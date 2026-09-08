@@ -16,8 +16,8 @@ app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
     service: "CodeForge",
-    phase: 1,
-    message: "Backend foundation ready",
+    phase: 2,
+    message: "LLM Code Generation ready",
   });
 });
 

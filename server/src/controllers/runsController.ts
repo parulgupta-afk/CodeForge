@@ -2,8 +2,9 @@ import { Request, Response } from "express";
 import { randomUUID } from "crypto";
 import { runsStore } from "../store/runsStore";
 import { CreateRunRequest, Run } from "../types/run";
+import { generateCode } from "../agents/codeGenerator";
 
-export const createRun = (req: Request, res: Response) => {
+export const createRun = async (req: Request, res: Response) => {
   try {
     const body = req.body as CreateRunRequest;
 
@@ -25,12 +26,40 @@ export const createRun = (req: Request, res: Response) => {
 
     runsStore.create(run);
 
-    return res.status(201).json({
-      runId: run.id,
-      status: run.status,
-      task: run.task,
-      createdAt: run.createdAt,
-    });
+    // For Phase 2 we immediately generate code (later this becomes async + orchestrator)
+    // We keep the run in "queued" and return quickly, then generate.
+    // For simplicity in Phase 2 we generate synchronously so you can see the result.
+
+    const generation = await generateCode(run.task);
+
+    if (generation.success && generation.data) {
+      runsStore.update(run.id, {
+        status: "running", // temporary - will become more accurate later
+        finalOutput: generation.data.code,
+        attempts: 1,
+      });
+
+      return res.status(201).json({
+        runId: run.id,
+        status: "code_generated",
+        task: run.task,
+        generatedCode: generation.data,
+        createdAt: run.createdAt,
+      });
+    } else {
+      runsStore.update(run.id, {
+        status: "failed",
+        error: generation.error || "Code generation failed",
+        attempts: 1,
+      });
+
+      return res.status(500).json({
+        runId: run.id,
+        status: "failed",
+        error: generation.error,
+        rawResponse: generation.rawResponse,
+      });
+    }
   } catch (err) {
     console.error("createRun error:", err);
     return res.status(500).json({ error: "Internal server error" });

@@ -1,20 +1,16 @@
 import { generateCode } from "./codeGenerator";
 import { buildRepairPrompt } from "../prompts/repair";
 import { GeneratedCode, GenerationResult } from "../types/generation";
-import { ExecutionResult } from "../types/execution";
+import { ClassifiedError } from "../types/error";
 
 /**
- * Asks the LLM to repair the previous code based on the execution error.
- * Reuses the same generateCode infrastructure (Anthropic / Gemini / Mock).
+ * Asks the LLM to repair the previous code using a structured error classification.
  */
 export async function repairCode(
   task: string,
   previousCode: GeneratedCode,
-  execution: ExecutionResult
+  classified: ClassifiedError
 ): Promise<GenerationResult> {
-  const repairPrompt = buildRepairPrompt(task, previousCode, execution);
-
-  // We pass the repair prompt as the "task" so the existing generator can handle it.
-  // A more advanced version can use a dedicated repair system prompt later.
+  const repairPrompt = buildRepairPrompt(task, previousCode, classified);
   return generateCode(repairPrompt);
 }

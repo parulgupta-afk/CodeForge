@@ -1,20 +1,14 @@
 import { GeneratedCode } from "../types/generation";
-import { ExecutionResult } from "../types/execution";
+import { ClassifiedError } from "../types/error";
 
 export function buildRepairPrompt(
   task: string,
   previousCode: GeneratedCode,
-  execution: ExecutionResult
+  classified: ClassifiedError
 ): string {
-  const errorInfo = execution.timedOut
-    ? `The program timed out after ${execution.durationMs}ms.`
-    : execution.stderr
-    ? execution.stderr
-    : execution.error || "Unknown error";
-
   return `You are an expert Python programmer working inside CodeForge, an autonomous coding agent.
 
-The previous attempt to solve the task failed. Your job is to fix the code.
+The previous attempt to solve the task failed. Your job is to fix the code using the structured error information below.
 
 STRICT RULES:
 1. Return ONLY valid JSON. No markdown, no explanations outside the JSON.
@@ -28,7 +22,7 @@ STRICT RULES:
 }
 
 3. Keep the original intent of the task.
-4. Fix the specific error that occurred.
+4. Fix the specific problem indicated by the error category.
 5. Prefer the Python standard library when possible.
 6. Do not include any text before or after the JSON object.
 
@@ -40,11 +34,12 @@ PREVIOUS CODE:
 ${previousCode.code}
 \`\`\`
 
-ERROR THAT OCCURRED:
-${errorInfo}
+STRUCTURED ERROR:
+Category: ${classified.category}
+Detail: ${classified.detail}
+Retryable: ${classified.retryable}
 
-Exit code: ${execution.exitCode}
-Timed out: ${execution.timedOut}
+${classified.rawStderr ? `Raw stderr (for reference):\n${classified.rawStderr.slice(0, 800)}` : ""}
 
 Now produce the fixed version of the code.`;
 }

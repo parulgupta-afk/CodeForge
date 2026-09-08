@@ -4,34 +4,43 @@ Autonomous Coding Agent with Sandboxed Execution
 
 **GitHub:** https://github.com/parulgupta-afk/CodeForge
 
-## Current Status: Phase 5 – Docker Sandbox
+## Current Status: Phase 6 – Error Classifier
 
 ### What works now
-- Full autonomous loop (Generate → Execute → Repair)
-- **Docker sandbox** with:
-  - Network disabled (`--network none`)
-  - Memory limit: 512 MB
-  - CPU limit: 1 core
-  - Timeout protection
-  - Automatic container cleanup
-- Fallback to local executor if Docker is unavailable
+- Full autonomous loop: Generate → Execute → **Classify Error** → Repair → Execute
+- Structured error categories:
+  - SyntaxError
+  - MissingDependency
+  - RuntimeException
+  - Timeout
+  - PermissionDenied
+  - NetworkBlocked
+  - Unknown
+- Smarter repair prompts that use the classified error instead of raw traceback
 
-### How to enable Docker
-
-In `server/.env`:
+### Project Structure
 ```
-USE_DOCKER=true
-SANDBOX_IMAGE=python:3.12-slim
+server/src/
+├── agents/
+│   ├── codeGenerator.ts
+│   ├── repairAgent.ts
+│   └── orchestrator.ts
+├── classifier/
+│   └── errorClassifier.ts     ← NEW
+├── prompts/
+│   ├── generation.ts
+│   └── repair.ts              ← UPDATED
+├── sandbox/
+└── types/
+    └── error.ts               ← NEW
 ```
 
-### Setup (Windows CMD)
+## Setup (Windows CMD)
 
 ```cmd
-:: Make sure Docker Desktop is running
 cd codeforge\server
 npm install
-echo USE_DOCKER=true > .env
-echo ANTHROPIC_API_KEY=sk-ant-your-key-here >> .env
+echo ANTHROPIC_API_KEY=sk-ant-your-key-here > .env
 npm run dev
 ```
 
@@ -47,5 +56,6 @@ curl -X POST http://localhost:3001/api/runs -H "Content-Type: application/json" 
 - Phase 2 ✅ LLM Code Generation
 - Phase 3 ✅ Local Execution Engine
 - Phase 4 ✅ Autonomous Repair Loop
-- Phase 5 ✅ Docker Sandbox
-- Phase 6 → Error Classifier
+- Phase 5 → Docker Sandbox (push when ready)
+- Phase 6 ✅ Error Classifier
+- Phase 7 → PostgreSQL Persistence

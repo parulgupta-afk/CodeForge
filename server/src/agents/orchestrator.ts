@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { generateCode } from "./codeGenerator";
 import { repairCode } from "./repairAgent";
 import { executeCode } from "../sandbox";
+import { classifyError } from "../classifier/errorClassifier";
 import { Attempt, OrchestratorResult } from "../types/attempt";
 import { runsStore } from "../store/runsStore";
 import { Run } from "../types/run";
@@ -10,13 +11,12 @@ const MAX_ATTEMPTS = 3;
 
 /**
  * Core autonomous loop:
- * generate → execute → (if failed) repair → execute → ... up to MAX_ATTEMPTS
+ * generate → execute → classify → repair → execute ... up to MAX_ATTEMPTS
  */
 export async function runAgent(task: string): Promise<OrchestratorResult> {
   const runId = randomUUID();
   const now = new Date().toISOString();
 
-  // Create the run record
   const run: Run = {
     id: runId,
     task,
@@ -39,7 +39,8 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
       generation = await generateCode(task);
     } else {
       const previous = attempts[attempts.length - 1];
-      generation = await repairCode(task, previous.generatedCode, previous.execution);
+      const classified = classifyError(previous.execution);
+      generation = await repairCode(task, previous.generatedCode, classified);
     }
 
     lastProvider = (generation as any).provider;
@@ -95,13 +96,15 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
       timeoutMs: 15_000,
     });
 
+    const classified = execution.success ? undefined : classifyError(execution);
+
     const attempt: Attempt = {
       attemptNumber,
       generatedCode: generation.data,
       execution,
-      errorSummary: execution.success
-        ? undefined
-        : execution.error || execution.stderr || "Execution failed",
+      errorSummary: classified
+        ? `${classified.category}: ${classified.detail}`
+        : undefined,
       timestamp: new Date().toISOString(),
     };
 
@@ -142,7 +145,7 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
         status: "failed",
         attempts: attemptNumber,
         generatedCode: generation.data.code,
-        error: execution.error || execution.stderr,
+        error: classified ? `${classified.category}: ${classified.detail}` : execution.error,
         execution: {
           success: false,
           stdout: execution.stdout,
@@ -158,17 +161,16 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
         runId,
         task,
         attempts,
-        finalError: execution.error || execution.stderr || "All attempts failed",
+        finalError: classified
+          ? `${classified.category}: ${classified.detail}`
+          : execution.error || execution.stderr || "All attempts failed",
         totalAttempts: attemptNumber,
         provider: lastProvider,
         model: lastModel,
       };
     }
-
-    // Otherwise continue to next repair attempt
   }
 
-  // Should never reach here
   return {
     success: false,
     runId,

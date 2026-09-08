@@ -4,6 +4,7 @@ import { TaskBriefCard } from "./components/TaskBriefCard";
 import { StepperBar } from "./components/StepperBar";
 import { WorkingJournalCard } from "./components/WorkingJournalCard";
 import { AttemptCard } from "./components/AttemptCard";
+import { MetricsCard } from "./components/MetricsCard";
 import { createRun } from "./services/api";
 import { getSocket } from "./services/socket";
 import { JournalLog, RunResponse, StepperStage } from "./types/run";
@@ -160,8 +161,9 @@ export default function App() {
             ))}
           </div>
 
-          <div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             <WorkingJournalCard logs={logs} />
+            <MetricsCard />
           </div>
         </div>
       </main>

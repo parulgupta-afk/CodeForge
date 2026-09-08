@@ -10,6 +10,7 @@ dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 import express from "express";
 import cors from "cors";
 import runsRouter from "./routes/runs";
+import metricsRouter from "./routes/metrics";
 import { initSocketIO } from "./websocket/io";
 
 const app = express();
@@ -22,12 +23,13 @@ app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
     service: "CodeForge",
-    phase: 9,
-    message: "Live WebSocket logs ready",
+    phase: 10,
+    message: "Metrics Dashboard ready",
   });
 });
 
 app.use("/api/runs", runsRouter);
+app.use("/api/metrics", metricsRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: "Not found" });

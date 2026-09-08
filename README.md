@@ -4,31 +4,28 @@ Autonomous Coding Agent with Sandboxed Execution
 
 **GitHub:** https://github.com/parulgupta-afk/CodeForge
 
-## Current Status: Phase 9 – Live WebSocket Logs
+## Current Status: Phase 10 – Metrics Dashboard
 
 ### What works now
-- Full agent loop with structured error classification
-- Docker / local sandbox
-- Studio UI
-- **Live WebSocket events** streamed into the Working Journal
+- Full autonomous agent loop
+- Studio UI with live WebSocket journal
+- **Metrics dashboard**: success rate, first-attempt rate, avg attempts, failure categories
 
-### Events emitted
+### API
 ```
-run:started → attempt:started → code:generated → execution:started
-→ execution:output | execution:error → error:classified → repair:started
-→ attempt:completed → run:completed | run:failed
+GET /api/metrics
 ```
 
 ### Quick Start (Windows CMD)
 
-**Terminal 1 – Backend**
+**Terminal 1**
 ```cmd
 cd codeforge\server
 npm install
 npm run dev
 ```
 
-**Terminal 2 – Frontend**
+**Terminal 2**
 ```cmd
 cd codeforge\client
 npm install
@@ -38,9 +35,6 @@ npm run dev
 Open → http://localhost:5173
 
 ### Roadmap
-- Phase 0–5 ✅
-- Phase 6 ✅ Error Classifier
-- Phase 7 → PostgreSQL (optional)
-- Phase 8 ✅ Studio UI
-- Phase 9 ✅ Live WebSocket Logs
-- Phase 10 → Metrics Dashboard
+- Phase 0–9 ✅
+- Phase 10 ✅ Metrics Dashboard
+- Phase 11 → Benchmarking

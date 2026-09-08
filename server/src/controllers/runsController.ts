@@ -3,6 +3,7 @@ import { randomUUID } from "crypto";
 import { runsStore } from "../store/runsStore";
 import { CreateRunRequest, Run } from "../types/run";
 import { generateCode } from "../agents/codeGenerator";
+import { executeLocally } from "../sandbox/localExecutor";
 
 export const createRun = async (req: Request, res: Response) => {
   try {
@@ -26,29 +27,10 @@ export const createRun = async (req: Request, res: Response) => {
 
     runsStore.create(run);
 
-    // For Phase 2 we immediately generate code (later this becomes async + orchestrator)
-    // We keep the run in "queued" and return quickly, then generate.
-    // For simplicity in Phase 2 we generate synchronously so you can see the result.
-
+    // ---------- Step 1: Generate code ----------
     const generation = await generateCode(run.task);
 
-    if (generation.success && generation.data) {
-      runsStore.update(run.id, {
-        status: "running", // temporary - will become more accurate later
-        finalOutput: generation.data.code,
-        attempts: 1,
-      });
-
-      return res.status(201).json({
-        runId: run.id,
-        status: "code_generated",
-        task: run.task,
-        provider: generation.provider,
-        model: generation.model,
-        generatedCode: generation.data,
-        createdAt: run.createdAt,
-      });
-    } else {
+    if (!generation.success || !generation.data) {
       runsStore.update(run.id, {
         status: "failed",
         error: generation.error || "Code generation failed",
@@ -58,10 +40,55 @@ export const createRun = async (req: Request, res: Response) => {
       return res.status(500).json({
         runId: run.id,
         status: "failed",
+        stage: "generation",
         error: generation.error,
         rawResponse: generation.rawResponse,
       });
     }
+
+    // ---------- Step 2: Execute the generated code ----------
+    const execution = await executeLocally({
+      code: generation.data.code,
+      filename: generation.data.filename || "main.py",
+      timeoutMs: 15_000,
+    });
+
+    const finalStatus = execution.success ? "success" : "failed";
+
+    runsStore.update(run.id, {
+      status: finalStatus,
+      attempts: 1,
+      generatedCode: generation.data.code,
+      finalOutput: execution.success ? execution.stdout : undefined,
+      error: execution.success ? undefined : execution.error || execution.stderr,
+      execution: {
+        success: execution.success,
+        stdout: execution.stdout,
+        stderr: execution.stderr,
+        exitCode: execution.exitCode,
+        durationMs: execution.durationMs,
+        timedOut: execution.timedOut,
+      },
+    });
+
+    return res.status(201).json({
+      runId: run.id,
+      status: finalStatus,
+      task: run.task,
+      provider: (generation as any).provider,
+      model: (generation as any).model,
+      generatedCode: generation.data,
+      execution: {
+        success: execution.success,
+        stdout: execution.stdout,
+        stderr: execution.stderr,
+        exitCode: execution.exitCode,
+        durationMs: execution.durationMs,
+        timedOut: execution.timedOut,
+        error: execution.error,
+      },
+      createdAt: run.createdAt,
+    });
   } catch (err) {
     console.error("createRun error:", err);
     return res.status(500).json({ error: "Internal server error" });

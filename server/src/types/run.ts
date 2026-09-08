@@ -9,6 +9,16 @@ export interface Run {
   finalOutput?: string;
   attempts: number;
   error?: string;
+  // Phase 3 additions
+  generatedCode?: string;
+  execution?: {
+    success: boolean;
+    stdout: string;
+    stderr: string;
+    exitCode: number | null;
+    durationMs: number;
+    timedOut: boolean;
+  };
 }
 
 export interface CreateRunRequest {

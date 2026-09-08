@@ -54,7 +54,6 @@ function parseGeneratedJson(raw: string): GeneratedCode | null {
 }
 
 function resolvePrompt(task: string): string {
-  // If task is already a full prompt (e.g. from repairAgent)
   if (task.includes("You are an expert Python programmer")) {
     return task;
   }
@@ -229,7 +228,7 @@ export async function generateCode(task: string): Promise<GenerationResult> {
 
       console.warn("Anthropic generation failed:", result.error);
 
-      // If Anthropic failed due to credit balance, quota, or auth limitation, fall back gracefully
+      // Fall back if credit balance is low or billing issue
       const isCreditOrQuota =
         result.error &&
         (result.error.includes("credit balance") ||

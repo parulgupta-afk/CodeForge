@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { generateCode } from "./codeGenerator";
 import { repairCode } from "./repairAgent";
-import { executeLocally } from "../sandbox/localExecutor";
+import { executeCode } from "../sandbox";
 import { Attempt, OrchestratorResult } from "../types/attempt";
 import { runsStore } from "../store/runsStore";
 import { Run } from "../types/run";
@@ -89,7 +89,7 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
     }
 
     // ---------- Execute ----------
-    const execution = await executeLocally({
+    const execution = await executeCode({
       code: generation.data.code,
       filename: generation.data.filename || "main.py",
       timeoutMs: 15_000,

@@ -1,9 +1,14 @@
-import express from "express";
-import cors from "cors";
+import path from "path";
 import dotenv from "dotenv";
-import runsRouter from "./routes/runs";
 
 dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+dotenv.config({ path: path.resolve(process.cwd(), "../.env") });
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+
+import express from "express";
+import cors from "cors";
+import runsRouter from "./routes/runs";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -16,8 +21,8 @@ app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
     service: "CodeForge",
-    phase: 4,
-    message: "Autonomous Repair Loop ready",
+    phase: 5,
+    message: "Docker Sandbox ready",
   });
 });
 
@@ -36,7 +41,7 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 CodeForge server (Phase 4) running on http://localhost:${PORT}`);
+  console.log(`🚀 CodeForge server (Phase 5) running on http://localhost:${PORT}`);
   console.log(`   POST /api/runs`);
   console.log(`   GET  /api/runs`);
   console.log(`   GET  /api/runs/:id`);

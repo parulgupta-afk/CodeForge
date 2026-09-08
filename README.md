@@ -4,55 +4,44 @@ Autonomous Coding Agent with Sandboxed Execution
 
 **GitHub:** https://github.com/parulgupta-afk/CodeForge
 
-## Current Status: Phase 1 – Backend Foundation
+## Current Status: Phase 2 – LLM Code Generation
+
+### What works now
+- `POST /api/runs` → sends task to Anthropic Claude → returns structured Python code
+- In-memory run tracking
+- Health endpoint
 
 ### Project Structure
 ```
-codeforge/
-├── client/          # React frontend (coming in Phase 8)
-├── server/          # Express + TypeScript backend ✅
-│   └── src/
-│       ├── controllers/
-│       ├── routes/
-│       ├── store/         # In-memory runs store
-│       ├── types/
-│       └── server.ts
-├── sandbox/         # Docker execution (Phase 5)
-├── benchmark/       # Evaluation (Phase 11)
-└── docker/
+server/src/
+├── agents/codeGenerator.ts   ← NEW
+├── prompts/generation.ts     ← NEW
+├── types/generation.ts       ← NEW
+├── controllers/
+├── routes/
+├── store/
+└── server.ts
 ```
 
-## Phase 1 Features
-- `POST /api/runs` – Create a new coding task
-- `GET  /api/runs` – List all runs
-- `GET  /api/runs/:id` – Get a specific run
-- `GET  /api/health` – Health check
+## Setup (Windows CMD)
 
-## Quick Start
-
-```bash
-cd server
+```cmd
+cd codeforge\server
 npm install
+echo ANTHROPIC_API_KEY=sk-ant-your-key-here > .env
 npm run dev
 ```
 
-### Test the API
+### Test
 
-```bash
-# Create a run
-curl -X POST http://localhost:3001/api/runs \
-  -H "Content-Type: application/json" \
-  -d '{"task": "Calculate the average of numbers from 1 to 100"}'
-
-# List runs
-curl http://localhost:3001/api/runs
+```cmd
+curl -X POST http://localhost:3001/api/runs -H "Content-Type: application/json" -d "{\"task\": \"Calculate the average of numbers from 1 to 100\"}"
 ```
 
-## Roadmap
+## Roadmap Progress
 - Phase 0 ✅ Environment + Architecture
 - Phase 1 ✅ Backend Foundation
-- Phase 2 → LLM Code Generation (Anthropic)
+- Phase 2 ✅ LLM Code Generation (Anthropic)
 - Phase 3 → Local Execution Engine
 - Phase 4 → Autonomous Repair Loop
 - Phase 5 → Docker Sandbox
-- ... and more

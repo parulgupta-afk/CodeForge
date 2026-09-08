@@ -1,9 +1,15 @@
+import path from "path";
+import dotenv from "dotenv";
+
+// Load environment variables from server/.env or root .env
+dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+dotenv.config({ path: path.resolve(process.cwd(), "../.env") });
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import runsRouter from "./routes/runs";
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;

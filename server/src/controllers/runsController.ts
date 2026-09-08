@@ -43,6 +43,8 @@ export const createRun = async (req: Request, res: Response) => {
         runId: run.id,
         status: "code_generated",
         task: run.task,
+        provider: generation.provider,
+        model: generation.model,
         generatedCode: generation.data,
         createdAt: run.createdAt,
       });

@@ -8,7 +8,7 @@ export async function createRun(task: string): Promise<RunResponse> {
   });
 
   const data = await res.json();
-  if (!res.ok && !data.attempts) {
+  if (!res.ok) {
     throw new Error(data.error || data.finalError || "Agent request failed");
   }
   return data as RunResponse;

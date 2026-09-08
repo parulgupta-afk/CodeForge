@@ -5,15 +5,20 @@ import { executeCode } from "../sandbox";
 import { classifyError } from "../classifier/errorClassifier";
 import { Attempt, OrchestratorResult } from "../types/attempt";
 import { runsStore } from "../store/runsStore";
-import { saveRun, saveAttempt } from "../database/runsRepository";
 import { Run } from "../types/run";
+import { emitAgentEvent } from "../websocket/io";
 
 const MAX_ATTEMPTS = 3;
 
-/**
- * Core autonomous loop:
- * generate → execute → classify → repair → execute ... up to MAX_ATTEMPTS
- */
+function emit(runId: string, type: any, extra: any = {}) {
+  emitAgentEvent({
+    type,
+    runId,
+    timestamp: new Date().toISOString(),
+    ...extra,
+  });
+}
+
 export async function runAgent(task: string): Promise<OrchestratorResult> {
   const runId = randomUUID();
   const now = new Date().toISOString();
@@ -28,12 +33,18 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
   };
   runsStore.create(run);
 
+  emit(runId, "run:started", { message: "Agent started", data: { task } });
+
   const attempts: Attempt[] = [];
   let lastProvider: string | undefined;
   let lastModel: string | undefined;
 
   for (let attemptNumber = 1; attemptNumber <= MAX_ATTEMPTS; attemptNumber++) {
-    // ---------- Generate or Repair ----------
+    emit(runId, "attempt:started", {
+      attemptNumber,
+      message: `Starting attempt ${attemptNumber}`,
+    });
+
     let generation;
 
     if (attemptNumber === 1) {
@@ -41,6 +52,15 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
     } else {
       const previous = attempts[attempts.length - 1];
       const classified = classifyError(previous.execution);
+      emit(runId, "error:classified", {
+        attemptNumber: previous.attemptNumber,
+        message: `${classified.category}: ${classified.detail}`,
+        data: classified,
+      });
+      emit(runId, "repair:started", {
+        attemptNumber,
+        message: "Repairing code…",
+      });
       generation = await repairCode(task, previous.generatedCode, classified);
     }
 
@@ -48,6 +68,10 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
     lastModel = (generation as any).model;
 
     if (!generation.success || !generation.data) {
+      emit(runId, "run:failed", {
+        message: generation.error || "Code generation failed",
+      });
+
       const failedAttempt: Attempt = {
         attemptNumber,
         generatedCode: {
@@ -69,7 +93,6 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
         errorSummary: generation.error || "Code generation failed",
         timestamp: new Date().toISOString(),
       };
-
       attempts.push(failedAttempt);
 
       runsStore.update(runId, {
@@ -90,12 +113,44 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
       };
     }
 
-    // ---------- Execute ----------
+    emit(runId, "code:generated", {
+      attemptNumber,
+      message: "Code generated",
+      data: {
+        filename: generation.data.filename,
+        lines: generation.data.code.split("\n").length,
+        explanation: generation.data.explanation,
+      },
+    });
+
+    emit(runId, "execution:started", {
+      attemptNumber,
+      message: "Executing in sandbox…",
+    });
+
     const execution = await executeCode({
       code: generation.data.code,
       filename: generation.data.filename || "main.py",
       timeoutMs: 15_000,
     });
+
+    if (execution.success) {
+      emit(runId, "execution:output", {
+        attemptNumber,
+        message: execution.stdout?.slice(0, 200) || "OK",
+        data: { stdout: execution.stdout, durationMs: execution.durationMs },
+      });
+    } else {
+      emit(runId, "execution:error", {
+        attemptNumber,
+        message: execution.error || execution.stderr || "Execution failed",
+        data: {
+          stderr: execution.stderr,
+          exitCode: execution.exitCode,
+          timedOut: execution.timedOut,
+        },
+      });
+    }
 
     const classified = execution.success ? undefined : classifyError(execution);
 
@@ -108,10 +163,14 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
         : undefined,
       timestamp: new Date().toISOString(),
     };
-
     attempts.push(attempt);
 
-    // ---------- Success? ----------
+    emit(runId, "attempt:completed", {
+      attemptNumber,
+      message: execution.success ? "Attempt succeeded" : "Attempt failed",
+      data: { success: execution.success },
+    });
+
     if (execution.success) {
       runsStore.update(runId, {
         status: "success",
@@ -128,7 +187,12 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
         },
       });
 
-      const successResult = {
+      emit(runId, "run:completed", {
+        message: `Resolved in ${attemptNumber} attempt(s)`,
+        data: { finalOutput: execution.stdout },
+      });
+
+      return {
         success: true,
         runId,
         task,
@@ -138,17 +202,16 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
         provider: lastProvider,
         model: lastModel,
       };
-      await persistResult(successResult);
-      return successResult;
     }
 
-    // ---------- Last attempt failed ----------
     if (attemptNumber === MAX_ATTEMPTS) {
       runsStore.update(runId, {
         status: "failed",
         attempts: attemptNumber,
         generatedCode: generation.data.code,
-        error: classified ? `${classified.category}: ${classified.detail}` : execution.error,
+        error: classified
+          ? `${classified.category}: ${classified.detail}`
+          : execution.error,
         execution: {
           success: false,
           stdout: execution.stdout,
@@ -159,7 +222,13 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
         },
       });
 
-      const failResult = {
+      emit(runId, "run:failed", {
+        message: classified
+          ? `${classified.category}: ${classified.detail}`
+          : execution.error || "All attempts failed",
+      });
+
+      return {
         success: false,
         runId,
         task,
@@ -171,8 +240,6 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
         provider: lastProvider,
         model: lastModel,
       };
-      await persistResult(failResult);
-      return failResult;
     }
   }
 
@@ -184,27 +251,4 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
     finalError: "Unexpected orchestrator exit",
     totalAttempts: attempts.length,
   };
-}
-
-
-// ---------- Persistence helpers (Phase 7) ----------
-async function persistResult(result: OrchestratorResult) {
-  try {
-    await saveRun({
-      id: result.runId,
-      task: result.task,
-      status: result.success ? "success" : "failed",
-      finalOutput: result.finalOutput,
-      error: result.finalError,
-      totalAttempts: result.totalAttempts,
-      provider: result.provider,
-      model: result.model,
-    });
-
-    for (const attempt of result.attempts) {
-      await saveAttempt(result.runId, attempt);
-    }
-  } catch (err) {
-    console.warn("Failed to persist run to database:", err);
-  }
 }

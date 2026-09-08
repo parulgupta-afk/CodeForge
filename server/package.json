@@ -13,7 +13,8 @@
     "express": "^4.21.0",
     "@anthropic-ai/sdk": "^0.39.0",
     "dockerode": "^4.0.2",
-    "pg": "^8.13.0"
+    "pg": "^8.13.0",
+    "socket.io": "^4.8.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",

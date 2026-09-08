@@ -4,49 +4,34 @@ Autonomous Coding Agent with Sandboxed Execution
 
 **GitHub:** https://github.com/parulgupta-afk/CodeForge
 
-## Current Status: Phase 7 – PostgreSQL Persistence
+## Current Status: Phase 8 – Studio UI
 
-### What works now
-- Full autonomous loop (Generate → Execute → Classify → Repair)
-- Docker sandbox (optional)
-- **PostgreSQL persistence** for runs and attempts
-- Graceful fallback to in-memory store when DATABASE_URL is missing
+Premium **CodeForge Studio** frontend applied:
+- Newsreader + Source Sans 3 typography
+- Craft card elevation & ambient background
+- Stepper for Generate → Execute → Repair
+- Working Journal for agent logs
+- Task Brief input connected to real backend
 
-### Database Tables
-- `runs` – one row per task
-- `attempts` – one row per generation/execution attempt
+### Quick Start (Windows CMD)
 
-### Setup (Windows CMD)
-
+**Terminal 1 – Backend**
 ```cmd
 cd codeforge\server
-npm install pg
-npm install -D @types/pg
-
-:: Add your Neon / Supabase / local Postgres URL
-echo DATABASE_URL=postgresql://user:pass@host:5432/codeforge >> .env
-
+copy .env.example .env
+notepad .env
+npm install
 npm run dev
 ```
 
-### Free database options
-- Neon → https://neon.tech
-- Supabase → https://supabase.com
-
-### Test
-
+**Terminal 2 – Frontend**
 ```cmd
-curl -X POST http://localhost:3001/api/runs -H "Content-Type: application/json" -d "{\"task\": \"Calculate the average of numbers from 1 to 100\"}"
-curl http://localhost:3001/api/health
+cd codeforge\client
+npm install
+npm run dev
 ```
 
-## Roadmap Progress
-- Phase 0 ✅ Environment + Architecture
-- Phase 1 ✅ Backend Foundation
-- Phase 2 ✅ LLM Code Generation
-- Phase 3 ✅ Local Execution Engine
-- Phase 4 ✅ Autonomous Repair Loop
-- Phase 5 ✅ Docker Sandbox
-- Phase 6 → Error Classifier (push when ready)
-- Phase 7 ✅ PostgreSQL Persistence
-- Phase 8 → React Frontend
+Open → http://localhost:5173
+
+### Design Credits
+UI language adapted from the CodeForge Studio design system (typography, cards, stepper, journal).

@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
-import { randomUUID } from "crypto";
 import { runsStore } from "../store/runsStore";
-import { CreateRunRequest, Run } from "../types/run";
-import { generateCode } from "../agents/codeGenerator";
-import { executeLocally } from "../sandbox/localExecutor";
+import { CreateRunRequest } from "../types/run";
+import { runAgent } from "../agents/orchestrator";
 
 export const createRun = async (req: Request, res: Response) => {
   try {
@@ -15,79 +13,32 @@ export const createRun = async (req: Request, res: Response) => {
       });
     }
 
-    const now = new Date().toISOString();
-    const run: Run = {
-      id: randomUUID(),
-      task: body.task.trim(),
-      status: "queued",
-      createdAt: now,
-      updatedAt: now,
-      attempts: 0,
-    };
+    // Hand off to the autonomous agent
+    const result = await runAgent(body.task.trim());
 
-    runsStore.create(run);
+    const statusCode = result.success ? 201 : 500;
 
-    // ---------- Step 1: Generate code ----------
-    const generation = await generateCode(run.task);
-
-    if (!generation.success || !generation.data) {
-      runsStore.update(run.id, {
-        status: "failed",
-        error: generation.error || "Code generation failed",
-        attempts: 1,
-      });
-
-      return res.status(500).json({
-        runId: run.id,
-        status: "failed",
-        stage: "generation",
-        error: generation.error,
-        rawResponse: generation.rawResponse,
-      });
-    }
-
-    // ---------- Step 2: Execute the generated code ----------
-    const execution = await executeLocally({
-      code: generation.data.code,
-      filename: generation.data.filename || "main.py",
-      timeoutMs: 15_000,
-    });
-
-    const finalStatus = execution.success ? "success" : "failed";
-
-    runsStore.update(run.id, {
-      status: finalStatus,
-      attempts: 1,
-      generatedCode: generation.data.code,
-      finalOutput: execution.success ? execution.stdout : undefined,
-      error: execution.success ? undefined : execution.error || execution.stderr,
-      execution: {
-        success: execution.success,
-        stdout: execution.stdout,
-        stderr: execution.stderr,
-        exitCode: execution.exitCode,
-        durationMs: execution.durationMs,
-        timedOut: execution.timedOut,
-      },
-    });
-
-    return res.status(201).json({
-      runId: run.id,
-      status: finalStatus,
-      task: run.task,
-      provider: (generation as any).provider,
-      model: (generation as any).model,
-      generatedCode: generation.data,
-      execution: {
-        success: execution.success,
-        stdout: execution.stdout,
-        stderr: execution.stderr,
-        exitCode: execution.exitCode,
-        durationMs: execution.durationMs,
-        timedOut: execution.timedOut,
-        error: execution.error,
-      },
-      createdAt: run.createdAt,
+    return res.status(statusCode).json({
+      runId: result.runId,
+      status: result.success ? "success" : "failed",
+      task: result.task,
+      totalAttempts: result.totalAttempts,
+      provider: result.provider,
+      model: result.model,
+      finalOutput: result.finalOutput,
+      finalError: result.finalError,
+      attempts: result.attempts.map((a) => ({
+        attemptNumber: a.attemptNumber,
+        code: a.generatedCode.code,
+        explanation: a.generatedCode.explanation,
+        success: a.execution.success,
+        stdout: a.execution.stdout,
+        stderr: a.execution.stderr,
+        exitCode: a.execution.exitCode,
+        durationMs: a.execution.durationMs,
+        timedOut: a.execution.timedOut,
+        errorSummary: a.errorSummary,
+      })),
     });
   } catch (err) {
     console.error("createRun error:", err);

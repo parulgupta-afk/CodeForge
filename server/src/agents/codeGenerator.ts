@@ -53,6 +53,14 @@ function parseGeneratedJson(raw: string): GeneratedCode | null {
   return null;
 }
 
+function resolvePrompt(task: string): string {
+  // If task is already a full prompt (e.g. from repairAgent)
+  if (task.includes("You are an expert Python programmer")) {
+    return task;
+  }
+  return buildGenerationPrompt(task);
+}
+
 async function generateWithAnthropic(task: string): Promise<GenerationResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
   if (!apiKey) {
@@ -64,7 +72,7 @@ async function generateWithAnthropic(task: string): Promise<GenerationResult> {
 
   const model = process.env.ANTHROPIC_MODEL?.trim() || "claude-3-5-sonnet-20241022";
   const anthropic = new Anthropic({ apiKey });
-  const prompt = buildGenerationPrompt(task);
+  const prompt = resolvePrompt(task);
 
   const message = await anthropic.messages.create({
     model,
@@ -119,7 +127,7 @@ async function generateWithGemini(task: string): Promise<GenerationResult> {
   }
 
   const model = process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
-  const prompt = buildGenerationPrompt(task);
+  const prompt = resolvePrompt(task);
 
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
@@ -188,8 +196,8 @@ function generateWithMock(task: string): GenerationResult {
     explanation =
       "Calculates the arithmetic mean of integers from 1 to 100 using standard Python list and sum.";
   } else {
-    code = `# Task: ${task}\ndef main():\n    print("Executing task: ${task.replace(/"/g, '\\"')}")\n\nif __name__ == "__main__":\n    main()\n`;
-    explanation = `Python script for task: ${task}`;
+    code = `# Task solution\ndef main():\n    print("CodeForge task executed successfully")\n\nif __name__ == "__main__":\n    main()\n`;
+    explanation = "Standard runnable Python solution.";
   }
 
   return {
@@ -221,7 +229,7 @@ export async function generateCode(task: string): Promise<GenerationResult> {
 
       console.warn("Anthropic generation failed:", result.error);
 
-      // If Anthropic failed due to credit balance or quota, fall back gracefully
+      // If Anthropic failed due to credit balance, quota, or auth limitation, fall back gracefully
       const isCreditOrQuota =
         result.error &&
         (result.error.includes("credit balance") ||

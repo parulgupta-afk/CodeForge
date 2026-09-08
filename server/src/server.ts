@@ -16,8 +16,8 @@ app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
     service: "CodeForge",
-    phase: 3,
-    message: "Local Execution Engine ready",
+    phase: 4,
+    message: "Autonomous Repair Loop ready",
   });
 });
 
@@ -36,7 +36,7 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 CodeForge server (Phase 3) running on http://localhost:${PORT}`);
+  console.log(`🚀 CodeForge server (Phase 4) running on http://localhost:${PORT}`);
   console.log(`   POST /api/runs`);
   console.log(`   GET  /api/runs`);
   console.log(`   GET  /api/runs/:id`);

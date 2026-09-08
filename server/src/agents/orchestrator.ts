@@ -5,6 +5,7 @@ import { executeCode } from "../sandbox";
 import { classifyError } from "../classifier/errorClassifier";
 import { Attempt, OrchestratorResult } from "../types/attempt";
 import { runsStore } from "../store/runsStore";
+import { saveRun, saveAttempt } from "../database/runsRepository";
 import { Run } from "../types/run";
 
 const MAX_ATTEMPTS = 3;
@@ -127,7 +128,7 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
         },
       });
 
-      return {
+      const successResult = {
         success: true,
         runId,
         task,
@@ -137,6 +138,8 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
         provider: lastProvider,
         model: lastModel,
       };
+      await persistResult(successResult);
+      return successResult;
     }
 
     // ---------- Last attempt failed ----------
@@ -156,7 +159,7 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
         },
       });
 
-      return {
+      const failResult = {
         success: false,
         runId,
         task,
@@ -168,6 +171,8 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
         provider: lastProvider,
         model: lastModel,
       };
+      await persistResult(failResult);
+      return failResult;
     }
   }
 
@@ -179,4 +184,27 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
     finalError: "Unexpected orchestrator exit",
     totalAttempts: attempts.length,
   };
+}
+
+
+// ---------- Persistence helpers (Phase 7) ----------
+async function persistResult(result: OrchestratorResult) {
+  try {
+    await saveRun({
+      id: result.runId,
+      task: result.task,
+      status: result.success ? "success" : "failed",
+      finalOutput: result.finalOutput,
+      error: result.finalError,
+      totalAttempts: result.totalAttempts,
+      provider: result.provider,
+      model: result.model,
+    });
+
+    for (const attempt of result.attempts) {
+      await saveAttempt(result.runId, attempt);
+    }
+  } catch (err) {
+    console.warn("Failed to persist run to database:", err);
+  }
 }

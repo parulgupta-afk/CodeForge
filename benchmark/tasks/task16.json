@@ -1,0 +1,1 @@
+{"id":"task16","category":"failure","title":"Missing pandas","task":"Use pandas to create a DataFrame from {'x':[1,2,3]} and print the mean of column x. If pandas is missing, the agent should recover."}

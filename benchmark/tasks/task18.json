@@ -1,0 +1,1 @@
+{"id":"task18","category":"failure","title":"Index error bait","task":"From list [10,20,30] print the element at index 5. Recover if it fails."}

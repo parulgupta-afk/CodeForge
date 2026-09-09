@@ -1,0 +1,1 @@
+{"id":"task12","category":"data","title":"CSV average","task":"Given CSV text 'name,score\\nA,10\\nB,20\\nC,30', parse it and print the average score."}

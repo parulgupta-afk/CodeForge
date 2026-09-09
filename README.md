@@ -6,45 +6,25 @@ Autonomous Coding Agent with Sandboxed Execution
 
 ## Current Status: Phase 11 – Benchmarking
 
-### What works now
-- Full autonomous agent loop
-- Studio UI with live WebSocket journal
-- **Metrics dashboard**: success rate, first-attempt rate, avg attempts, failure categories
-- **Benchmark Suite**: automated evaluation runner (`benchmark/runner.ts`) measuring Pass@1, Pass@3, self-repair effectiveness, and generating JSON/Markdown reports
+### Phases completed
+- Phase 0–10 ✅ (all pushed to GitHub)
+- Phase 11 ✅ Benchmark suite (25 tasks)
 
-### API
-```
-GET /api/metrics
-POST /api/runs
-```
-
-### Quick Start (Windows CMD)
-
-**Terminal 1**
+### Benchmark
 ```cmd
 cd codeforge\server
-npm install
 npm run dev
-```
 
-**Terminal 2**
-```cmd
-cd codeforge\client
-npm install
-npm run dev
-```
-
-Open → http://localhost:5173
-
-**Terminal 3 (Benchmark Suite)**
-```cmd
 cd codeforge\benchmark
-npx ts-node runner.ts
+npm install
+npm run bench
 ```
-*(Or run `npm run benchmark` from project root)*
 
-### Roadmap
-- Phase 0–9 ✅
-- Phase 10 ✅ Metrics Dashboard
-- Phase 11 ✅ Benchmarking
+Results → `benchmark/results.json`
 
+### Resume line (fill after you run)
+> Built an autonomous coding agent with sandboxed execution; resolved **X%** of tasks within three self-correction attempts across a 25-task benchmark.
+
+### Quick Start
+**Backend:** `cd server && npm install && npm run dev`  
+**Frontend:** `cd client && npm install && npm run dev` → http://localhost:5173

@@ -176,7 +176,9 @@ html, body {
 .gold-foil-text {
   background: linear-gradient(105deg, #d9825b 0%, #ffcf9e 35%, #ffffff 50%, #ffcf9e 65%, #d9825b 100%);
   background-size: 220% auto;
+  
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: goldFoilShift 3.5s ease infinite;
 }

@@ -15,6 +15,11 @@ import * as path from "path";
 const API = process.env.CODEFORGE_API || "http://localhost:3001";
 const TASKS_DIR = path.join(__dirname, "tasks");
 const RESULTS_FILE = path.join(__dirname, "results.json");
+const DELAY_MS = Number(process.env.BENCH_DELAY_MS || 3500); // pause between tasks to avoid API rate limits
+
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
 
 interface Task {
   id: string;
@@ -122,6 +127,7 @@ async function main() {
     const r = await runOne(task);
     results.push(r);
     console.log(r.success ? `OK (${r.attempts} attempt(s), ${r.durationMs}ms)` : `FAIL (${r.errorCategory || r.finalError})`);
+    if (DELAY_MS > 0) await sleep(DELAY_MS);
   }
 
   const summary = summarize(results);

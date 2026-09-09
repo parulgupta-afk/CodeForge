@@ -10,6 +10,7 @@ dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 import express from "express";
 import cors from "cors";
 import runsRouter from "./routes/runs";
+import { applySecurity } from "./middleware/security";
 import metricsRouter from "./routes/metrics";
 import { initSocketIO } from "./websocket/io";
 
@@ -18,13 +19,14 @@ const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json({ limit: "1mb" }));
+applySecurity(app);
 
 app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
     service: "CodeForge",
-    phase: 10,
-    message: "Metrics Dashboard ready",
+    phase: 12,
+    message: "Production security + deployment ready",
   });
 });
 

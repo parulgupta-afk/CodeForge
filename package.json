@@ -5,8 +5,6 @@
   "scripts": {
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev",
-    "benchmark": "cd benchmark && npx ts-node runner.ts",
-    "benchmark:mock": "cd benchmark && npx ts-node runner.ts --mock",
     "build": "cd server && npm run build && cd ../client && npm run build"
   }
 }

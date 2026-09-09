@@ -4,27 +4,30 @@ Autonomous Coding Agent with Sandboxed Execution
 
 **GitHub:** https://github.com/parulgupta-afk/CodeForge
 
-## Current Status: Phase 11 – Benchmarking
+## Current Status: Phase 12 – Deployment + Security
 
-### Phases completed
-- Phase 0–10 ✅ (all pushed to GitHub)
-- Phase 11 ✅ Benchmark suite (25 tasks)
+### Completed phases
+- 0–11 ✅ (including 25-task benchmark)
+- 12 ✅ Rate limiting, Helmet, Docker, deploy guide
 
-### Benchmark
+### Security
+- Rate limit: 60 req/min API, 10 runs/min
+- Helmet headers
+- Body size limit
+- Secrets via `.env` only
+
+### Deploy
+See [DEPLOY.md](./DEPLOY.md)
+
+### Benchmark (avoid rate limits)
 ```cmd
-cd codeforge\server
-npm run dev
-
-cd codeforge\benchmark
-npm install
+cd benchmark
+set BENCH_DELAY_MS=3000
 npm run bench
 ```
 
-Results → `benchmark/results.json`
-
-### Resume line (fill after you run)
-> Built an autonomous coding agent with sandboxed execution; resolved **X%** of tasks within three self-correction attempts across a 25-task benchmark.
-
 ### Quick Start
-**Backend:** `cd server && npm install && npm run dev`  
-**Frontend:** `cd client && npm install && npm run dev` → http://localhost:5173
+```cmd
+cd server && npm install && npm run dev
+cd client && npm install && npm run dev
+```

@@ -4,7 +4,8 @@ let socket: Socket | null = null;
 
 export function getSocket(): Socket {
   if (!socket) {
-    const url = ((import.meta as any).env?.VITE_WS_URL as string) || "http://localhost:3001";
+    // In dev, Vite proxies /api but WebSocket needs the backend origin
+    const url = import.meta.env.VITE_WS_URL || "http://localhost:3001";
     socket = io(url, {
       transports: ["websocket", "polling"],
       autoConnect: true,

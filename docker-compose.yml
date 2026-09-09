@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    ports:
+      - "3001:3001"
+    env_file:
+      - server/.env
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      # Docker-in-Docker is complex; for production prefer a remote sandbox
+      # or keep USE_DOCKER=false and use a dedicated worker.
+      - USE_DOCKER=false
+    restart: unless-stopped
+
+  # Optional: local Postgres for persistence
+  # db:
+  #   image: postgres:16-alpine
+  #   environment:
+  #     POSTGRES_USER: codeforge
+  #     POSTGRES_PASSWORD: codeforge
+  #     POSTGRES_DB: codeforge
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
+
+# volumes:
+#   pgdata:

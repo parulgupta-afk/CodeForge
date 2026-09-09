@@ -1,245 +1,237 @@
 {
   "total": 25,
-  "successCount": 0,
-  "successRate": 0,
-  "firstAttemptSuccessRate": 0,
-  "withinThreeAttemptsRate": 0,
-  "averageAttempts": 0,
-  "failureCategories": {
-    "ANTHROPIC_API_KEY is not set in environment variables": 15,
-    "Unknown": 10
-  },
+  "successCount": 25,
+  "successRate": 100,
+  "firstAttemptSuccessRate": 100,
+  "withinThreeAttemptsRate": 100,
+  "averageAttempts": 1,
+  "failureCategories": {},
   "results": [
     {
       "taskId": "task01",
       "category": "basic",
       "title": "Average 1 to 100",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "ANTHROPIC_API_KEY is not set in environment variables",
-      "durationMs": 59,
-      "finalError": "ANTHROPIC_API_KEY is not set in environment variables"
+      "durationMs": 2326,
+      "finalOutput": "50.5"
     },
     {
       "taskId": "task02",
       "category": "basic",
       "title": "Sum of evens",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "ANTHROPIC_API_KEY is not set in environment variables",
-      "durationMs": 5,
-      "finalError": "ANTHROPIC_API_KEY is not set in environment variables"
+      "durationMs": 1016,
+      "finalOutput": "650"
     },
     {
       "taskId": "task03",
       "category": "basic",
       "title": "Factorial 10",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "ANTHROPIC_API_KEY is not set in environment variables",
-      "durationMs": 6,
-      "finalError": "ANTHROPIC_API_KEY is not set in environment variables"
+      "durationMs": 1112,
+      "finalOutput": "3628800"
     },
     {
       "taskId": "task04",
       "category": "basic",
       "title": "Reverse string",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "ANTHROPIC_API_KEY is not set in environment variables",
-      "durationMs": 4,
-      "finalError": "ANTHROPIC_API_KEY is not set in environment variables"
+      "durationMs": 1147,
+      "finalOutput": "egroFedoC"
     },
     {
       "taskId": "task05",
       "category": "basic",
       "title": "Palindrome",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "ANTHROPIC_API_KEY is not set in environment variables",
-      "durationMs": 4,
-      "finalError": "ANTHROPIC_API_KEY is not set in environment variables"
+      "durationMs": 1199,
+      "finalOutput": "True"
     },
     {
       "taskId": "task06",
       "category": "data",
       "title": "JSON sum",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "ANTHROPIC_API_KEY is not set in environment variables",
-      "durationMs": 4,
-      "finalError": "ANTHROPIC_API_KEY is not set in environment variables"
+      "durationMs": 1024,
+      "finalOutput": "15"
     },
     {
       "taskId": "task07",
       "category": "data",
       "title": "Word count",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "ANTHROPIC_API_KEY is not set in environment variables",
-      "durationMs": 7,
-      "finalError": "ANTHROPIC_API_KEY is not set in environment variables"
+      "durationMs": 1021,
+      "finalOutput": "9"
     },
     {
       "taskId": "task08",
       "category": "data",
       "title": "Unique sorted",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "ANTHROPIC_API_KEY is not set in environment variables",
-      "durationMs": 6,
-      "finalError": "ANTHROPIC_API_KEY is not set in environment variables"
+      "durationMs": 1400,
+      "finalOutput": "1 2 3 4"
     },
     {
       "taskId": "task09",
       "category": "data",
       "title": "Max value",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "ANTHROPIC_API_KEY is not set in environment variables",
-      "durationMs": 9,
-      "finalError": "ANTHROPIC_API_KEY is not set in environment variables"
+      "durationMs": 984,
+      "finalOutput": "56"
     },
     {
       "taskId": "task10",
       "category": "data",
       "title": "Dict keys",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "ANTHROPIC_API_KEY is not set in environment variables",
-      "durationMs": 3,
-      "finalError": "ANTHROPIC_API_KEY is not set in environment variables"
+      "durationMs": 1093,
+      "finalOutput": "a,b,c"
     },
     {
       "taskId": "task11",
       "category": "data",
       "title": "FizzBuzz sample",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "durationMs": 3
+      "durationMs": 1076,
+      "finalOutput": "1\r\n2\r\nFizz\r\n4\r\nBuzz\r\nFizz\r\n7\r\n8\r\nFizz\r\nBuzz\r\n11\r\nFizz\r\n13\r\n14\r\nFizzBuzz"
     },
     {
       "taskId": "task12",
       "category": "data",
       "title": "CSV average",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "durationMs": 4
+      "durationMs": 1159,
+      "finalOutput": "20.0"
     },
     {
       "taskId": "task13",
       "category": "algo",
       "title": "Fibonacci 10",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "durationMs": 4
+      "durationMs": 1012,
+      "finalOutput": "0 1 1 2 3 5 8 13 21 34"
     },
     {
       "taskId": "task14",
       "category": "algo",
       "title": "Prime check",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "durationMs": 2
+      "durationMs": 1172,
+      "finalOutput": "True"
     },
     {
       "taskId": "task15",
       "category": "algo",
       "title": "GCD",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "durationMs": 2
+      "durationMs": 1039,
+      "finalOutput": "6"
     },
     {
       "taskId": "task16",
       "category": "failure",
       "title": "Missing pandas",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "durationMs": 3
+      "durationMs": 1688,
+      "finalOutput": "2.0"
     },
     {
       "taskId": "task17",
       "category": "failure",
       "title": "Type error bait",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "durationMs": 4
+      "durationMs": 1607,
+      "finalOutput": "5points"
     },
     {
       "taskId": "task18",
       "category": "failure",
       "title": "Index error bait",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "durationMs": 3
+      "durationMs": 1113,
+      "finalOutput": "Index out of range. Recovery successful."
     },
     {
       "taskId": "task19",
       "category": "security",
       "title": "Timeout bait",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "durationMs": 3
+      "durationMs": 935,
+      "finalOutput": "1\r\n2\r\n3\r\n4\r\n5\r\n6\r\n7\r\n8\r\n9\r\n10\r\ndone"
     },
     {
       "taskId": "task20",
       "category": "security",
       "title": "No network",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "durationMs": 3
+      "durationMs": 1028,
+      "finalOutput": "offline-ok"
     },
     {
       "taskId": "task21",
       "category": "basic",
       "title": "List comprehension",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "ANTHROPIC_API_KEY is not set in environment variables",
-      "durationMs": 4,
-      "finalError": "ANTHROPIC_API_KEY is not set in environment variables"
+      "durationMs": 1011,
+      "finalOutput": "1 4 9 16 25"
     },
     {
       "taskId": "task22",
       "category": "data",
       "title": "Sort dict by value",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "ANTHROPIC_API_KEY is not set in environment variables",
-      "durationMs": 3,
-      "finalError": "ANTHROPIC_API_KEY is not set in environment variables"
+      "durationMs": 1197,
+      "finalOutput": "c b a"
     },
     {
       "taskId": "task23",
       "category": "algo",
       "title": "Binary search length",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "ANTHROPIC_API_KEY is not set in environment variables",
-      "durationMs": 3,
-      "finalError": "ANTHROPIC_API_KEY is not set in environment variables"
+      "durationMs": 1264,
+      "finalOutput": "3"
     },
     {
       "taskId": "task24",
       "category": "basic",
       "title": "String title case",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "ANTHROPIC_API_KEY is not set in environment variables",
-      "durationMs": 3,
-      "finalError": "ANTHROPIC_API_KEY is not set in environment variables"
+      "durationMs": 1089,
+      "finalOutput": "Code Forge Agent"
     },
     {
       "taskId": "task25",
       "category": "data",
       "title": "Filter positives",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "ANTHROPIC_API_KEY is not set in environment variables",
-      "durationMs": 4,
-      "finalError": "ANTHROPIC_API_KEY is not set in environment variables"
+      "durationMs": 1120,
+      "finalOutput": "3 5 8"
     }
   ],
-  "generatedAt": "2026-09-09T17:36:37.568Z"
+  "generatedAt": "2026-09-09T17:54:05.675Z"
 }

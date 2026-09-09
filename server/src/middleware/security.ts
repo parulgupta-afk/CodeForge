@@ -20,11 +20,11 @@ export function applySecurity(app: Express) {
     message: { error: "Too many requests, please try again later." },
   });
 
-  // Stricter limit on creating runs (expensive: LLM + sandbox)
+  // Limit on creating runs (allowing enough throughput for benchmark suite)
   const runLimiter = rateLimit({
     windowMs: 60 * 1000,
-    max: 10,
-    message: { error: "Run rate limit exceeded. Max 10 runs per minute." },
+    max: Number(process.env.RUN_RATE_LIMIT || 100),
+    message: { error: "Run rate limit exceeded. Max 100 runs per minute." },
   });
 
   app.use("/api/", apiLimiter);

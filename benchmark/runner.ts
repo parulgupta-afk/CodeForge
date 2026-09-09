@@ -57,8 +57,15 @@ async function runOne(task: Task): Promise<TaskResult> {
     const success = data.status === "success";
     const attempts = data.totalAttempts || data.attempts?.length || 1;
     let errorCategory: string | undefined;
-    if (!success && data.finalError) {
-      errorCategory = String(data.finalError).split(":")[0].trim();
+    const rawError = data.finalError || data.error;
+    if (!success) {
+      if (rawError) {
+        errorCategory = String(rawError).split(":")[0].trim();
+      } else if (!res.ok) {
+        errorCategory = `HTTP ${res.status}`;
+      } else {
+        errorCategory = "RunFailed";
+      }
     }
     return {
       taskId: task.id,
@@ -69,7 +76,7 @@ async function runOne(task: Task): Promise<TaskResult> {
       errorCategory,
       durationMs: Date.now() - start,
       finalOutput: data.finalOutput,
-      finalError: data.finalError,
+      finalError: rawError,
     };
   } catch (err: any) {
     return {

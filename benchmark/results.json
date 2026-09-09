@@ -1,0 +1,81 @@
+{
+  "timestamp": "2026-09-09T16:59:05.039Z",
+  "serverUrl": "http://localhost:3001",
+  "totalTasks": 5,
+  "passedTasks": 5,
+  "failedTasks": 0,
+  "passRate": 100,
+  "passAt1Rate": 100,
+  "passAt3Rate": 100,
+  "repairCount": 0,
+  "repairSuccessRate": 100,
+  "averageAttempts": 1,
+  "averageDurationMs": 4582,
+  "results": [
+    {
+      "id": "math-01",
+      "name": "Average of Numbers 1 to 100",
+      "category": "Math & Logic",
+      "difficulty": "Easy",
+      "success": true,
+      "resolvedOnAttempt": 1,
+      "totalAttempts": 1,
+      "durationMs": 4469,
+      "stdout": "50.5",
+      "assertionsPassed": true,
+      "failedAssertions": []
+    },
+    {
+      "id": "string-02",
+      "name": "Reverse Words in Sentence",
+      "category": "String Manipulation",
+      "difficulty": "Easy",
+      "success": true,
+      "resolvedOnAttempt": 1,
+      "totalAttempts": 1,
+      "durationMs": 4119,
+      "stdout": "eht kciuq nworb xof spmuj revo eht yzal god",
+      "assertionsPassed": true,
+      "failedAssertions": []
+    },
+    {
+      "id": "algo-03",
+      "name": "Binary Search Index",
+      "category": "Algorithms",
+      "difficulty": "Medium",
+      "success": true,
+      "resolvedOnAttempt": 1,
+      "totalAttempts": 1,
+      "durationMs": 4214,
+      "stdout": "5",
+      "assertionsPassed": true,
+      "failedAssertions": []
+    },
+    {
+      "id": "data-04",
+      "name": "Student Score Filtering",
+      "category": "Data Processing",
+      "difficulty": "Medium",
+      "success": true,
+      "resolvedOnAttempt": 1,
+      "totalAttempts": 1,
+      "durationMs": 5161,
+      "stdout": "Bob, Diana",
+      "assertionsPassed": true,
+      "failedAssertions": []
+    },
+    {
+      "id": "json-05",
+      "name": "JSON Serialization and Roundtrip Validation",
+      "category": "Serialization",
+      "difficulty": "Easy",
+      "success": true,
+      "resolvedOnAttempt": 1,
+      "totalAttempts": 1,
+      "durationMs": 4949,
+      "stdout": "VALIDATION_PASSED",
+      "assertionsPassed": true,
+      "failedAssertions": []
+    }
+  ]
+}

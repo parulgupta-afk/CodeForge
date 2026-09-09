@@ -1,6 +1,4 @@
-@import "tailwindcss";
-
-@theme {
+:root {
   --color-primary: #9d3e1a;
   --color-primary-container: #bd5630;
   --color-on-primary: #ffffff;
@@ -79,12 +77,10 @@
   --spacing-container-max: 1200px;
 }
 
-@layer base {
-  html, body {
-    margin: 0;
-    padding: 0;
-    font-family: var(--font-body-md);
-  }
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body-md);
 }
 
 /* Ambient radial glow backdrop */

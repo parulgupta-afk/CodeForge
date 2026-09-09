@@ -1,0 +1,42 @@
+[
+  {
+    "id": "math-01",
+    "name": "Average of Numbers 1 to 100",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "task": "Calculate the average of numbers from 1 to 100 and print only the final numeric result.",
+    "expectedOutputs": ["50.5"]
+  },
+  {
+    "id": "string-02",
+    "name": "Reverse Words in Sentence",
+    "category": "String Manipulation",
+    "difficulty": "Easy",
+    "task": "Given the sentence 'the quick brown fox jumps over the lazy dog', reverse every individual word while preserving word order, and print the resulting string.",
+    "expectedOutputs": ["eht kciuq nworb xof spmuj revo eht yzal god"]
+  },
+  {
+    "id": "algo-03",
+    "name": "Binary Search Index",
+    "category": "Algorithms",
+    "difficulty": "Medium",
+    "task": "Implement binary search on the sorted list [2, 5, 8, 12, 16, 23, 38, 56, 72, 91] to find the index of target 23. Print only the index found.",
+    "expectedOutputs": ["5"]
+  },
+  {
+    "id": "data-04",
+    "name": "Student Score Filtering",
+    "category": "Data Processing",
+    "difficulty": "Medium",
+    "task": "Create a list of student dictionaries with 'name' and 'score': Alice (85), Bob (92), Charlie (78), Diana (95), Evan (88). Filter students who scored 90 or above, sort their names alphabetically, and print their names joined with ', '.",
+    "expectedOutputs": ["Bob, Diana"]
+  },
+  {
+    "id": "json-05",
+    "name": "JSON Serialization and Roundtrip Validation",
+    "category": "Serialization",
+    "difficulty": "Easy",
+    "task": "Create a dictionary with keys 'status': 'ok', 'count': 42, and 'items': ['alpha', 'beta']. Serialize it to a JSON string, deserialize it back, verify the values match, and print 'VALIDATION_PASSED'.",
+    "expectedOutputs": ["VALIDATION_PASSED"]
+  }
+]

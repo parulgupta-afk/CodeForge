@@ -1,0 +1,16 @@
+{
+  "name": "codeforge-benchmark",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Benchmarking and evaluation suite for CodeForge autonomous coding agent",
+  "scripts": {
+    "start": "ts-node runner.ts",
+    "benchmark": "ts-node runner.ts",
+    "benchmark:mock": "ts-node runner.ts --mock"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  }
+}

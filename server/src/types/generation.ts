@@ -11,4 +11,6 @@ export interface GenerationResult {
   data?: GeneratedCode;
   error?: string;
   rawResponse?: string;
+  provider?: string;
+  model?: string;
 }

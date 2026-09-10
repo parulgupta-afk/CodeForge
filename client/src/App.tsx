@@ -6,7 +6,7 @@ import { WorkingJournalCard } from "./components/WorkingJournalCard";
 import { AttemptCard } from "./components/AttemptCard";
 import { MetricsCard } from "./components/MetricsCard";
 import { createRun } from "./services/api";
-import { getSocket } from "./services/socket";
+import { getSocket, onConnectionState, ConnectionState } from "./services/socket";
 import { JournalLog, RunResponse, StepperStage } from "./types/run";
 
 function nowTime() {
@@ -42,11 +42,23 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [logs, setLogs] = useState<JournalLog[]>([]);
   const [liveAttempt, setLiveAttempt] = useState(0);
+  const [connectionState, setConnectionState] = useState<ConnectionState>("disconnected");
+  const seenEventKeys = React.useRef(new Set<string>());
 
   useEffect(() => {
+    const unsub = onConnectionState(setConnectionState);
     const socket = getSocket();
 
     const onEvent = (event: any) => {
+      const key = `${event.runId || ""}:${event.type}:${event.attemptNumber ?? ""}:${event.timestamp || ""}:${event.message || ""}`;
+      if (seenEventKeys.current.has(key)) return;
+      seenEventKeys.current.add(key);
+      // bound memory
+      if (seenEventKeys.current.size > 500) {
+        const arr = Array.from(seenEventKeys.current);
+        seenEventKeys.current = new Set(arr.slice(-250));
+      }
+
       const msg = event.message || event.type;
       let type: JournalLog["type"] = "neutral";
       if (event.type.includes("completed") || event.type.includes("output")) type = "secondary";
@@ -56,11 +68,11 @@ export default function App() {
       setLogs((prev) => [
         ...prev,
         {
-          id: `${event.type}-${Date.now()}`,
+          id: key,
           time: nowTime(),
           type,
           content: msg,
-          highlight: event.data?.category || undefined,
+          highlight: event.data?.category || event.data?.provider || undefined,
         },
       ]);
 
@@ -70,6 +82,7 @@ export default function App() {
     socket.on("agent:event", onEvent);
     return () => {
       socket.off("agent:event", onEvent);
+      unsub();
     };
   }, []);
 
@@ -78,6 +91,7 @@ export default function App() {
     setError(null);
     setResult(null);
     setLiveAttempt(0);
+    seenEventKeys.current.clear();
     setLogs([
       {
         id: "start",
@@ -110,9 +124,22 @@ export default function App() {
 
       <main style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 20px 60px" }}>
         <div style={{ marginBottom: 28 }}>
-          <h1 style={{ fontFamily: "Newsreader, Georgia, serif", fontSize: 32, fontWeight: 600, margin: "0 0 6px", color: "#111827" }}>
-            Forge your next script
-          </h1>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+            <h1 style={{ fontFamily: "Newsreader, Georgia, serif", fontSize: 32, fontWeight: 600, margin: "0 0 6px", color: "#111827" }}>
+              Forge your next script
+            </h1>
+            <span style={{
+              fontSize: 12,
+              padding: "4px 10px",
+              borderRadius: 999,
+              background: connectionState === "connected" ? "#ecfdf5" : connectionState === "reconnecting" ? "#fffbeb" : "#fef2f2",
+              color: connectionState === "connected" ? "#065f46" : connectionState === "reconnecting" ? "#92400e" : "#991b1b",
+              border: "1px solid #e5e7eb",
+              whiteSpace: "nowrap",
+            }}>
+              {connectionState === "connected" ? "Live: connected" : connectionState === "reconnecting" ? "Live: reconnecting…" : "Live: disconnected"}
+            </span>
+          </div>
           <p style={{ color: "#6b7280", margin: 0, fontSize: 15 }}>
             Live agent logs · Generate → Execute → Classify → Repair
           </p>

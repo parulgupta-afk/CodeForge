@@ -6,13 +6,17 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "test": "ts-node --transpile-only src/__tests__/errorClassifier.test.ts",
-    "test:classifier": "ts-node --transpile-only src/__tests__/errorClassifier.test.ts"
+    "test": "ts-node --transpile-only src/__tests__/errorClassifier.test.ts && ts-node --transpile-only src/__tests__/orchestrator.test.ts && ts-node --transpile-only src/__tests__/providerFallback.test.ts",
+    "test:classifier": "ts-node --transpile-only src/__tests__/errorClassifier.test.ts",
+    "test:orchestrator": "ts-node --transpile-only src/__tests__/orchestrator.test.ts",
+    "test:providers": "ts-node --transpile-only src/__tests__/providerFallback.test.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
+    "@anthropic-ai/sdk": "^0.39.0",
     "dockerode": "^4.0.2",
     "pg": "^8.13.0",
     "socket.io": "^4.8.0",
@@ -26,6 +30,7 @@
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.5.4",
     "@types/dockerode": "^3.3.31",
-    "@types/pg": "^8.11.6"
+    "@types/pg": "^8.11.6",
+    "ts-node": "^10.9.2"
   }
 }

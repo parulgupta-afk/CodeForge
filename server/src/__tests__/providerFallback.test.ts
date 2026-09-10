@@ -7,7 +7,7 @@ import { generateCode } from "../agents/codeGenerator";
 let passed = 0;
 let failed = 0;
 
-function assert(name: string, cond: boolean, detail?: string) {
+function assert(name: string, cond: boolean | undefined, detail?: string) {
   if (cond) {
     passed++;
     console.log(`  ✓ ${name}`);

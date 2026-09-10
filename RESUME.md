@@ -1,7 +1,7 @@
 # Resume / LinkedIn copy for CodeForge
 
 ## Short project line
-CodeForge — Autonomous coding agent with Docker-sandboxed execution and bounded self-repair (React, Node, TypeScript, Anthropic, Docker).
+CodeForge — Autonomous coding agent with Docker-sandboxed execution and bounded self-repair (React, Node, TypeScript, Gemini, Groq, Docker).
 
 ## Bullet points (copy/paste)
 

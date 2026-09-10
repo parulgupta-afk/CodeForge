@@ -12,7 +12,7 @@ This is not “AI writes code.” The engineering focus is **safe execution of u
 
 ```
 User task
-  → Generate Python (Anthropic / Gemini / mock)
+  → Generate Python (Gemini / Groq / mock)
   → Execute in sandbox (Docker or local fallback)
   → On failure: classify error → repair prompt → retry
   → Max 3 attempts → success or exhausted
@@ -113,7 +113,7 @@ cd ..\benchmark && set BENCH_DELAY_MS=2000 && npm run bench
 | Frontend | React + TypeScript + Vite | Studio UI, live journal |
 | Backend | Node.js + Express + TypeScript | Orchestrator, API |
 | Realtime | Socket.IO | Agent event stream |
-| LLM | Anthropic (+ Gemini / mock fallback) | Code generation & repair |
+| LLM | Google Gemini + Groq (mock fallback) | Code generation & repair |
 | Sandbox | Docker (dockerode) / local subprocess | Isolated execution |
 | DB | PostgreSQL (optional) | Run history |
 | Security | Helmet + express-rate-limit | Headers, abuse limits |
@@ -162,15 +162,17 @@ Open http://localhost:5173
 
 | Variable | Required | Purpose |
 |----------|----------|---------|
-| `ANTHROPIC_API_KEY` | Yes* | Primary LLM |
-| `GEMINI_API_KEY` | No | Fallback LLM |
-| `USE_MOCK_LLM` | No | Offline mock generator |
+| `GEMINI_API_KEY` | Optional* | Primary LLM (Google Gemini) |
+| `GEMINI_MODEL` | No | Gemini model (default `gemini-3.5-flash-lite`) |
+| `GROQ_API_KEY` | Optional* | Fallback LLM (Groq) |
+| `GROQ_MODEL` | No | Groq model (e.g. `llama-3.3-70b-versatile` / `groq/compound-mini`) |
+| `USE_MOCK_LLM` | No | `true` for offline mock generator |
 | `USE_DOCKER` | No | `true` to use Docker sandbox |
 | `SANDBOX_IMAGE` | No | Default `python:3.12-slim` |
 | `DATABASE_URL` | No | PostgreSQL connection string |
 | `RUN_RATE_LIMIT` | No | Max runs/min (default 100) |
 
-\*Or set `USE_MOCK_LLM=true` / provide Gemini.
+*Either Gemini, Groq, or `USE_MOCK_LLM=true` is used.
 
 ### Tests
 

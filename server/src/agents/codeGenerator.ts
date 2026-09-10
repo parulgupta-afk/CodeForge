@@ -14,10 +14,18 @@ function parseGeneratedJson(
   model: string
 ): GenerationResult {
   let jsonStr = raw.trim();
-  if (jsonStr.startsWith("```")) {
-    jsonStr = jsonStr.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+
+  // Strip markdown code fence if present
+  if (jsonStr.includes("```")) {
+    const codeBlockMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    if (codeBlockMatch) {
+      jsonStr = codeBlockMatch[1].trim();
+    } else {
+      jsonStr = jsonStr.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
+    }
   }
 
+  // Extract outermost JSON object
   const firstBrace = jsonStr.indexOf("{");
   const lastBrace = jsonStr.lastIndexOf("}");
   if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
@@ -27,14 +35,25 @@ function parseGeneratedJson(
   let parsed: any;
   try {
     parsed = JSON.parse(jsonStr);
-  } catch {
-    return {
-      success: false,
-      error: "Failed to parse JSON from model response",
-      rawResponse: raw,
-      provider,
-      model,
-    };
+  } catch (parseErr) {
+    // Attempt cleanup if unescaped control chars exist
+    try {
+      const sanitized = jsonStr.replace(/[\u0000-\u001F]+/g, (match) => {
+        if (match === "\n") return "\\n";
+        if (match === "\r") return "\\r";
+        if (match === "\t") return "\\t";
+        return "";
+      });
+      parsed = JSON.parse(sanitized);
+    } catch {
+      return {
+        success: false,
+        error: "Failed to parse JSON from model response",
+        rawResponse: raw,
+        provider,
+        model,
+      };
+    }
   }
 
   if (!parsed.code) {
@@ -62,80 +81,95 @@ function parseGeneratedJson(
 }
 
 // ---------- Gemini ----------
-async function generateWithGemini(prompt: string, maxRetries = 3): Promise<GenerationResult> {
+async function generateWithGemini(prompt: string, maxRetries = 2): Promise<GenerationResult> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return { success: false, error: "GEMINI_API_KEY is not set" };
   }
 
-  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const primaryModel = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
+  const candidateModels = Array.from(
+    new Set([primaryModel, "gemini-3.5-flash-lite", "gemini-2.0-flash", "gemini-1.5-flash"])
+  );
 
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.2,
-            maxOutputTokens: 2048,
-            responseMimeType: "application/json",
-          },
-        }),
-      });
+  let lastError = "Gemini API call failed";
 
-      if (res.status === 429) {
+  for (const model of candidateModels) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              temperature: 0.2,
+              maxOutputTokens: 2048,
+              responseMimeType: "application/json",
+            },
+          }),
+        });
+
+        if (res.status === 429) {
+          if (attempt < maxRetries) {
+            const delayMs = (attempt + 1) * 3000;
+            console.warn(`[Gemini] 429 rate limit (${model}) – retry in ${delayMs / 1000}s`);
+            await new Promise((r) => setTimeout(r, delayMs));
+            continue;
+          }
+          lastError = `Gemini rate limit exceeded for ${model}`;
+          break; // Try next fallback model
+        }
+
+        if (res.status === 404) {
+          console.warn(`[Gemini] Model ${model} not found (404), trying fallback...`);
+          lastError = `Gemini model ${model} not found`;
+          break; // Try next fallback model
+        }
+
+        if (!res.ok) {
+          const errText = await res.text();
+          lastError = `Gemini API error (${res.status}): ${errText.slice(0, 300)}`;
+          if (errText.includes("not found") || res.status === 400) {
+            break; // Try next model
+          }
+          return {
+            success: false,
+            error: lastError,
+            provider: "gemini",
+            model,
+          };
+        }
+
+        const data = (await res.json()) as any;
+        const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!raw) {
+          return {
+            success: false,
+            error: "No text content returned from Gemini",
+            provider: "gemini",
+            model,
+          };
+        }
+
+        return parseGeneratedJson(raw, "gemini", model);
+      } catch (err: any) {
         if (attempt < maxRetries) {
-          const delayMs = (attempt + 1) * 4000;
-          console.warn(`[Gemini] 429 rate limit – retry in ${delayMs / 1000}s`);
-          await new Promise((r) => setTimeout(r, delayMs));
+          await new Promise((r) => setTimeout(r, 2000));
           continue;
         }
+        lastError = err.message || "Gemini API call failed";
       }
-
-      if (!res.ok) {
-        const errText = await res.text();
-        return {
-          success: false,
-          error: `Gemini API error (${res.status}): ${errText.slice(0, 300)}`,
-          provider: "gemini",
-          model,
-        };
-      }
-
-      const data = (await res.json()) as any;
-      const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!raw) {
-        return {
-          success: false,
-          error: "No text content returned from Gemini",
-          provider: "gemini",
-          model,
-        };
-      }
-
-      return parseGeneratedJson(raw, "gemini", model);
-    } catch (err: any) {
-      if (attempt < maxRetries) {
-        await new Promise((r) => setTimeout(r, 3000));
-        continue;
-      }
-      return {
-        success: false,
-        error: err.message || "Gemini API call failed",
-        provider: "gemini",
-        model,
-      };
     }
   }
 
   return {
     success: false,
-    error: "Gemini API call failed after retries",
+    error: lastError,
     provider: "gemini",
-    model: process.env.GEMINI_MODEL || "gemini-2.0-flash",
+    model: primaryModel,
   };
 }
 
@@ -146,82 +180,109 @@ async function generateWithGroq(prompt: string, maxRetries = 2): Promise<Generat
     return { success: false, error: "GROQ_API_KEY is not set" };
   }
 
-  const model = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+  const primaryModel = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+  // Ordered fallback models: user preference first, then active working models on Groq
+  const candidateModels = Array.from(
+    new Set([
+      primaryModel,
+      "groq/compound-mini",
+      "groq/compound",
+      "qwen/qwen3.8-27b",
+      "openai/gpt-oss-120b",
+      "llama-3.1-8b-instant",
+    ])
+  );
   const url = "https://api.groq.com/openai/v1/chat/completions";
 
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model,
-          messages: [
-            {
-              role: "system",
-              content:
-                "You are a Python code generator. Always respond with a single JSON object only, no markdown, with keys: code, filename, dependencies, explanation.",
-            },
-            { role: "user", content: prompt },
-          ],
-          temperature: 0.2,
-          max_tokens: 2048,
-        }),
-      });
+  let lastError = "Groq API call failed";
 
-      if (res.status === 429) {
+  for (const model of candidateModels) {
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              {
+                role: "system",
+                content:
+                  "You are a Python code generator. Always respond with a single JSON object only, no markdown, with keys: code, filename, dependencies, explanation.",
+              },
+              { role: "user", content: prompt },
+            ],
+            temperature: 0.2,
+            max_tokens: 1024,
+          }),
+        });
+
+        if (res.status === 429) {
+          const errBody = await res.text();
+          if (attempt < maxRetries) {
+            const delayMs = (attempt + 1) * 2500;
+            console.warn(`[Groq] 429 limit (${model}) – retry in ${delayMs / 1000}s`);
+            await new Promise((r) => setTimeout(r, delayMs));
+            continue;
+          }
+          // If token/rate limit on this specific model, try next fallback model
+          console.warn(`[Groq] Rate/token limit on ${model}, trying fallback model...`);
+          lastError = `Groq 429 on ${model}: ${errBody.slice(0, 200)}`;
+          break;
+        }
+
+        if (res.status === 404) {
+          // Model does not exist or user doesn't have access, try next candidate model
+          console.warn(`[Groq] Model ${model} not found (404), falling back to alternative model...`);
+          lastError = `Groq model ${model} not found`;
+          break; // Break attempt loop to try next model in candidateModels
+        }
+
+        if (!res.ok) {
+          const errText = await res.text();
+          lastError = `Groq API error (${res.status}): ${errText.slice(0, 300)}`;
+          if (errText.includes("model_not_found") || errText.includes("does not exist")) {
+            console.warn(`[Groq] Model ${model} unavailable, trying fallback model...`);
+            break;
+          }
+          return {
+            success: false,
+            error: lastError,
+            provider: "groq",
+            model,
+          };
+        }
+
+        const data = (await res.json()) as any;
+        const raw = data?.choices?.[0]?.message?.content;
+        if (!raw) {
+          return {
+            success: false,
+            error: "No text content returned from Groq",
+            provider: "groq",
+            model,
+          };
+        }
+
+        return parseGeneratedJson(raw, "groq", model);
+      } catch (err: any) {
         if (attempt < maxRetries) {
-          const delayMs = (attempt + 1) * 3000;
-          console.warn(`[Groq] 429 rate limit – retry in ${delayMs / 1000}s`);
-          await new Promise((r) => setTimeout(r, delayMs));
+          await new Promise((r) => setTimeout(r, 2000));
           continue;
         }
+        lastError = err.message || "Groq API call failed";
       }
-
-      if (!res.ok) {
-        const errText = await res.text();
-        return {
-          success: false,
-          error: `Groq API error (${res.status}): ${errText.slice(0, 300)}`,
-          provider: "groq",
-          model,
-        };
-      }
-
-      const data = (await res.json()) as any;
-      const raw = data?.choices?.[0]?.message?.content;
-      if (!raw) {
-        return {
-          success: false,
-          error: "No text content returned from Groq",
-          provider: "groq",
-          model,
-        };
-      }
-
-      return parseGeneratedJson(raw, "groq", model);
-    } catch (err: any) {
-      if (attempt < maxRetries) {
-        await new Promise((r) => setTimeout(r, 2000));
-        continue;
-      }
-      return {
-        success: false,
-        error: err.message || "Groq API call failed",
-        provider: "groq",
-        model,
-      };
     }
   }
 
   return {
     success: false,
-    error: "Groq API call failed after retries",
+    error: lastError,
     provider: "groq",
-    model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+    model: primaryModel,
   };
 }
 

@@ -10,7 +10,7 @@ Render / Fly.io (Express + Socket.IO backend)
         │
    ┌────┴────┐
    ▼         ▼
-Anthropic   PostgreSQL (Neon / Supabase)
+Gemini/Groq PostgreSQL (Neon / Supabase)
 ```
 
 Docker sandbox on a typical PaaS is hard (no Docker daemon).
@@ -40,7 +40,8 @@ VITE_WS_URL=https://your-backend.onrender.com
 1. Create a Web Service from the repo
 2. Root directory: `server` (or use `docker/backend.Dockerfile`)
 3. Env vars:
-   - `ANTHROPIC_API_KEY`
+   - `GEMINI_API_KEY` (and `GEMINI_MODEL`)
+   - `GROQ_API_KEY` (and `GROQ_MODEL`)
    - `DATABASE_URL` (Neon/Supabase)
    - `USE_DOCKER=false` (unless you have Docker)
    - `PORT` (platform usually sets this)

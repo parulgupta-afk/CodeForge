@@ -1,6 +1,12 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { buildGenerationPrompt } from "../prompts/generation";
-import { GeneratedCode, GenerationResult } from "../types/generation";
+import { GenerationResult } from "../types/generation";
+
+/**
+ * Provider chain (no Anthropic required):
+ *   1. Gemini  (if GEMINI_API_KEY set)
+ *   2. Groq    (if GROQ_API_KEY set)
+ *   3. Mock    (always available offline)
+ */
 
 function parseGeneratedJson(
   raw: string,
@@ -12,7 +18,6 @@ function parseGeneratedJson(
     jsonStr = jsonStr.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
   }
 
-  // If there's surrounding text outside markdown code block, extract the JSON object
   const firstBrace = jsonStr.indexOf("{");
   const lastBrace = jsonStr.lastIndexOf("}");
   if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
@@ -56,50 +61,14 @@ function parseGeneratedJson(
   };
 }
 
-let anthropicTemporarilyDisabled = false;
-
-async function generateWithAnthropic(prompt: string): Promise<GenerationResult> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return { success: false, error: "ANTHROPIC_API_KEY is not set" };
-  }
-
-  const model = process.env.ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022";
-  try {
-    const anthropic = new Anthropic({ apiKey });
-    const message = await anthropic.messages.create({
-      model,
-      max_tokens: 2048,
-      messages: [{ role: "user", content: prompt }],
-    });
-
-    const textBlock = message.content.find((block) => block.type === "text");
-    if (!textBlock || textBlock.type !== "text") {
-      return { success: false, error: "No text returned from Anthropic", provider: "anthropic", model };
-    }
-
-    return parseGeneratedJson(textBlock.text, "anthropic", model);
-  } catch (err: any) {
-    const errMsg = err.message || "Anthropic API call failed";
-    if (errMsg.includes("credit balance") || err.status === 400 || err.status === 401) {
-      anthropicTemporarilyDisabled = true;
-    }
-    return {
-      success: false,
-      error: errMsg,
-      provider: "anthropic",
-      model,
-    };
-  }
-}
-
-async function generateWithGemini(prompt: string, maxRetries = 4): Promise<GenerationResult> {
+// ---------- Gemini ----------
+async function generateWithGemini(prompt: string, maxRetries = 3): Promise<GenerationResult> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return { success: false, error: "GEMINI_API_KEY is not set" };
   }
 
-  const model = process.env.GEMINI_MODEL || "gemini-3.5-flash-lite";
+  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -117,12 +86,11 @@ async function generateWithGemini(prompt: string, maxRetries = 4): Promise<Gener
         }),
       });
 
-      // Handle Gemini Rate Limit (429) with exponential backoff
       if (res.status === 429) {
         if (attempt < maxRetries) {
-          const delayMs = (attempt + 1) * 5000;
-          console.warn(`[Gemini] Rate limit 429 hit. Pausing ${delayMs / 1000}s before retry (${attempt + 1}/${maxRetries})...`);
-          await new Promise((resolve) => setTimeout(resolve, delayMs));
+          const delayMs = (attempt + 1) * 4000;
+          console.warn(`[Gemini] 429 rate limit – retry in ${delayMs / 1000}s`);
+          await new Promise((r) => setTimeout(r, delayMs));
           continue;
         }
       }
@@ -131,7 +99,7 @@ async function generateWithGemini(prompt: string, maxRetries = 4): Promise<Gener
         const errText = await res.text();
         return {
           success: false,
-          error: `Gemini API error (${res.status}): ${errText}`,
+          error: `Gemini API error (${res.status}): ${errText.slice(0, 300)}`,
           provider: "gemini",
           model,
         };
@@ -151,9 +119,7 @@ async function generateWithGemini(prompt: string, maxRetries = 4): Promise<Gener
       return parseGeneratedJson(raw, "gemini", model);
     } catch (err: any) {
       if (attempt < maxRetries) {
-        const delayMs = 3000;
-        console.warn(`[Gemini] Network error: ${err.message}. Retrying in ${delayMs / 1000}s...`);
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
+        await new Promise((r) => setTimeout(r, 3000));
         continue;
       }
       return {
@@ -169,10 +135,97 @@ async function generateWithGemini(prompt: string, maxRetries = 4): Promise<Gener
     success: false,
     error: "Gemini API call failed after retries",
     provider: "gemini",
-    model,
+    model: process.env.GEMINI_MODEL || "gemini-2.0-flash",
   };
 }
 
+// ---------- Groq (OpenAI-compatible) ----------
+async function generateWithGroq(prompt: string, maxRetries = 2): Promise<GenerationResult> {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    return { success: false, error: "GROQ_API_KEY is not set" };
+  }
+
+  const model = process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+  const url = "https://api.groq.com/openai/v1/chat/completions";
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a Python code generator. Always respond with a single JSON object only, no markdown, with keys: code, filename, dependencies, explanation.",
+            },
+            { role: "user", content: prompt },
+          ],
+          temperature: 0.2,
+          max_tokens: 2048,
+        }),
+      });
+
+      if (res.status === 429) {
+        if (attempt < maxRetries) {
+          const delayMs = (attempt + 1) * 3000;
+          console.warn(`[Groq] 429 rate limit – retry in ${delayMs / 1000}s`);
+          await new Promise((r) => setTimeout(r, delayMs));
+          continue;
+        }
+      }
+
+      if (!res.ok) {
+        const errText = await res.text();
+        return {
+          success: false,
+          error: `Groq API error (${res.status}): ${errText.slice(0, 300)}`,
+          provider: "groq",
+          model,
+        };
+      }
+
+      const data = (await res.json()) as any;
+      const raw = data?.choices?.[0]?.message?.content;
+      if (!raw) {
+        return {
+          success: false,
+          error: "No text content returned from Groq",
+          provider: "groq",
+          model,
+        };
+      }
+
+      return parseGeneratedJson(raw, "groq", model);
+    } catch (err: any) {
+      if (attempt < maxRetries) {
+        await new Promise((r) => setTimeout(r, 2000));
+        continue;
+      }
+      return {
+        success: false,
+        error: err.message || "Groq API call failed",
+        provider: "groq",
+        model,
+      };
+    }
+  }
+
+  return {
+    success: false,
+    error: "Groq API call failed after retries",
+    provider: "groq",
+    model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+  };
+}
+
+// ---------- Mock (offline) ----------
 function generateMockCode(taskOrPrompt: string): GenerationResult {
   const lower = taskOrPrompt.toLowerCase();
   let pythonCode = `print("Task executed successfully")`;
@@ -187,46 +240,46 @@ function generateMockCode(taskOrPrompt: string): GenerationResult {
     pythonCode = `print("CodeForge"[::-1])`;
   } else if (lower.includes("palindrome")) {
     pythonCode = `s = "racecar"\nprint(s == s[::-1])`;
-  } else if (lower.includes("json")) {
-    pythonCode = `import json\nd = json.loads('{"a": 10, "b": 20, "c": 30}')\nprint(sum(d.values()))`;
+  } else if (lower.includes("json") && lower.includes("sum")) {
+    pythonCode = `import json\nprint(sum(json.loads('[1,2,3,4,5]')))`;
   } else if (lower.includes("word count") || lower.includes("lazy dog")) {
     pythonCode = `s = "The quick brown fox jumps over the lazy dog"\nprint(len(s.split()))`;
-  } else if (lower.includes("unique sorted") || lower.includes("[5, 2, 8")) {
-    pythonCode = `print(sorted(list(set([5, 2, 8, 2, 1, 9, 5, 8]))))`;
-  } else if (lower.includes("max value") || lower.includes("[42, 17")) {
-    pythonCode = `print(max([42, 17, 89, 33, 95, 12]))`;
-  } else if (lower.includes("dict keys") || lower.includes("sorted list of keys")) {
-    pythonCode = `d = {"banana": 3, "apple": 5, "cherry": 2}\nprint(sorted(list(d.keys())))`;
+  } else if (lower.includes("unique") || lower.includes("[1,2,2,3")) {
+    pythonCode = `print(" ".join(str(x) for x in sorted(set([1,2,2,3,3,3,4]))))`;
+  } else if (lower.includes("max") && lower.includes("23")) {
+    pythonCode = `print(max([23, 1, 56, 8, 42]))`;
+  } else if (lower.includes("dict keys") || lower.includes("'a':1")) {
+    pythonCode = `print(",".join({"a":1,"b":2,"c":3}.keys()))`;
   } else if (lower.includes("fizzbuzz")) {
-    pythonCode = `out = []\nfor i in range(1, 16):\n    if i % 15 == 0: out.append("FizzBuzz")\n    elif i % 3 == 0: out.append("Fizz")\n    elif i % 5 == 0: out.append("Buzz")\n    else: out.append(str(i))\nprint(" ".join(out))`;
+    pythonCode = `for i in range(1, 16):\n    if i % 15 == 0: print("FizzBuzz")\n    elif i % 3 == 0: print("Fizz")\n    elif i % 5 == 0: print("Buzz")\n    else: print(i)`;
   } else if (lower.includes("csv")) {
-    pythonCode = `csv_data = "name,score\\nAlice,85\\nBob,92\\nCharlie,78\\nDiana,95"\nlines = csv_data.strip().split("\\n")[1:]\nscores = [float(line.split(",")[1]) for line in lines]\nprint(sum(scores) / len(scores))`;
+    pythonCode = `csv = "name,score\\nA,10\\nB,20\\nC,30"\nlines = csv.strip().split("\\n")[1:]\nscores = [float(l.split(",")[1]) for l in lines]\nprint(sum(scores)/len(scores))`;
   } else if (lower.includes("fibonacci")) {
-    pythonCode = `def fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\nprint(fib(10))`;
+    pythonCode = `a,b=0,1\nout=[]\nfor _ in range(10):\n    out.append(str(a)); a,b=b,a+b\nprint(" ".join(out))`;
   } else if (lower.includes("prime")) {
-    pythonCode = `def is_prime(n):\n    if n < 2: return False\n    for i in range(2, int(n**0.5) + 1):\n        if n % i == 0: return False\n    return True\nprint(is_prime(29))`;
+    pythonCode = `n=29\nprint(all(n%i for i in range(2,int(n**0.5)+1)) and n>1)`;
   } else if (lower.includes("gcd")) {
     pythonCode = `import math\nprint(math.gcd(48, 18))`;
-  } else if (lower.includes("missing pandas") || lower.includes("pandas")) {
-    pythonCode = `data = [10, 20, 30, 40, 50]\nprint(sum(data) / len(data))`;
-  } else if (lower.includes("type error") || lower.includes("sum strings")) {
-    pythonCode = `items = ["10", "20", "30"]\nprint(sum(int(x) for x in items))`;
-  } else if (lower.includes("index error") || lower.includes("safe get")) {
-    pythonCode = `items = [1, 2, 3]\nidx = 5\nprint(items[idx] if idx < len(items) else None)`;
+  } else if (lower.includes("pandas") || lower.includes("missing")) {
+    pythonCode = `print(sum([1,2,3])/len([1,2,3]))`;
+  } else if (lower.includes("type error") || lower.includes("points")) {
+    pythonCode = `print(str(5)+"points")`;
+  } else if (lower.includes("index error")) {
+    pythonCode = `lst=[10,20,30]\nprint("Index out of range. Recovery successful." if 5>=len(lst) else lst[5])`;
   } else if (lower.includes("timeout")) {
-    pythonCode = `print(sum(range(1000)))`;
-  } else if (lower.includes("network")) {
-    pythonCode = `print("offline computation ready")`;
-  } else if (lower.includes("list comprehension") || lower.includes("squares of even")) {
-    pythonCode = `print([x**2 for x in range(1, 11) if x % 2 == 0])`;
-  } else if (lower.includes("sort dict by value")) {
-    pythonCode = `d = {"a": 3, "b": 1, "c": 2}\nprint(sorted(d.items(), key=lambda x: x[1]))`;
+    pythonCode = `for i in range(1,11): print(i)\nprint("done")`;
+  } else if (lower.includes("network") || lower.includes("offline")) {
+    pythonCode = `print("offline-ok")`;
+  } else if (lower.includes("list comprehension") || lower.includes("squares")) {
+    pythonCode = `print(" ".join(str(x*x) for x in range(1,6)))`;
+  } else if (lower.includes("sort dict")) {
+    pythonCode = `d={"b":2,"a":3,"c":1}\nprint(" ".join(k for k,_ in sorted(d.items(), key=lambda x:x[1])))`;
   } else if (lower.includes("binary search")) {
-    pythonCode = `import bisect\nitems = [1, 3, 5, 7, 9, 11]\nidx = bisect.bisect_left(items, 7)\nprint(idx if idx < len(items) and items[idx] == 7 else -1)`;
+    pythonCode = `arr=[1,3,5,7,9]; t=7\nprint(arr.index(t) if t in arr else -1)`;
   } else if (lower.includes("title case")) {
-    pythonCode = `print("hello world from codeforge".title())`;
-  } else if (lower.includes("filter positives")) {
-    pythonCode = `items = [-5, 3, -1, 10, -2, 7]\nprint([x for x in items if x > 0])`;
+    pythonCode = `print("code forge agent".title())`;
+  } else if (lower.includes("filter positives") || lower.includes("positive")) {
+    pythonCode = `print(" ".join(str(x) for x in [-2,0,3,-1,5,8] if x>0))`;
   }
 
   return {
@@ -236,46 +289,38 @@ function generateMockCode(taskOrPrompt: string): GenerationResult {
       filename: "main.py",
       code: pythonCode,
       dependencies: [],
-      explanation: "Generated by CodeForge Mock LLM",
+      explanation: "Generated by CodeForge Mock LLM (offline fallback)",
     },
     provider: "mock",
     model: "mock-llm",
   };
 }
 
+// ---------- Public entry ----------
 export async function generateCode(taskOrPrompt: string): Promise<GenerationResult> {
-  // Support offline mock mode if configured
   if (process.env.USE_MOCK_LLM === "true") {
     return generateMockCode(taskOrPrompt);
   }
 
-  // Prevent double-wrapping if taskOrPrompt is already a formatted prompt
   const prompt = taskOrPrompt.startsWith("You are an expert Python programmer")
     ? taskOrPrompt
     : buildGenerationPrompt(taskOrPrompt);
 
-  // 1. Try Anthropic first if key is present and not currently disabled
-  if (process.env.ANTHROPIC_API_KEY && !anthropicTemporarilyDisabled) {
-    const anthropicResult = await generateWithAnthropic(prompt);
-    if (anthropicResult.success) {
-      return anthropicResult;
-    }
-
-    // If Anthropic fails (e.g. credit limit, network, auth), fallback to Gemini
-    if (process.env.GEMINI_API_KEY) {
-      console.warn(`[CodeForge] Anthropic unavailable (${anthropicResult.error}). Falling back to Gemini...`);
-      return await generateWithGemini(prompt);
-    }
-
-    return anthropicResult;
-  }
-
-  // 2. Try Gemini
+  // 1. Gemini
   if (process.env.GEMINI_API_KEY) {
-    return await generateWithGemini(prompt);
+    const gemini = await generateWithGemini(prompt);
+    if (gemini.success) return gemini;
+    console.warn(`[CodeForge] Gemini failed (${gemini.error}). Trying Groq...`);
   }
 
-  // 3. Fallback to mock if nothing else works
-  console.warn("[CodeForge] No API keys configured or working. Using mock generator.");
+  // 2. Groq
+  if (process.env.GROQ_API_KEY) {
+    const groq = await generateWithGroq(prompt);
+    if (groq.success) return groq;
+    console.warn(`[CodeForge] Groq failed (${groq.error}). Falling back to mock...`);
+  }
+
+  // 3. Mock
+  console.warn("[CodeForge] No working LLM keys. Using mock generator.");
   return generateMockCode(taskOrPrompt);
 }

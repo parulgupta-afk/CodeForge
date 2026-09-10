@@ -154,6 +154,41 @@ export async function runAgent(task: string): Promise<OrchestratorResult> {
 
     const classified = execution.success ? undefined : classifyError(execution);
 
+    // Do not burn remaining attempts on non-retryable failures
+    if (classified && !classified.retryable && attemptNumber < MAX_ATTEMPTS) {
+      const earlyAttempt: Attempt = {
+        attemptNumber,
+        generatedCode: generation.data,
+        execution,
+        errorSummary: `${classified.category}: ${classified.detail}`,
+        timestamp: new Date().toISOString(),
+      };
+      attempts.push(earlyAttempt);
+
+      runsStore.update(runId, {
+        status: "failed",
+        attempts: attemptNumber,
+        generatedCode: generation.data.code,
+        error: `${classified.category}: ${classified.detail}`,
+      });
+
+      emit(runId, "run:failed", {
+        message: `Non-retryable: ${classified.category}: ${classified.detail}`,
+        data: classified,
+      });
+
+      return {
+        success: false,
+        runId,
+        task,
+        attempts,
+        finalError: `${classified.category}: ${classified.detail}`,
+        totalAttempts: attemptNumber,
+        provider: lastProvider,
+        model: lastModel,
+      };
+    }
+
     const attempt: Attempt = {
       attemptNumber,
       generatedCode: generation.data,

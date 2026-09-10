@@ -155,7 +155,7 @@ async function run() {
     ]);
     const r = await generateCode("nine");
     restore();
-    assert("Parses fenced JSON", r.success === true && r.data?.code.includes("print(9)"));
+    assert("Parses fenced JSON", Boolean(r.success === true && r.data?.code.includes("print(9)")));
   }
 
   // Missing code field

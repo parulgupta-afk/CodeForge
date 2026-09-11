@@ -13,7 +13,7 @@
       "title": "Average 1 to 100",
       "success": true,
       "attempts": 1,
-      "durationMs": 1631,
+      "durationMs": 1416,
       "finalOutput": "50.5"
     },
     {
@@ -22,7 +22,7 @@
       "title": "Sum of evens",
       "success": true,
       "attempts": 1,
-      "durationMs": 1089,
+      "durationMs": 1754,
       "finalOutput": "650"
     },
     {
@@ -31,7 +31,7 @@
       "title": "Factorial 10",
       "success": true,
       "attempts": 1,
-      "durationMs": 1080,
+      "durationMs": 1354,
       "finalOutput": "3628800"
     },
     {
@@ -40,7 +40,7 @@
       "title": "Reverse string",
       "success": true,
       "attempts": 1,
-      "durationMs": 1084,
+      "durationMs": 1384,
       "finalOutput": "egroFedoC"
     },
     {
@@ -49,7 +49,7 @@
       "title": "Palindrome",
       "success": true,
       "attempts": 1,
-      "durationMs": 1321,
+      "durationMs": 1468,
       "finalOutput": "True"
     },
     {
@@ -58,7 +58,7 @@
       "title": "JSON sum",
       "success": true,
       "attempts": 1,
-      "durationMs": 1115,
+      "durationMs": 1165,
       "finalOutput": "15"
     },
     {
@@ -67,7 +67,7 @@
       "title": "Word count",
       "success": true,
       "attempts": 1,
-      "durationMs": 1073,
+      "durationMs": 1316,
       "finalOutput": "9"
     },
     {
@@ -76,7 +76,7 @@
       "title": "Unique sorted",
       "success": true,
       "attempts": 1,
-      "durationMs": 1214,
+      "durationMs": 1538,
       "finalOutput": "1 2 3 4"
     },
     {
@@ -85,7 +85,7 @@
       "title": "Max value",
       "success": true,
       "attempts": 1,
-      "durationMs": 1181,
+      "durationMs": 1881,
       "finalOutput": "56"
     },
     {
@@ -94,7 +94,7 @@
       "title": "Dict keys",
       "success": true,
       "attempts": 1,
-      "durationMs": 1131,
+      "durationMs": 1227,
       "finalOutput": "a,b,c"
     },
     {
@@ -103,7 +103,7 @@
       "title": "FizzBuzz sample",
       "success": true,
       "attempts": 1,
-      "durationMs": 5261,
+      "durationMs": 1359,
       "finalOutput": "1\r\n2\r\nFizz\r\n4\r\nBuzz\r\nFizz\r\n7\r\n8\r\nFizz\r\nBuzz\r\n11\r\nFizz\r\n13\r\n14\r\nFizzBuzz"
     },
     {
@@ -112,7 +112,7 @@
       "title": "CSV average",
       "success": true,
       "attempts": 1,
-      "durationMs": 1236,
+      "durationMs": 1618,
       "finalOutput": "20.0"
     },
     {
@@ -121,7 +121,7 @@
       "title": "Fibonacci 10",
       "success": true,
       "attempts": 1,
-      "durationMs": 1114,
+      "durationMs": 1409,
       "finalOutput": "0 1 1 2 3 5 8 13 21 34"
     },
     {
@@ -130,7 +130,7 @@
       "title": "Prime check",
       "success": true,
       "attempts": 1,
-      "durationMs": 1286,
+      "durationMs": 1099,
       "finalOutput": "True"
     },
     {
@@ -139,7 +139,7 @@
       "title": "GCD",
       "success": true,
       "attempts": 1,
-      "durationMs": 2420,
+      "durationMs": 1213,
       "finalOutput": "6"
     },
     {
@@ -148,7 +148,7 @@
       "title": "Missing pandas",
       "success": true,
       "attempts": 1,
-      "durationMs": 2477,
+      "durationMs": 3423,
       "finalOutput": "2.0"
     },
     {
@@ -157,7 +157,7 @@
       "title": "Type error bait",
       "success": true,
       "attempts": 1,
-      "durationMs": 1564,
+      "durationMs": 1663,
       "finalOutput": "5points"
     },
     {
@@ -166,8 +166,8 @@
       "title": "Index error bait",
       "success": true,
       "attempts": 1,
-      "durationMs": 1710,
-      "finalOutput": "Index out of range, recovered successfully."
+      "durationMs": 1258,
+      "finalOutput": "Index out of range. Recovery successful."
     },
     {
       "taskId": "task19",
@@ -175,7 +175,7 @@
       "title": "Timeout bait",
       "success": true,
       "attempts": 1,
-      "durationMs": 1048,
+      "durationMs": 1164,
       "finalOutput": "1\r\n2\r\n3\r\n4\r\n5\r\n6\r\n7\r\n8\r\n9\r\n10\r\ndone"
     },
     {
@@ -184,7 +184,7 @@
       "title": "No network",
       "success": true,
       "attempts": 1,
-      "durationMs": 2796,
+      "durationMs": 1328,
       "finalOutput": "offline-ok"
     },
     {
@@ -193,7 +193,7 @@
       "title": "List comprehension",
       "success": true,
       "attempts": 1,
-      "durationMs": 1424,
+      "durationMs": 1171,
       "finalOutput": "1 4 9 16 25"
     },
     {
@@ -202,7 +202,7 @@
       "title": "Sort dict by value",
       "success": true,
       "attempts": 1,
-      "durationMs": 1086,
+      "durationMs": 1291,
       "finalOutput": "c\r\nb\r\na"
     },
     {
@@ -211,7 +211,7 @@
       "title": "Binary search length",
       "success": true,
       "attempts": 1,
-      "durationMs": 1812,
+      "durationMs": 1461,
       "finalOutput": "3"
     },
     {
@@ -220,7 +220,7 @@
       "title": "String title case",
       "success": true,
       "attempts": 1,
-      "durationMs": 1394,
+      "durationMs": 1204,
       "finalOutput": "Code Forge Agent"
     },
     {
@@ -229,9 +229,9 @@
       "title": "Filter positives",
       "success": true,
       "attempts": 1,
-      "durationMs": 1523,
+      "durationMs": 1527,
       "finalOutput": "3 5 8"
     }
   ],
-  "generatedAt": "2026-09-10T06:15:45.004Z"
+  "generatedAt": "2026-09-10T07:28:17.565Z"
 }

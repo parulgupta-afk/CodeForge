@@ -1,15 +1,21 @@
 import { ExecutionInput, ExecutionResult } from "../types/execution";
 import { executeLocally } from "./localExecutor";
 
-// Docker executor will be used when USE_DOCKER=true (Phase 5)
+/**
+ * Execution entry point.
+ *
+ * USE_DOCKER=true  → try Docker sandbox; on failure, fall back to local
+ * USE_DOCKER=false → local subprocess only (NOT a security boundary)
+ */
 let executeInDocker: ((input: ExecutionInput) => Promise<ExecutionResult>) | null = null;
 
 try {
-  // Dynamic import so the project still works if dockerode is not installed yet
+  // Optional: project still works if dockerode fails to load
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const dockerModule = require("./dockerExecutor");
   executeInDocker = dockerModule.executeInDocker;
 } catch {
-  // dockerode not available – stay on local executor
+  executeInDocker = null;
 }
 
 export async function executeCode(input: ExecutionInput): Promise<ExecutionResult> {
@@ -18,8 +24,9 @@ export async function executeCode(input: ExecutionInput): Promise<ExecutionResul
   if (useDocker && executeInDocker) {
     try {
       return await executeInDocker(input);
-    } catch (err: any) {
-      console.warn("Docker execution failed, falling back to local:", err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn("[CodeForge] Docker execution failed, falling back to local:", message);
       return executeLocally(input);
     }
   }

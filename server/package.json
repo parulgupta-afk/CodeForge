@@ -7,10 +7,11 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
-    "test": "ts-node --transpile-only src/__tests__/errorClassifier.test.ts && ts-node --transpile-only src/__tests__/orchestrator.test.ts && ts-node --transpile-only src/__tests__/providerFallback.test.ts",
+    "test": "ts-node --transpile-only src/__tests__/errorClassifier.test.ts && ts-node --transpile-only src/__tests__/orchestrator.test.ts && ts-node --transpile-only src/__tests__/providerFallback.test.ts && ts-node --transpile-only src/__tests__/localExecutor.test.ts",
     "test:classifier": "ts-node --transpile-only src/__tests__/errorClassifier.test.ts",
     "test:orchestrator": "ts-node --transpile-only src/__tests__/orchestrator.test.ts",
-    "test:providers": "ts-node --transpile-only src/__tests__/providerFallback.test.ts"
+    "test:providers": "ts-node --transpile-only src/__tests__/providerFallback.test.ts",
+    "test:sandbox": "ts-node --transpile-only src/__tests__/localExecutor.test.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",

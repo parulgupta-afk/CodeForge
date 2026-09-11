@@ -7,7 +7,7 @@ import { generateCode } from "../agents/codeGenerator";
 let passed = 0;
 let failed = 0;
 
-function assert(name: string, cond: boolean | undefined, detail?: string) {
+function assert(name: string, cond: boolean, detail?: string) {
   if (cond) {
     passed++;
     console.log(`  ✓ ${name}`);
@@ -155,7 +155,7 @@ async function run() {
     ]);
     const r = await generateCode("nine");
     restore();
-    assert("Parses fenced JSON", Boolean(r.success === true && r.data?.code.includes("print(9)")));
+    assert("Parses fenced JSON", r.success === true && r.data?.code.includes("print(9)"));
   }
 
   // Missing code field

@@ -43,12 +43,13 @@ async function run() {
 
   {
     const r = await executeLocally({
-      code: "while True:\n    pass",
+      code: "import time\nwhile True:\n    time.sleep(0.05)",
       filename: "main.py",
-      timeoutMs: 800,
+      timeoutMs: 1500,
     });
     assert("timeout flagged", r.timedOut === true);
     assert("timeout not success", r.success === false);
+    assert("timeout error message", typeof r.error === "string" && r.error.includes("timed out"));
   }
 
   {

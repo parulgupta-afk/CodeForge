@@ -20,7 +20,7 @@ jobs:
       - name: Install
         run: npm install
       - name: Typecheck
-        run: npx tsc --noEmit
+        run: npm run typecheck
       - name: Unit + integration tests
         env:
           USE_MOCK_LLM: "true"

@@ -2,7 +2,7 @@ import { buildGenerationPrompt } from "../prompts/generation";
 import { GenerationResult } from "../types/generation";
 
 /**
- * Provider chain (no Anthropic required):
+ * Provider chain:
  *   1. Gemini  (if GEMINI_API_KEY set)
  *   2. Groq    (if GROQ_API_KEY set)
  *   3. Mock    (always available offline)

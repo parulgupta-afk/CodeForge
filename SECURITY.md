@@ -19,7 +19,7 @@ Attack classes considered:
 | Fork bombs | Process spawning |
 | Network exfiltration | `urllib` / sockets |
 | Filesystem abuse | Read/write outside workspace |
-| Secret leakage | Child process inherits `ANTHROPIC_*` / `GEMINI_*` |
+| Secret leakage | Child process inherits `GROQ_*` / `GEMINI_*` |
 | Huge stdout/stderr | Log flooding / memory pressure |
 | Huge source payloads | Oversized generated code |
 | API flooding | Rapid `POST /api/runs` |

@@ -2,11 +2,8 @@ import path from "path";
 import dotenv from "dotenv";
 import http from "http";
 
+// Canonical backend environment file: server/.env
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
-dotenv.config();
-dotenv.config({ path: path.resolve(process.cwd(), ".env") });
-dotenv.config({ path: path.resolve(process.cwd(), "../.env") });
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 import express from "express";
 import cors from "cors";
@@ -18,7 +15,28 @@ import { initSocketIO } from "./websocket/io";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors());
+/**
+ * Resolves allowed CORS origins.
+ * Reads CORS_ORIGIN (supports single origin or comma-separated list).
+ * Defaults to local development frontend origins if unset.
+ */
+export function getAllowedOrigins(): string[] | string {
+  const envOrigin = process.env.CORS_ORIGIN?.trim();
+  if (envOrigin) {
+    const list = envOrigin.split(",").map((o) => o.trim()).filter(Boolean);
+    return list.length === 1 ? list[0] : list;
+  }
+  return ["http://localhost:5173", "http://127.0.0.1:5173"];
+}
+
+const allowedOrigins = getAllowedOrigins();
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "1mb" }));
 applySecurity(app);
 
@@ -44,7 +62,7 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 });
 
 const httpServer = http.createServer(app);
-initSocketIO(httpServer);
+initSocketIO(httpServer, allowedOrigins);
 
 httpServer.listen(PORT, () => {
   console.log(`🚀 CodeForge server (Phase 9) running on http://localhost:${PORT}`);

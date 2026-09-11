@@ -4,11 +4,18 @@ import { AgentEvent } from "./events";
 
 let io: Server | null = null;
 
-export function initSocketIO(httpServer: HttpServer): Server {
+export function initSocketIO(httpServer: HttpServer, customOrigins?: string[] | string): Server {
+  const origin =
+    customOrigins ||
+    (process.env.CORS_ORIGIN?.trim()
+      ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim()).filter(Boolean)
+      : ["http://localhost:5173", "http://127.0.0.1:5173"]);
+
   io = new Server(httpServer, {
     cors: {
-      origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+      origin,
       methods: ["GET", "POST"],
+      credentials: true,
     },
   });
 

@@ -51,6 +51,7 @@ Root `.env.example` is documentation only — the backend does not load a root `
 | `GROQ_MODEL` | No | Default `llama-3.3-70b-versatile` |
 | `USE_MOCK_LLM` | No | `true` for CI / offline / no keys |
 | `PORT` | No | Default `3001` |
+| `CORS_ORIGIN` | No | Allowed frontend origin(s) for Express & Socket.IO CORS (default: `http://localhost:5173,http://127.0.0.1:5173`) |
 | `USE_DOCKER` | No | `true` = Docker sandbox; `false` = local Python |
 | `SANDBOX_IMAGE` | No | Default `python:3.12-slim` |
 | `DATABASE_URL` | No | Enables Postgres persistence |
@@ -62,20 +63,22 @@ Root `.env.example` is documentation only — the backend does not load a root `
 ### Development — local subprocess (`USE_DOCKER=false`, default)
 
 - Runs `python` / `python3` in a temp directory
-- Timeout, output size limits, minimal child env (API keys not inherited)
-- **Not a security boundary** — solo machine demos only
+- Enforces timeout, code size, output limits, and minimal child env (API keys not inherited)
+- **Important:** Local subprocess execution is **not** a security boundary — intended for local dev and solo demos only
 
 ### Secure execution — Docker (`USE_DOCKER=true`)
 
-Requires Docker Desktop/daemon on the same host as the Node process.
+Requires Docker Desktop or a Docker daemon on the same host as the Node process.
+Docker provides the intended isolation layer:
 
-Ephemeral container per run:
+- **Network disabled:** `NetworkMode: none`
+- **Resource limits:** Memory (512MB), CPU (1 core), PID limit (64)
+- **Non-root user:** Runs as `nobody` (UID 65534)
+- **Capability restrictions:** Drops `ALL` Linux capabilities, `no-new-privileges`
+- **Filesystem isolation:** Read-only code mount, size-capped tmpfs for `/tmp`
+- **Timeout:** Wall-clock timeout with automatic SIGKILL and container cleanup
 
-- Network disabled
-- Memory / CPU / PID limits
-- Capabilities dropped, non-root user, no-new-privileges
-- Read-only code mount, capped tmpfs
-- Wall-clock timeout and forced cleanup
+*Note: While Docker provides strong container isolation, it is not claimed to be an absolute security guarantee (see [SECURITY.md](./SECURITY.md)).*
 
 If Docker fails at runtime, the server logs a warning and **falls back to local subprocess**.
 
@@ -88,14 +91,15 @@ Compose does **not** by itself provide the secure sandbox. Use host process + `U
 
 ```cmd
 cd server
-npm test
-npm run typecheck
-npm run build
+npm test              # runs classifier, orchestrator, provider fallback & local sandbox safety tests
+npm run typecheck     # typechecks all files including tests
+npm run build         # compiles production dist (excludes test files)
+npm run test:docker   # runs Docker container security tests (requires running Docker daemon)
 ```
 
 GitHub Actions: install → typecheck → tests (`USE_MOCK_LLM=true`) → build server + client. No real API keys.
 
-Local executor tests cover timeout, oversized code, and structured failures. Docker isolation tests need a Docker daemon and are optional outside CI.
+Local executor tests cover timeout, oversized code, and structured failures. Docker integration tests require a local Docker daemon and are separated cleanly so standard CI does not depend on them.
 
 ## Benchmark
 

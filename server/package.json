@@ -6,12 +6,13 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --project tsconfig.test.json --noEmit",
     "test": "ts-node --transpile-only src/__tests__/errorClassifier.test.ts && ts-node --transpile-only src/__tests__/orchestrator.test.ts && ts-node --transpile-only src/__tests__/providerFallback.test.ts && ts-node --transpile-only src/__tests__/localExecutor.test.ts",
     "test:classifier": "ts-node --transpile-only src/__tests__/errorClassifier.test.ts",
     "test:orchestrator": "ts-node --transpile-only src/__tests__/orchestrator.test.ts",
     "test:providers": "ts-node --transpile-only src/__tests__/providerFallback.test.ts",
-    "test:sandbox": "ts-node --transpile-only src/__tests__/localExecutor.test.ts"
+    "test:sandbox": "ts-node --transpile-only src/__tests__/localExecutor.test.ts",
+    "test:docker": "ts-node --transpile-only src/__tests__/dockerExecutor.test.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",

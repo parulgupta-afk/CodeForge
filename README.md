@@ -38,8 +38,7 @@ npm run dev
 
 Open http://localhost:5173
 
-**Canonical env file:** `server/.env` (copy from `server/.env.example`).
-Root `.env.example` is documentation only — the backend does not load a root `.env`.
+**Canonical backend environment file:** `server/.env` (copy from `server/.env.example`). The backend loads only `server/.env`.
 
 ## Environment variables
 

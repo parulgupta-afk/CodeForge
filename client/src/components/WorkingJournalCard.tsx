@@ -17,22 +17,72 @@ export const WorkingJournalCard: React.FC<Props> = ({ logs }) => {
         boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
       }}
     >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+      {/* Header */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 16,
+        }}
+      >
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span className="material-symbols-outlined" style={{ color: "#9d3e1a", fontSize: 20 }}>
+          <span
+            className="material-symbols-outlined"
+            style={{
+              color: "#9d3e1a",
+              fontSize: 20,
+            }}
+          >
             psychology
           </span>
-          <h3 style={{ fontFamily: "Newsreader, Georgia, serif", fontSize: 18, fontWeight: 600, margin: 0 }}>
+
+          <h3
+            style={{
+              fontFamily: "Newsreader, Georgia, serif",
+              fontSize: 18,
+              fontWeight: 600,
+              margin: 0,
+            }}
+          >
             Agent Working Journal
           </h3>
         </div>
-        <span style={{ fontSize: 11, color: "#9ca3af", fontFamily: "monospace" }}>Autonomous Log</span>
+
+        <span
+          style={{
+            fontSize: 11,
+            color: "#9ca3af",
+            fontFamily: "monospace",
+          }}
+        >
+          Autonomous Log
+        </span>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      {/* Scrollable journal */}
+      <div
+        style={{
+          maxHeight: 420,
+          overflowY: "auto",
+          paddingRight: 8,
+          display: "flex",
+          flexDirection: "column",
+          gap: 6,
+          scrollbarWidth: "thin",
+        }}
+      >
         {logs.length === 0 && (
-          <p style={{ color: "#9ca3af", fontSize: 14 }}>Waiting for the agent to start…</p>
+          <p
+            style={{
+              color: "#9ca3af",
+              fontSize: 14,
+            }}
+          >
+            Waiting for the agent to start…
+          </p>
         )}
+
         {logs.map((log) => {
           const dot =
             log.type === "primary"
@@ -42,6 +92,7 @@ export const WorkingJournalCard: React.FC<Props> = ({ logs }) => {
               : log.type === "warning"
               ? "#b45309"
               : "#9ca3af";
+
           return (
             <div
               key={log.id}
@@ -54,15 +105,55 @@ export const WorkingJournalCard: React.FC<Props> = ({ logs }) => {
                 alignItems: "flex-start",
               }}
             >
-              <span style={{ fontSize: 11, color: "#9ca3af", fontFamily: "monospace", width: 52, flexShrink: 0 }}>
+              {/* Time */}
+              <span
+                style={{
+                  fontSize: 11,
+                  color: "#9ca3af",
+                  fontFamily: "monospace",
+                  width: 52,
+                  flexShrink: 0,
+                }}
+              >
                 {log.time}
               </span>
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: dot, marginTop: 5, flexShrink: 0 }} />
-              <p style={{ margin: 0, fontSize: 14, color: "#1f2937", lineHeight: 1.5 }}>
+
+              {/* Status dot */}
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: "50%",
+                  background: dot,
+                  marginTop: 5,
+                  flexShrink: 0,
+                }}
+              />
+
+              {/* Log content */}
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: 14,
+                  color: "#1f2937",
+                  lineHeight: 1.5,
+                }}
+              >
                 {log.highlight ? (
                   <>
                     {log.content.split(log.highlight)[0]}
-                    <strong style={{ color: log.type === "primary" ? "#9d3e1a" : "#111" }}>{log.highlight}</strong>
+
+                    <strong
+                      style={{
+                        color:
+                          log.type === "primary"
+                            ? "#9d3e1a"
+                            : "#111",
+                      }}
+                    >
+                      {log.highlight}
+                    </strong>
+
                     {log.content.split(log.highlight)[1]}
                   </>
                 ) : (

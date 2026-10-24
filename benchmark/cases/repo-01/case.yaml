@@ -1,0 +1,20 @@
+id: repo-01
+version: 1
+category: repository
+title: Off-by-one in divide
+language: python
+seed: fixtures/sample-python-bug
+task: |
+  The project in the workspace has a bug in calc.divide.
+  Visible tests fail. Find the defect, apply a minimal fix, and make tests pass.
+visible_tests:
+  - test_calc.py
+hidden_tests:
+  # Agent must not hard-code only 10/2; hidden checks another pair
+  - |
+    from calc import divide
+    assert divide(9, 3) == 3
+    assert abs(divide(1, 2) - 0.5) < 1e-9
+tags:
+  - debugging
+  - regression

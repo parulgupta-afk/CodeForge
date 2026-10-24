@@ -8,11 +8,13 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 import express from "express";
 import cors from "cors";
 import runsRouter from "./routes/runs";
+import repoRouter from "./routes/repo";
 import { applySecurity } from "./middleware/security";
 import metricsRouter from "./routes/metrics";
 import { initSocketIO } from "./websocket/io";
 import { ensureSchema } from "./database/schema";
 import { ensureExperienceSchema } from "./memory/experienceStore";
+import { ensureRepoToolsRegistered } from "./tools/repositoryTools";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -44,18 +46,22 @@ app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
     service: "CodeForge",
-    phase: "evolution-0-3",
-    message: "Truthful persistence, evaluator, experience memory, evaluation lab",
+    phase: "evolution-0-4",
+    message: "Phases 0–4: truthful core + repository agent",
     features: {
       sandboxMode: process.env.SANDBOX_MODE || "dev",
       llmMode: process.env.LLM_MODE || "live",
       memoryMode: process.env.MEMORY_MODE || "off",
-      allowMockFallback: process.env.ALLOW_MOCK_FALLBACK === "true" || process.env.USE_MOCK_LLM === "true",
+      allowMockFallback:
+        process.env.ALLOW_MOCK_FALLBACK === "true" ||
+        process.env.USE_MOCK_LLM === "true",
+      repoAgent: true,
     },
   });
 });
 
 app.use("/api/runs", runsRouter);
+app.use("/api/repo", repoRouter);
 app.use("/api/metrics", metricsRouter);
 
 app.use((_req, res) => {
@@ -77,6 +83,11 @@ async function boot() {
     await ensureExperienceSchema();
   } catch (err: any) {
     console.warn("[boot] schema init skipped:", err?.message);
+  }
+  try {
+    ensureRepoToolsRegistered();
+  } catch (err: any) {
+    console.warn("[boot] repo tools:", err?.message);
   }
 
   httpServer.listen(PORT, () => {

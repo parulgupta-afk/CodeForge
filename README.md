@@ -2,7 +2,7 @@
 
 Autonomous coding agent with sandboxed execution.
 
-```text
+```
 Task → LLM generates Python → execute in sandbox → classify errors → repair (max 3) → result
 ```
 
@@ -10,7 +10,7 @@ Focus: bounded autonomous repair, isolation of untrusted code, measurable reliab
 
 ## Architecture
 
-```text
+```
 React Studio (Vite) ──Socket.IO──► Express orchestrator
                                       │
                          ┌────────────┼────────────┐
@@ -36,14 +36,14 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5173`
+Open http://localhost:5173
 
 **Canonical backend environment file:** `server/.env` (copy from `server/.env.example`). The backend loads only `server/.env`.
 
 ## Environment variables
 
 | Variable | Required? | Purpose |
-| --- | --- | --- |
+|----------|-----------|---------|
 | `GEMINI_API_KEY` | One of Gemini / Groq / mock | Primary LLM |
 | `GEMINI_MODEL` | No | Default `gemini-2.0-flash` |
 | `GROQ_API_KEY` | Optional | Fallback LLM |
@@ -105,7 +105,7 @@ Local executor tests cover timeout, oversized code, and structured failures. Doc
 Committed `benchmark/results.json` (2026-09-09):
 
 | Metric | Value |
-| --- | --- |
+|--------|--------|
 | Tasks | 25 |
 | Success rate | 100% |
 | First-attempt success | 100% |
@@ -132,3 +132,20 @@ See [SECURITY.md](./SECURITY.md).
 ## Stack
 
 TypeScript · Express · React · Vite · Socket.IO · Docker · Gemini / Groq · optional PostgreSQL
+
+---
+
+## Evolution (Phases 0–6)
+
+Additional capabilities live under `docs/` and do not replace the MVP above.
+
+| Phase | Focus | Docs |
+|-------|--------|------|
+| 0–3 | Truthful persistence, evaluator, experience memory, evaluation protocol | [EVALUATION.md](./docs/EVALUATION.md), [EVOLUTION_PHASES_0_3.md](./docs/EVOLUTION_PHASES_0_3.md) |
+| 4 | Repository agent (workspace tools, state machine) | [PHASE_4_REPO_AGENT.md](./docs/PHASE_4_REPO_AGENT.md) |
+| 5 | Engineering Arena (missions, scoring) | [PHASE_5_ARENA.md](./docs/PHASE_5_ARENA.md) |
+| 6 | API tokens, quotas, audit, evidence bundles | [PHASE_6_HARDEN.md](./docs/PHASE_6_HARDEN.md) |
+
+Static results placeholder: [docs/results/index.html](./docs/results/index.html).
+
+Do not cite improvement numbers until committed under `benchmark/results/` with intervals.

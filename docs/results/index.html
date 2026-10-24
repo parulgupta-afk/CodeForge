@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>CodeForge – public results</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #e5e7eb; padding: 8px 10px; text-align: left; }
+    th { background: #f9fafb; }
+    .note { color: #6b7280; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>CodeForge public results</h1>
+  <p class="note">
+    Static snapshot for recruiters. Numbers only from committed files under
+    <code>benchmark/</code>. Re-run under the evaluator before citing improvements.
+  </p>
+  <h2>Baseline (exit-code criterion, pre-Evolution)</h2>
+  <table>
+    <tr><th>Metric</th><th>Value</th><th>Source</th></tr>
+    <tr><td>Tasks</td><td>25</td><td>benchmark/results.json</td></tr>
+    <tr><td>Success rate</td><td>100% (exit code 0)</td><td>benchmark/results.json</td></tr>
+    <tr><td>Note</td><td colspan="2">Not comparable to hidden-test verified rates</td></tr>
+  </table>
+  <h2>Evolution experiment</h2>
+  <p class="note">
+    Conditions A–D results will appear here after Phase 3 experiment runs are committed
+    to <code>benchmark/results/</code>. See <code>docs/EVALUATION.md</code>.
+  </p>
+  <footer class="note">CodeForge Evolution · do not claim unmeasured gains</footer>
+</body>
+</html>

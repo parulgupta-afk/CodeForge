@@ -1,0 +1,12 @@
+id: repo-02
+version: 1
+category: repository
+title: Missing space in greet
+language: python
+seed: fixtures/sample-python-bug-2
+task: |
+  greeter.greet concatenates without a space after the comma. Fix it minimally.
+visible_tests:
+  - test_greeter.py
+tags:
+  - debugging

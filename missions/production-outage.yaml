@@ -1,0 +1,53 @@
+id: production-outage
+title: Production Outage (Boss)
+story: |
+  Three defects hit at once under a tight budget: bad auth check, broken transfer,
+  and a stats regression. Fix all modules so every visible and hidden test passes.
+mode_default: agent_arena
+skill_tags:
+  - debugging
+  - integration
+  - regression
+language: python
+starter:
+  auth.py: |
+    def check_password(stored_hash: str, attempt: str) -> bool:
+        return stored_hash != attempt
+  ledger.py: |
+    def transfer(accounts: dict, src: str, dst: str, amount: float) -> dict:
+        if accounts[src] < amount:
+            raise ValueError("insufficient funds")
+        accounts[src] -= amount
+        return accounts
+  stats.py: |
+    def mean(nums: list) -> float:
+        if not nums:
+            return 0.0
+        return sum(nums) / (len(nums) - 1)
+visible_tests: |
+  from auth import check_password
+  from ledger import transfer
+  from stats import mean
+  assert check_password("a", "a") is True
+  a = {"x": 20.0, "y": 0.0}
+  transfer(a, "x", "y", 5.0)
+  assert a["x"] == 15.0 and a["y"] == 5.0
+  assert abs(mean([2, 4, 6]) - 4.0) < 1e-9
+  print("visible_ok")
+hidden_tests: |
+  from auth import check_password
+  from ledger import transfer
+  from stats import mean
+  assert check_password("p", "q") is False
+  b = {"a": 10.0, "b": 10.0}
+  transfer(b, "a", "b", 10.0)
+  assert b["a"] == 0.0 and b["b"] == 20.0
+  assert abs(mean([10]) - 10.0) < 1e-9
+  print("hidden_ok")
+hints:
+  - Three separate bugs — fix each module.
+  - Boss mission: aim for hidden tests green.
+defect:
+  file: auth.py
+  lines: [2]
+  summary: multiple defects across auth, ledger, stats

@@ -16,6 +16,10 @@ import { initSocketIO } from "./websocket/io";
 import { ensureSchema } from "./database/schema";
 import { ensureExperienceSchema } from "./memory/experienceStore";
 import { ensureRepoToolsRegistered } from "./tools/repositoryTools";
+import { ensureAuditSchema } from "./audit/auditLog";
+import { getAuditLog } from "./controllers/evidenceController";
+import { requireApiToken, enforceRunQuota } from "./auth/tokens";
+import { log } from "./observability/logger";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -47,8 +51,8 @@ app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
     service: "CodeForge",
-    phase: "evolution-0-5",
-    message: "Phases 0–5: truthful core, repo agent, Engineering Arena",
+    phase: "evolution-0-6",
+    message: "Phases 0–6 complete: truthful core, memory, repo agent, Arena, harden",
     features: {
       sandboxMode: process.env.SANDBOX_MODE || "dev",
       llmMode: process.env.LLM_MODE || "live",
@@ -58,21 +62,24 @@ app.get("/api/health", (_req, res) => {
         process.env.USE_MOCK_LLM === "true",
       repoAgent: true,
       arena: true,
+      apiTokensRequired: Boolean(process.env.API_TOKENS?.trim()),
+      quotas: process.env.ENFORCE_QUOTAS === "true",
     },
   });
 });
 
 app.use("/api/runs", runsRouter);
-app.use("/api/repo", repoRouter);
+app.use("/api/repo", requireApiToken, enforceRunQuota, repoRouter);
 app.use("/api/missions", missionsRouter);
 app.use("/api/metrics", metricsRouter);
+app.get("/api/audit", getAuditLog);
 
 app.use((_req, res) => {
   res.status(404).json({ error: "Not found" });
 });
 
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error("Unhandled error:", err);
+  log.error("Unhandled error", { err: err?.message });
   res.status(500).json({ error: "Internal server error" });
 });
 
@@ -80,10 +87,10 @@ const httpServer = http.createServer(app);
 initSocketIO(httpServer, allowedOrigins);
 
 async function boot() {
-  // Phase 0: ensure schema at boot so persistence is real when DATABASE_URL is set
   try {
     await ensureSchema();
     await ensureExperienceSchema();
+    await ensureAuditSchema();
   } catch (err: any) {
     console.warn("[boot] schema init skipped:", err?.message);
   }
@@ -94,9 +101,15 @@ async function boot() {
   }
 
   httpServer.listen(PORT, () => {
-    console.log(`🚀 CodeForge Evolution (Phases 0–5) on http://localhost:${PORT}`);
-    console.log(`   WebSocket ready · POST /api/runs · /api/repo · /api/missions`);
-    console.log(`   SANDBOX_MODE=${process.env.SANDBOX_MODE || "dev"} LLM_MODE=${process.env.LLM_MODE || "live"} MEMORY_MODE=${process.env.MEMORY_MODE || "off"}`);
+    log.info("CodeForge Evolution listening", {
+      port: PORT,
+      phase: "0-6",
+      sandboxMode: process.env.SANDBOX_MODE || "dev",
+      llmMode: process.env.LLM_MODE || "live",
+      memoryMode: process.env.MEMORY_MODE || "off",
+    });
+    console.log(`🚀 CodeForge Evolution (Phases 0–6) on http://localhost:${PORT}`);
+    console.log(`   POST /api/runs · /api/repo · /api/missions · GET /api/runs/:id/evidence`);
   });
 }
 

@@ -1,134 +1,96 @@
-# CodeForge
+# Parul Gupta — Engineering Portfolio
 
-Autonomous coding agent with sandboxed execution.
+Premium Engineering OS portfolio for software engineering recruiting.
 
-```
-Task → LLM generates Python → execute in sandbox → classify errors → repair (max 3) → result
-```
+**Static site works with zero API keys and zero paid services.**
 
-Focus: bounded autonomous repair, isolation of untrusted code, measurable reliability.
+## Design hierarchy
 
-## Architecture
+| Layer | Share |
+|-------|------|
+| Professional product UI | ~80% |
+| Engineering OS (⌘K, labs, architecture) | ~15% |
+| Discoverable commands | ~5% |
 
-```
-React Studio (Vite) ──Socket.IO──► Express orchestrator
-                                      │
-                         ┌────────────┼────────────┐
-                         ▼            ▼            ▼
-                    Gemini/Groq/Mock  Classifier   Sandbox
-                                                   ├─ Docker (USE_DOCKER=true)
-                                                   └─ Local subprocess (default)
-```
+Palette: obsidian · graphite · ice cyan · subtle lime status.
 
-Python-only MVP. Optional PostgreSQL when `DATABASE_URL` is set.
+**Core philosophy:** recruiter sees a portfolio; engineer discovers an Engineering OS.
 
-## Local setup (Windows)
+## Flagship systems
 
-```cmd
-cd server
-copy .env.example .env
-notepad .env
-npm install
-npm run dev
+| Project | Stack highlights | Links |
+|---------|------------------|-------|
+| **PriceLoop** | FastAPI · PostgreSQL · Stripe · Redis/Celery scaffold | [Source](https://github.com/parulgupta-afk/Priceloop) |
+| **CodeForge** | Express · Socket.IO · Gemini/Groq · Docker sandbox | [Demo](https://code-forge-jade.vercel.app) · [Source](https://github.com/parulgupta-afk/CodeForge) |
+| **PulseOps** | Node · queues · realtime incident workflows | [Source](https://github.com/parulgupta-afk/pulseops) |
 
-cd ..\client
-npm install
+Applied: Pocket-Triage, SkyCall · Experiments: NutriVibe, Beacon, Disaster Mesh
+
+## Local development
+
+```bash
+npm ci
 npm run dev
 ```
 
-Open http://localhost:5173
+Open http://localhost:3000
 
-**Canonical backend environment file:** `server/.env` (copy from `server/.env.example`). The backend loads only `server/.env`.
+### Quality gates
 
-## Environment variables
-
-| Variable | Required? | Purpose |
-|----------|-----------|---------|
-| `GEMINI_API_KEY` | One of Gemini / Groq / mock | Primary LLM |
-| `GEMINI_MODEL` | No | Default `gemini-2.0-flash` |
-| `GROQ_API_KEY` | Optional | Fallback LLM |
-| `GROQ_MODEL` | No | Default `llama-3.3-70b-versatile` |
-| `USE_MOCK_LLM` | No | `true` for CI / offline / no keys |
-| `PORT` | No | Default `3001` |
-| `CORS_ORIGIN` | No | Allowed frontend origin(s) for Express & Socket.IO CORS (default: `http://localhost:5173,http://127.0.0.1:5173`) |
-| `USE_DOCKER` | No | `true` = Docker sandbox; `false` = local Python |
-| `SANDBOX_IMAGE` | No | Default `python:3.12-slim` |
-| `DATABASE_URL` | No | Enables Postgres persistence |
-
-**Mock mode:** set `USE_MOCK_LLM=true` when you have no API keys, for CI, or deterministic runs.
-
-## Execution modes
-
-### Development — local subprocess (`USE_DOCKER=false`, default)
-
-- Runs `python` / `python3` in a temp directory
-- Enforces timeout, code size, output limits, and minimal child env (API keys not inherited)
-- **Important:** Local subprocess execution is **not** a security boundary — intended for local dev and solo demos only
-
-### Secure execution — Docker (`USE_DOCKER=true`)
-
-Requires Docker Desktop or a Docker daemon on the same host as the Node process.
-Docker provides the intended isolation layer:
-
-- **Network disabled:** `NetworkMode: none`
-- **Resource limits:** Memory (512MB), CPU (1 core), PID limit (64)
-- **Non-root user:** Runs as `nobody` (UID 65534)
-- **Capability restrictions:** Drops `ALL` Linux capabilities, `no-new-privileges`
-- **Filesystem isolation:** Read-only code mount, size-capped tmpfs for `/tmp`
-- **Timeout:** Wall-clock timeout with automatic SIGKILL and container cleanup
-
-*Note: While Docker provides strong container isolation, it is not claimed to be an absolute security guarantee (see [SECURITY.md](./SECURITY.md)).*
-
-If Docker fails at runtime, the server logs a warning and **falls back to local subprocess**.
-
-### docker-compose.yml
-
-Starts the **API service only**. `USE_DOCKER=false` is intentional (no Docker-in-Docker).
-Compose does **not** by itself provide the secure sandbox. Use host process + `USE_DOCKER=true`.
-
-## Tests & CI
-
-```cmd
-cd server
-npm test              # runs classifier, orchestrator, provider fallback & local sandbox safety tests
-npm run typecheck     # typechecks all files including tests
-npm run build         # compiles production dist (excludes test files)
-npm run test:docker   # runs Docker container security tests (requires running Docker daemon)
+```bash
+npm run typecheck
+npm run lint
+npm run format:check
+npm run test
+npm run build
+npx playwright install chromium   # once
+npm run e2e
 ```
 
-GitHub Actions: install → typecheck → tests (`USE_MOCK_LLM=true`) → build server + client. No real API keys.
+### Optional AI API
 
-Local executor tests cover timeout, oversized code, and structured failures. Docker integration tests require a local Docker daemon and are separated cleanly so standard CI does not depend on them.
+```bash
+cp .env.example .env
+# set GEMINI_API_KEY
+npm run api
+# optional: VITE_API_URL=http://localhost:8787
+```
 
-## Benchmark
+Without the API, the AI agent uses local grounded retrieval from `src/data/portfolioData.ts`.  
+**AI is an enhancement, not a dependency.**
 
-Committed `benchmark/results.json` (2026-09-09):
+## Deploy (static, free)
 
-| Metric | Value |
-|--------|--------|
-| Tasks | 25 |
-| Success rate | 100% |
-| First-attempt success | 100% |
-| Average attempts | 1.0 |
+```bash
+npm run build
+```
 
-Re-run against your own server; treat numbers as one measured run.
+Deploy the `dist/` folder to Vercel, Netlify, Cloudflare Pages, or GitHub Pages.
 
-## Security
+No database, no paid AI, no paid analytics required for the portfolio site.
 
-See [SECURITY.md](./SECURITY.md).
+## Command Center (⌘K / Ctrl+K)
 
-- Prefer `USE_DOCKER=true` for any multi-user or exposed host
-- Local subprocess is **not** isolation
-- Docker is stronger than local, not a microVM
+| Command | Action |
+|---------|--------|
+| `help` | 30-second summary |
+| `whoami` | About |
+| `sudo inspect parul` | Recruiter Mode |
+| `trace codeforge` / `priceloop` / `pulseops` | System Trace |
+| `open resume` | Resume section |
+| `recruiter mode` | Recruiter Mode |
+| `engineering mode` | Engineering Lab |
+| `contact parul` | Contact |
 
-## Production notes
+## Metric / evidence policy
 
-- Choose real keys or mock mode deliberately
-- Tighten CORS to your frontend origin
-- Never commit `.env`
-- Prefer Docker sandbox with a real host daemon
-- Add authentication before public exposure (not in this MVP)
+Claims use **implemented / measured / demo / target / count** semantics.  
+No fabricated uptime, latency SLAs, or production scale numbers without evidence.
 
-## Stack
+## Content source of truth
 
-TypeScript · Express · React · Vite · Socket.IO · Docker · Gemini / Groq · optional PostgreSQL
+`src/data/portfolioData.ts`
+
+## License
+
+Private portfolio project.

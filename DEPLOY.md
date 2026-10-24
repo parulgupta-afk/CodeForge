@@ -19,6 +19,34 @@ Options:
 2. Keep `USE_DOCKER=false` and use the local executor with strict timeouts
 3. Later: plug in E2B as an alternate sandbox backend
 
+## Docker & Docker Compose (Full Stack)
+
+To run the complete system (frontend + backend) locally or on a server via Docker:
+
+```bash
+# Build images (frontend, backend)
+docker compose build
+
+# Start services in background
+docker compose up -d
+
+# View status & logs
+docker compose ps
+docker compose logs -f
+
+# (Optional) Run with PostgreSQL database for run persistence
+docker compose --profile db up -d
+
+# Stop services
+docker compose down
+```
+
+Services exposed:
+- **Frontend**: http://localhost:5173 (Nginx reverse proxy for static assets + `/api` and WebSocket)
+- **Backend API**: http://localhost:3001
+- **Postgres (optional)**: localhost:5432
+
+
 ## Frontend → Vercel
 
 ```cmd

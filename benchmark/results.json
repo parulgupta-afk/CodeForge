@@ -1,11 +1,14 @@
 {
   "total": 25,
-  "successCount": 25,
-  "successRate": 100,
-  "firstAttemptSuccessRate": 100,
-  "withinThreeAttemptsRate": 100,
+  "successCount": 21,
+  "successRate": 84,
+  "firstAttemptSuccessRate": 84,
+  "withinThreeAttemptsRate": 84,
   "averageAttempts": 1,
-  "failureCategories": {},
+  "failureCategories": {
+    "NetworkOrServer": 2,
+    "unauthorized": 2
+  },
   "results": [
     {
       "taskId": "task01",
@@ -13,7 +16,7 @@
       "title": "Average 1 to 100",
       "success": true,
       "attempts": 1,
-      "durationMs": 15982,
+      "durationMs": 4803,
       "finalOutput": "50.5"
     },
     {
@@ -22,7 +25,7 @@
       "title": "Sum of evens",
       "success": true,
       "attempts": 1,
-      "durationMs": 8028,
+      "durationMs": 5420,
       "finalOutput": "650"
     },
     {
@@ -31,7 +34,7 @@
       "title": "Factorial 10",
       "success": true,
       "attempts": 1,
-      "durationMs": 8078,
+      "durationMs": 5451,
       "finalOutput": "3628800"
     },
     {
@@ -40,7 +43,7 @@
       "title": "Reverse string",
       "success": true,
       "attempts": 1,
-      "durationMs": 8834,
+      "durationMs": 4459,
       "finalOutput": "egroFedoC"
     },
     {
@@ -49,7 +52,7 @@
       "title": "Palindrome",
       "success": true,
       "attempts": 1,
-      "durationMs": 8209,
+      "durationMs": 5023,
       "finalOutput": "True"
     },
     {
@@ -58,7 +61,7 @@
       "title": "JSON sum",
       "success": true,
       "attempts": 1,
-      "durationMs": 8591,
+      "durationMs": 5849,
       "finalOutput": "15"
     },
     {
@@ -67,7 +70,7 @@
       "title": "Word count",
       "success": true,
       "attempts": 1,
-      "durationMs": 6202,
+      "durationMs": 4705,
       "finalOutput": "9"
     },
     {
@@ -76,7 +79,7 @@
       "title": "Unique sorted",
       "success": true,
       "attempts": 1,
-      "durationMs": 8546,
+      "durationMs": 5202,
       "finalOutput": "1 2 3 4"
     },
     {
@@ -85,7 +88,7 @@
       "title": "Max value",
       "success": true,
       "attempts": 1,
-      "durationMs": 6085,
+      "durationMs": 5328,
       "finalOutput": "56"
     },
     {
@@ -94,7 +97,7 @@
       "title": "Dict keys",
       "success": true,
       "attempts": 1,
-      "durationMs": 7674,
+      "durationMs": 5075,
       "finalOutput": "a,b,c"
     },
     {
@@ -103,7 +106,7 @@
       "title": "FizzBuzz sample",
       "success": true,
       "attempts": 1,
-      "durationMs": 8650,
+      "durationMs": 3628,
       "finalOutput": "1\r\n2\r\nFizz\r\n4\r\nBuzz\r\nFizz\r\n7\r\n8\r\nFizz\r\nBuzz\r\n11\r\nFizz\r\n13\r\n14\r\nFizzBuzz"
     },
     {
@@ -112,7 +115,7 @@
       "title": "CSV average",
       "success": true,
       "attempts": 1,
-      "durationMs": 11412,
+      "durationMs": 2232,
       "finalOutput": "20.0"
     },
     {
@@ -121,7 +124,7 @@
       "title": "Fibonacci 10",
       "success": true,
       "attempts": 1,
-      "durationMs": 12483,
+      "durationMs": 1532,
       "finalOutput": "0 1 1 2 3 5 8 13 21 34"
     },
     {
@@ -130,7 +133,7 @@
       "title": "Prime check",
       "success": true,
       "attempts": 1,
-      "durationMs": 9675,
+      "durationMs": 1638,
       "finalOutput": "True"
     },
     {
@@ -139,7 +142,7 @@
       "title": "GCD",
       "success": true,
       "attempts": 1,
-      "durationMs": 9231,
+      "durationMs": 1356,
       "finalOutput": "6"
     },
     {
@@ -148,7 +151,7 @@
       "title": "Missing pandas",
       "success": true,
       "attempts": 1,
-      "durationMs": 10462,
+      "durationMs": 4668,
       "finalOutput": "2.0"
     },
     {
@@ -157,7 +160,7 @@
       "title": "Type error bait",
       "success": true,
       "attempts": 1,
-      "durationMs": 9323,
+      "durationMs": 1821,
       "finalOutput": "5points"
     },
     {
@@ -166,8 +169,8 @@
       "title": "Index error bait",
       "success": true,
       "attempts": 1,
-      "durationMs": 8870,
-      "finalOutput": "Index out of range. Recovery successful."
+      "durationMs": 1457,
+      "finalOutput": "Index out of range, recovered successfully."
     },
     {
       "taskId": "task19",
@@ -175,7 +178,7 @@
       "title": "Timeout bait",
       "success": true,
       "attempts": 1,
-      "durationMs": 5355,
+      "durationMs": 1368,
       "finalOutput": "1\r\n2\r\n3\r\n4\r\n5\r\n6\r\n7\r\n8\r\n9\r\n10\r\ndone"
     },
     {
@@ -184,7 +187,7 @@
       "title": "No network",
       "success": true,
       "attempts": 1,
-      "durationMs": 7640,
+      "durationMs": 1239,
       "finalOutput": "offline-ok"
     },
     {
@@ -193,45 +196,49 @@
       "title": "List comprehension",
       "success": true,
       "attempts": 1,
-      "durationMs": 7289,
+      "durationMs": 1336,
       "finalOutput": "1 4 9 16 25"
     },
     {
       "taskId": "task22",
       "category": "data",
       "title": "Sort dict by value",
-      "success": true,
-      "attempts": 1,
-      "durationMs": 8453,
-      "finalOutput": "c\r\nb\r\na"
+      "success": false,
+      "attempts": 0,
+      "errorCategory": "NetworkOrServer",
+      "durationMs": 11,
+      "finalError": "fetch failed"
     },
     {
       "taskId": "task23",
       "category": "algo",
       "title": "Binary search length",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 6175,
-      "finalOutput": "3"
+      "errorCategory": "unauthorized",
+      "durationMs": 45,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task24",
       "category": "basic",
       "title": "String title case",
-      "success": true,
-      "attempts": 1,
-      "durationMs": 8288,
-      "finalOutput": "Code Forge Agent"
+      "success": false,
+      "attempts": 0,
+      "errorCategory": "NetworkOrServer",
+      "durationMs": 5,
+      "finalError": "fetch failed"
     },
     {
       "taskId": "task25",
       "category": "data",
       "title": "Filter positives",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 6149,
-      "finalOutput": "3 5 8"
+      "errorCategory": "unauthorized",
+      "durationMs": 25,
+      "finalError": "unauthorized: valid API token required"
     }
   ],
-  "generatedAt": "2026-09-13T17:15:06.922Z"
+  "generatedAt": "2026-10-24T10:27:52.669Z"
 }

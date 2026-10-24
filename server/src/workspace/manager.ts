@@ -34,11 +34,10 @@ export function resolveSafe(root: string, relativePath: string): string {
   if (!relativePath || relativePath.trim() === "") {
     throw new PathEscapeError("empty path");
   }
-  if (path.isAbsolute(relativePath)) {
+  if (path.isAbsolute(relativePath) || relativePath.startsWith("/") || relativePath.startsWith("\\")) {
     throw new PathEscapeError(`absolute paths not allowed: ${relativePath}`);
   }
-  const normalized = path.normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, "");
-  const full = path.resolve(root, normalized);
+  const full = path.resolve(root, relativePath);
   const rootResolved = path.resolve(root);
   if (full !== rootResolved && !full.startsWith(rootResolved + path.sep)) {
     throw new PathEscapeError(`path escapes workspace: ${relativePath}`);

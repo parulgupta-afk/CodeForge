@@ -169,6 +169,8 @@ export function evaluate(input: EvaluateInput): EvaluatorVerdict {
   let verdict: VerdictKind;
   if (failed.length === 0 && required.length > 0) {
     verdict = "verified";
+  } else if (passed.length > 0 && failed.length > 0) {
+    verdict = "partial";
   } else {
     verdict = "failed";
   }
@@ -178,7 +180,9 @@ export function evaluate(input: EvaluateInput): EvaluatorVerdict {
   const summary =
     verdict === "verified"
       ? `Verified: ${passed.length}/${required.length} checks passed`
-      : `Failed: ${failed.map((f) => f.name).join(", ") || "no checks passed"}`;
+      : verdict === "partial"
+        ? `Partial: ${passed.length} passed, ${failed.length} failed`
+        : `Failed: ${failed.map((f) => f.name).join(", ") || "no checks passed"}`;
 
   return {
     verdict,

@@ -3,18 +3,10 @@ import { RunResponse } from "../types/run";
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:3001";
 
-const API_TOKEN =
-  import.meta.env.VITE_API_TOKEN || "demo-token";
-
 export async function createRun(task: string): Promise<RunResponse> {
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
-  if (API_TOKEN) {
-    headers["Authorization"] = `Bearer ${API_TOKEN}`;
-  }
-
   const res = await fetch(`${API_URL}/api/runs`, {
     method: "POST",
-    headers,
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ task }),
   });
 

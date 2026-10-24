@@ -187,7 +187,7 @@ export async function runRepoAgent(
     const wallDeadline = Date.now() + budget.wallTimeMs;
 
     while (toolCalls < maxToolCalls && Date.now() < wallDeadline) {
-      setState("executing");
+      setState(state === "repairing" ? "executing" : "executing");
 
       const prompt = `${SYSTEM_TOOL_PROMPT}\n\n${memory}\n\nReturn the next action as JSON.`;
       const gen = await generateCode(prompt);
@@ -296,7 +296,7 @@ export async function runRepoAgent(
       }
     }
 
-    if ((state as RepoAgentState) !== "completed" && (state as RepoAgentState) !== "failed") {
+    if (state !== "completed" && state !== "failed") {
       lastError = lastError || "budget_or_tool_limit";
       setState("failed");
     }

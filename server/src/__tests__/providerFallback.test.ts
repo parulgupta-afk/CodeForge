@@ -130,7 +130,6 @@ async function run() {
     process.env.USE_MOCK_LLM = "false";
     process.env.GEMINI_API_KEY = "fake";
     process.env.GROQ_API_KEY = "fake";
-    process.env.ALLOW_MOCK_FALLBACK = "true";
     const restore = mockFetchSequence([
       { status: 500, body: "down" },
       { status: 500, body: "down" },

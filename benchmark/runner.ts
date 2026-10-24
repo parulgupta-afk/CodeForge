@@ -45,18 +45,12 @@ async function loadTasks(): Promise<Task[]> {
   return files.map((f) => JSON.parse(fs.readFileSync(path.join(TASKS_DIR, f), "utf8")));
 }
 
-const API_TOKEN = process.env.CODEFORGE_API_TOKEN || "demo-token";
-
 async function runOne(task: Task): Promise<TaskResult> {
   const start = Date.now();
   try {
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (API_TOKEN) {
-      headers["Authorization"] = `Bearer ${API_TOKEN}`;
-    }
     const res = await fetch(`${API}/api/runs`, {
       method: "POST",
-      headers,
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ task: task.task }),
     });
     const data: any = await res.json();

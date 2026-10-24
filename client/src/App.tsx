@@ -8,6 +8,7 @@ import { MetricsCard } from "./components/MetricsCard";
 import { createRun } from "./services/api";
 import { getSocket, onConnectionState, ConnectionState } from "./services/socket";
 import { JournalLog, RunResponse, StepperStage } from "./types/run";
+import { ArenaPage } from "./pages/ArenaPage";
 
 function nowTime() {
   return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -37,6 +38,7 @@ function buildStepper(result: RunResponse | null, loading: boolean, liveAttempt:
 }
 
 export default function App() {
+  const [view, setView] = useState<"studio" | "arena">("studio");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<RunResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +46,15 @@ export default function App() {
   const [liveAttempt, setLiveAttempt] = useState(0);
   const [connectionState, setConnectionState] = useState<ConnectionState>("disconnected");
   const seenEventKeys = React.useRef(new Set<string>());
+
+  if (view === "arena") {
+    return (
+      <div className="ambient-workspace-bg" style={{ minHeight: "100vh" }}>
+        <TopHeader />
+        <ArenaPage onBack={() => setView("studio")} />
+      </div>
+    );
+  }
 
   useEffect(() => {
     const unsub = onConnectionState(setConnectionState);
@@ -128,17 +139,33 @@ export default function App() {
             <h1 style={{ fontFamily: "Newsreader, Georgia, serif", fontSize: 32, fontWeight: 600, margin: "0 0 6px", color: "#111827" }}>
               Forge your next script
             </h1>
-            <span style={{
-              fontSize: 12,
-              padding: "4px 10px",
-              borderRadius: 999,
-              background: connectionState === "connected" ? "#ecfdf5" : connectionState === "reconnecting" ? "#fffbeb" : "#fef2f2",
-              color: connectionState === "connected" ? "#065f46" : connectionState === "reconnecting" ? "#92400e" : "#991b1b",
-              border: "1px solid #e5e7eb",
-              whiteSpace: "nowrap",
-            }}>
-              {connectionState === "connected" ? "Live: connected" : connectionState === "reconnecting" ? "Live: reconnecting…" : "Live: disconnected"}
-            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <button
+                type="button"
+                onClick={() => setView("arena")}
+                style={{
+                  fontSize: 13,
+                  padding: "6px 12px",
+                  borderRadius: 8,
+                  border: "1px solid #e5e7eb",
+                  background: "#fff",
+                  cursor: "pointer",
+                }}
+              >
+                Arena
+              </button>
+              <span style={{
+                fontSize: 12,
+                padding: "4px 10px",
+                borderRadius: 999,
+                background: connectionState === "connected" ? "#ecfdf5" : connectionState === "reconnecting" ? "#fffbeb" : "#fef2f2",
+                color: connectionState === "connected" ? "#065f46" : connectionState === "reconnecting" ? "#92400e" : "#991b1b",
+                border: "1px solid #e5e7eb",
+                whiteSpace: "nowrap",
+              }}>
+                {connectionState === "connected" ? "Live: connected" : connectionState === "reconnecting" ? "Live: reconnecting…" : "Live: disconnected"}
+              </span>
+            </div>
           </div>
           <p style={{ color: "#6b7280", margin: 0, fontSize: 15 }}>
             Live agent logs · Generate → Execute → Classify → Repair

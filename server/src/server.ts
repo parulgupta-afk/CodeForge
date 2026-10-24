@@ -9,6 +9,7 @@ import express from "express";
 import cors from "cors";
 import runsRouter from "./routes/runs";
 import repoRouter from "./routes/repo";
+import missionsRouter from "./routes/missions";
 import { applySecurity } from "./middleware/security";
 import metricsRouter from "./routes/metrics";
 import { initSocketIO } from "./websocket/io";
@@ -46,8 +47,8 @@ app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
     service: "CodeForge",
-    phase: "evolution-0-4",
-    message: "Phases 0–4: truthful core + repository agent",
+    phase: "evolution-0-5",
+    message: "Phases 0–5: truthful core, repo agent, Engineering Arena",
     features: {
       sandboxMode: process.env.SANDBOX_MODE || "dev",
       llmMode: process.env.LLM_MODE || "live",
@@ -56,12 +57,14 @@ app.get("/api/health", (_req, res) => {
         process.env.ALLOW_MOCK_FALLBACK === "true" ||
         process.env.USE_MOCK_LLM === "true",
       repoAgent: true,
+      arena: true,
     },
   });
 });
 
 app.use("/api/runs", runsRouter);
 app.use("/api/repo", repoRouter);
+app.use("/api/missions", missionsRouter);
 app.use("/api/metrics", metricsRouter);
 
 app.use((_req, res) => {
@@ -91,8 +94,8 @@ async function boot() {
   }
 
   httpServer.listen(PORT, () => {
-    console.log(`🚀 CodeForge Evolution (Phases 0–3) on http://localhost:${PORT}`);
-    console.log(`   WebSocket ready · POST /api/runs`);
+    console.log(`🚀 CodeForge Evolution (Phases 0–5) on http://localhost:${PORT}`);
+    console.log(`   WebSocket ready · POST /api/runs · /api/repo · /api/missions`);
     console.log(`   SANDBOX_MODE=${process.env.SANDBOX_MODE || "dev"} LLM_MODE=${process.env.LLM_MODE || "live"} MEMORY_MODE=${process.env.MEMORY_MODE || "off"}`);
   });
 }

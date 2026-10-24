@@ -1,0 +1,35 @@
+id: silent-frontend
+title: The Silent Frontend
+story: |
+  A pure-Python stand-in for a frontend formatter drops the last item when
+  serialising a list to a query string.
+mode_default: solo
+skill_tags:
+  - edge-cases
+  - correctness
+language: python
+starter:
+  qs.py: |
+    def to_query(params: list) -> str:
+        """Join key=value pairs with &. params is list of (k, v)."""
+        if not params:
+            return ""
+        # BUG: slice drops the last pair
+        parts = [f"{k}={v}" for k, v in params[:-1]]
+        return "&".join(parts)
+visible_tests: |
+  from qs import to_query
+  assert to_query([]) == ""
+  assert to_query([("a", "1")]) == "a=1"
+  assert to_query([("a", "1"), ("b", "2")]) == "a=1&b=2"
+  print("visible_ok")
+hidden_tests: |
+  from qs import to_query
+  assert to_query([("x", "9"), ("y", "8"), ("z", "7")]) == "x=9&y=8&z=7"
+  print("hidden_ok")
+hints:
+  - Check the list slice used when building parts.
+defect:
+  file: qs.py
+  lines: [6, 7]
+  summary: params[:-1] drops the last query pair

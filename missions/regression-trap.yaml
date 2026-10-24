@@ -1,0 +1,33 @@
+id: regression-trap
+title: The Regression Trap
+story: |
+  A "fix" for empty input broke the non-empty path. Restore correct behaviour
+  for both empty and non-empty lists.
+mode_default: agent_arena
+skill_tags:
+  - regression
+  - debugging
+language: python
+starter:
+  stats.py: |
+    def mean(nums: list) -> float:
+        if len(nums) == 0:
+            return 0.0
+        # BUG: introduced during empty-list fix — divides by len-1
+        return sum(nums) / (len(nums) - 1) if len(nums) > 0 else 0.0
+visible_tests: |
+  from stats import mean
+  assert mean([]) == 0.0
+  assert abs(mean([2, 4, 6]) - 4.0) < 1e-9
+  print("visible_ok")
+hidden_tests: |
+  from stats import mean
+  assert abs(mean([10]) - 10.0) < 1e-9
+  assert abs(mean([1, 2, 3, 4]) - 2.5) < 1e-9
+  print("hidden_ok")
+hints:
+  - Empty list is already handled; the non-empty formula is wrong.
+defect:
+  file: stats.py
+  lines: [5, 6]
+  summary: divides by len-1 instead of len

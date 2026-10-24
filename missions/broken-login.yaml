@@ -1,0 +1,42 @@
+id: broken-login
+title: The Broken Login
+story: |
+  Users report they cannot sign in. The auth helper returns the wrong boolean
+  when the password hash matches. Fix the defect without changing the public API.
+mode_default: solo
+skill_tags:
+  - debugging
+  - correctness
+language: python
+starter:
+  auth.py: |
+    def check_password(stored_hash: str, attempt: str) -> bool:
+        """Return True if attempt matches stored_hash (plain demo)."""
+        # BUG: inverted logic
+        return stored_hash != attempt
+
+    def login(username: str, password: str, db: dict) -> bool:
+        if username not in db:
+            return False
+        return check_password(db[username], password)
+visible_tests: |
+  from auth import login
+  db = {"alice": "secret"}
+  assert login("alice", "secret", db) is True
+  assert login("alice", "wrong", db) is False
+  assert login("bob", "secret", db) is False
+  print("visible_ok")
+hidden_tests: |
+  from auth import check_password, login
+  assert check_password("x", "x") is True
+  assert check_password("x", "y") is False
+  db = {"u": "p"}
+  assert login("u", "p", db) is True
+  print("hidden_ok")
+hints:
+  - Look at the comparison in check_password.
+  - Visible tests cover login; hidden tests cover check_password directly.
+defect:
+  file: auth.py
+  lines: [4, 5]
+  summary: inverted equality in check_password

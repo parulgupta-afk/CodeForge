@@ -1,0 +1,44 @@
+id: vanishing-transaction
+title: The Vanishing Transaction
+story: |
+  Ledger balances do not update after a transfer. Amount is subtracted from the
+  source but never added to the destination.
+mode_default: ai_partner
+skill_tags:
+  - debugging
+  - integration
+language: python
+starter:
+  ledger.py: |
+    def transfer(accounts: dict, src: str, dst: str, amount: float) -> dict:
+        if src not in accounts or dst not in accounts:
+            raise KeyError("unknown account")
+        if accounts[src] < amount:
+            raise ValueError("insufficient funds")
+        accounts[src] -= amount
+        # BUG: forgot to credit destination
+        return accounts
+visible_tests: |
+  from ledger import transfer
+  a = {"a": 100.0, "b": 50.0}
+  transfer(a, "a", "b", 30.0)
+  assert a["a"] == 70.0
+  assert a["b"] == 80.0
+  print("visible_ok")
+hidden_tests: |
+  from ledger import transfer
+  a = {"x": 10.0, "y": 0.0}
+  transfer(a, "x", "y", 10.0)
+  assert a["x"] == 0.0 and a["y"] == 10.0
+  try:
+    transfer(a, "x", "y", 1.0)
+    raise SystemExit("should have raised")
+  except ValueError:
+    pass
+  print("hidden_ok")
+hints:
+  - Trace both sides of the transfer.
+defect:
+  file: ledger.py
+  lines: [8, 9]
+  summary: missing credit to destination account

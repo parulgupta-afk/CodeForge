@@ -214,12 +214,14 @@ npm run build
 
 ### HTTP Endpoints
 
-- `POST /api/runs`: Create and launch a new code generation/execution task.
+- `POST /api/runs`: Create and launch a new code generation/execution task:
+
   ```json
   {
     "task": "Compute the first 20 Fibonacci numbers and print them as a JSON list"
   }
   ```
+
 - `GET /api/runs/:id`: Fetch execution status, attempt history, code diffs, and classified errors.
 - `GET /api/metrics`: Retrieve aggregated operator metrics (total runs, success rate, category distribution).
 - `GET /api/health`: Health status endpoint.

@@ -7,7 +7,7 @@ Premium Engineering OS portfolio for software engineering recruiting.
 ## Design hierarchy
 
 | Layer | Share |
-|-------|------|
+| --- | --- |
 | Professional product UI | ~80% |
 | Engineering OS (⌘K, labs, architecture) | ~15% |
 | Discoverable commands | ~5% |
@@ -19,7 +19,7 @@ Palette: obsidian · graphite · ice cyan · subtle lime status.
 ## Flagship systems
 
 | Project | Stack highlights | Links |
-|---------|------------------|-------|
+| --- | --- | --- |
 | **PriceLoop** | FastAPI · PostgreSQL · Stripe · Redis/Celery scaffold | [Source](https://github.com/parulgupta-afk/Priceloop) |
 | **CodeForge** | Express · Socket.IO · Gemini/Groq · Docker sandbox | [Demo](https://code-forge-jade.vercel.app) · [Source](https://github.com/parulgupta-afk/CodeForge) |
 | **PulseOps** | Node · queues · realtime incident workflows | [Source](https://github.com/parulgupta-afk/pulseops) |
@@ -33,7 +33,7 @@ npm ci
 npm run dev
 ```
 
-Open http://localhost:3000
+Open `http://localhost:3000`
 
 ### Quality gates
 
@@ -72,7 +72,7 @@ No database, no paid AI, no paid analytics required for the portfolio site.
 ## Command Center (⌘K / Ctrl+K)
 
 | Command | Action |
-|---------|--------|
+| --- | --- |
 | `help` | 30-second summary |
 | `whoami` | About |
 | `sudo inspect parul` | Recruiter Mode |

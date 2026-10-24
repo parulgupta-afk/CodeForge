@@ -11,14 +11,14 @@ import runsRouter from "./routes/runs";
 import { applySecurity } from "./middleware/security";
 import metricsRouter from "./routes/metrics";
 import { initSocketIO } from "./websocket/io";
+import { ensureSchema } from "./database/schema";
+import { ensureExperienceSchema } from "./memory/experienceStore";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 /**
  * Resolves allowed CORS origins.
- * Reads CORS_ORIGIN (supports single origin or comma-separated list).
- * Defaults to local development frontend origins if unset.
  */
 export function getAllowedOrigins(): string[] | string {
   const envOrigin = process.env.CORS_ORIGIN?.trim();
@@ -44,8 +44,14 @@ app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
     service: "CodeForge",
-    phase: 12,
-    message: "Production security + deployment ready",
+    phase: "evolution-0-3",
+    message: "Truthful persistence, evaluator, experience memory, evaluation lab",
+    features: {
+      sandboxMode: process.env.SANDBOX_MODE || "dev",
+      llmMode: process.env.LLM_MODE || "live",
+      memoryMode: process.env.MEMORY_MODE || "off",
+      allowMockFallback: process.env.ALLOW_MOCK_FALLBACK === "true" || process.env.USE_MOCK_LLM === "true",
+    },
   });
 });
 
@@ -64,8 +70,20 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 const httpServer = http.createServer(app);
 initSocketIO(httpServer, allowedOrigins);
 
-httpServer.listen(PORT, () => {
-  console.log(`🚀 CodeForge server (Phase 9) running on http://localhost:${PORT}`);
-  console.log(`   WebSocket ready`);
-  console.log(`   POST /api/runs`);
-});
+async function boot() {
+  // Phase 0: ensure schema at boot so persistence is real when DATABASE_URL is set
+  try {
+    await ensureSchema();
+    await ensureExperienceSchema();
+  } catch (err: any) {
+    console.warn("[boot] schema init skipped:", err?.message);
+  }
+
+  httpServer.listen(PORT, () => {
+    console.log(`🚀 CodeForge Evolution (Phases 0–3) on http://localhost:${PORT}`);
+    console.log(`   WebSocket ready · POST /api/runs`);
+    console.log(`   SANDBOX_MODE=${process.env.SANDBOX_MODE || "dev"} LLM_MODE=${process.env.LLM_MODE || "live"} MEMORY_MODE=${process.env.MEMORY_MODE || "off"}`);
+  });
+}
+
+boot();

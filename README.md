@@ -1,205 +1,134 @@
 # CodeForge
 
-Autonomous coding agent with sandboxed execution, structured error classification, and bounded self-repair.
+Autonomous coding agent with sandboxed execution.
 
-```text
-Task Brief ──► LLM Code Gen ──► Sandboxed Execution ──► Error Classification ──► Self-Repair (Max 3) ──► Verified Result
+```
+Task → LLM generates Python → execute in sandbox → classify errors → repair (max 3) → result
 ```
 
-> "CodeForge doesn't just generate code — it runs it in an isolated Docker sandbox, classifies runtime errors, and self-repairs within three bounded attempts."
-
----
+Focus: bounded autonomous repair, isolation of untrusted code, measurable reliability.
 
 ## Architecture
 
-```text
-┌─────────────────────────┐          Socket.IO (Live Telemetry)          ┌─────────────────────────┐
-│   React Studio (Vite)   │ ◄──────────────────────────────────────────► │  Express Orchestrator   │
-└─────────────────────────┘                                              └───────────┬─────────────┘
-                                                                                     │
-                       ┌───────────────────────────────┬─────────────────────────────┴─────────────────────────────┐
-                       ▼                               ▼                                                           ▼
-         ┌───────────────────────────┐   ┌───────────────────────────┐                               ┌───────────────────────────┐
-         │       LLM Providers       │   │     Error Classifier      │                               │     Execution Sandbox     │
-         │ ───────────────────────── │   │ ───────────────────────── │                               │ ───────────────────────── │
-         │ • Gemini 2.0 Flash (main) │   │ • Syntax / Runtime        │                               │ • Docker (USE_DOCKER=true)│
-         │ • Groq Llama 3.3 (backup) │   │ • MissingDependency       │                               │   Network: none, non-root │
-         │ • Deterministic Mock Mode │   │ • Timeout / Security      │                               │ • Local Subprocess (dev)  │
-         └───────────────────────────┘   └───────────────────────────┘                               └───────────────────────────┘
+```
+React Studio (Vite) ──Socket.IO──► Express orchestrator
+                                      │
+                         ┌────────────┼────────────┐
+                         ▼            ▼            ▼
+                    Gemini/Groq/Mock  Classifier   Sandbox
+                                                   ├─ Docker (USE_DOCKER=true)
+                                                   └─ Local subprocess (default)
 ```
 
-CodeForge is built around safe execution of untrusted generated code, resilience to model failures, and transparent operator visibility.
+Python-only MVP. Optional PostgreSQL when `DATABASE_URL` is set.
 
----
+## Local setup (Windows)
 
-## Key Features
-
-- **Isolated Docker Sandbox**: Ephemeral container per execution run with dropped Linux capabilities (`CapDrop: ALL`), non-root execution (`nobody`), resource quotas (512MB RAM, 1 CPU, 64 PIDs), read-only code mounts, and complete network isolation (`NetworkMode: none`).
-- **Structured Error Classification**: Fast regex and AST-based classification categorizing errors into `Timeout`, `MissingDependency`, `SyntaxError`, `PermissionDenied`, `NetworkBlocked`, `RuntimeError`, and `UnknownError`.
-- **Bounded Autonomous Repair**: Self-corrects generated code based on classified error feedback, bounded to at most 3 attempts with early exit on non-retryable security errors.
-- **Provider Fallback & Mock Mode**: Automatic failover from Gemini to Groq. Supports `USE_MOCK_LLM=true` for 100% offline development and automated CI without paid credentials or API keys.
-- **Real-Time Telemetry**: Real-time Socket.IO event streaming delivering execution steps, classified logs, duration, and diffs to the web studio.
-- **Optional Run Persistence**: Stores run traces, attempts, and execution metrics in PostgreSQL when configured, or runs purely in-memory.
-
----
-
-## Quick Start (Docker)
-
-To run the complete CodeForge stack (Nginx frontend + Node backend):
-
-```bash
-# Build container images
-docker compose build
-
-# Start services
-docker compose up -d
-
-# View real-time logs
-docker compose logs -f
-
-# Stop services
-docker compose down
-```
-
-- **Web Studio**: `http://localhost:5173`
-- **Backend API & WebSocket**: `http://localhost:3001`
-
----
-
-## Local Development (Without Docker Compose)
-
-### 1. Backend Server
-
-```bash
+```cmd
 cd server
+copy .env.example .env
+notepad .env
+npm install
+npm run dev
 
-# Copy environment configuration
-cp .env.example .env
-
-# Install dependencies and start development server
+cd ..\client
 npm install
 npm run dev
 ```
 
-The server will start on `http://localhost:3001`.
+Open http://localhost:5173
 
-### 2. Frontend Client
+**Canonical backend environment file:** `server/.env` (copy from `server/.env.example`). The backend loads only `server/.env`.
 
-```bash
-cd client
+## Environment variables
 
-# Install dependencies and launch Vite dev server
-npm install
-npm run dev
-```
+| Variable | Required? | Purpose |
+|----------|-----------|---------|
+| `GEMINI_API_KEY` | One of Gemini / Groq / mock | Primary LLM |
+| `GEMINI_MODEL` | No | Default `gemini-2.0-flash` |
+| `GROQ_API_KEY` | Optional | Fallback LLM |
+| `GROQ_MODEL` | No | Default `llama-3.3-70b-versatile` |
+| `USE_MOCK_LLM` | No | `true` for CI / offline / no keys |
+| `PORT` | No | Default `3001` |
+| `CORS_ORIGIN` | No | Allowed frontend origin(s) for Express & Socket.IO CORS (default: `http://localhost:5173,http://127.0.0.1:5173`) |
+| `USE_DOCKER` | No | `true` = Docker sandbox; `false` = local Python |
+| `SANDBOX_IMAGE` | No | Default `python:3.12-slim` |
+| `DATABASE_URL` | No | Enables Postgres persistence |
 
-The studio will be live at `http://localhost:5173`.
+**Mock mode:** set `USE_MOCK_LLM=true` when you have no API keys, for CI, or deterministic runs.
 
----
+## Execution modes
 
-## Environment Variables
+### Development — local subprocess (`USE_DOCKER=false`, default)
 
-All backend settings are configured in `server/.env` (refer to [`server/.env.example`](file:///c:/Users/parul/CodeForge/server/.env.example)):
+- Runs `python` / `python3` in a temp directory
+- Enforces timeout, code size, output limits, and minimal child env (API keys not inherited)
+- **Important:** Local subprocess execution is **not** a security boundary — intended for local dev and solo demos only
 
-| Variable | Required? | Default | Description |
-| --- | --- | --- | --- |
-| `GEMINI_API_KEY` | Optional* | None | Primary LLM provider (Google Gemini) |
-| `GEMINI_MODEL` | No | `gemini-2.0-flash` | Gemini model identifier |
-| `GROQ_API_KEY` | Optional* | None | Automatic fallback LLM provider |
-| `GROQ_MODEL` | No | `llama-3.3-70b-versatile` | Groq model identifier |
-| `USE_MOCK_LLM` | No | `false` | When `true`, uses offline mock generation (no API keys required) |
-| `USE_DOCKER` | No | `false` | When `true`, executes code inside isolated Docker containers |
-| `SANDBOX_IMAGE` | No | `python:3.12-slim` | Docker image tag used for Python sandbox containers |
-| `PORT` | No | `3001` | Backend HTTP & WebSocket port |
-| `DATABASE_URL` | No | None | PostgreSQL connection string for persistent run history |
+### Secure execution — Docker (`USE_DOCKER=true`)
 
-*\*At least one LLM key is needed for live generation. Alternatively, set `USE_MOCK_LLM=true` for testing without API keys.*
+Requires Docker Desktop or a Docker daemon on the same host as the Node process.
+Docker provides the intended isolation layer:
 
----
+- **Network disabled:** `NetworkMode: none`
+- **Resource limits:** Memory (512MB), CPU (1 core), PID limit (64)
+- **Non-root user:** Runs as `nobody` (UID 65534)
+- **Capability restrictions:** Drops `ALL` Linux capabilities, `no-new-privileges`
+- **Filesystem isolation:** Read-only code mount, size-capped tmpfs for `/tmp`
+- **Timeout:** Wall-clock timeout with automatic SIGKILL and container cleanup
 
-## Execution Sandboxing
+*Note: While Docker provides strong container isolation, it is not claimed to be an absolute security guarantee (see [SECURITY.md](./SECURITY.md)).*
 
-CodeForge supports two execution backends:
+If Docker fails at runtime, the server logs a warning and **falls back to local subprocess**.
 
-### 1. Docker Sandbox (`USE_DOCKER=true`, Recommended)
+### docker-compose.yml
 
-Requires Docker Desktop or a running Docker daemon on the host:
+Starts the **API service only**. `USE_DOCKER=false` is intentional (no Docker-in-Docker).
+Compose does **not** by itself provide the secure sandbox. Use host process + `USE_DOCKER=true`.
 
-- **Network Isolation:** `NetworkMode: none` (prevents data exfiltration and external calls)
-- **Hard Resource Quotas:** Memory capped at 512 MB, CPU capped at 1.0 core, process count capped at 64 PIDs
-- **Privilege Stripping:** `CapDrop: ALL`, `no-new-privileges: true`
-- **Unprivileged User:** Executes as `nobody` (UID 65534)
-- **Filesystem Constraints:** Read-only code mount; temporary files restricted to a size-capped `tmpfs` at `/tmp`
-- **Execution Safeguards:** Enforced wall-clock timeout (`SIGKILL`), 256 KB max stdout/stderr cap, and 200 KB max code input payload
+## Tests & CI
 
-### 2. Local Subprocess (`USE_DOCKER=false`, Dev Default)
-
-- Executes Python via child processes in temporary working directories
-- Sanitizes child environment (host API keys and secrets are **not** inherited)
-- Enforces wall-clock timeouts and output truncation
-- *Note: Local subprocess is not a security boundary; use Docker for multi-tenant or untrusted inputs (see [SECURITY.md](file:///c:/Users/parul/CodeForge/SECURITY.md)).*
-
----
-
-## Automated Tests
-
-Run the backend verification suite:
-
-```bash
+```cmd
 cd server
-
-# Run core unit tests (error classifier, orchestrator, provider fallback, local sandbox safety)
-npm test
-
-# Run Docker container isolation tests (requires running Docker daemon)
-npm run test:docker
-
-# Typecheck backend code
-npm run typecheck
-
-# Compile production bundle
-npm run build
+npm test              # runs classifier, orchestrator, provider fallback & local sandbox safety tests
+npm run typecheck     # typechecks all files including tests
+npm run build         # compiles production dist (excludes test files)
+npm run test:docker   # runs Docker container security tests (requires running Docker daemon)
 ```
 
----
+GitHub Actions: install → typecheck → tests (`USE_MOCK_LLM=true`) → build server + client. No real API keys.
 
-## Benchmark & Evaluation
+Local executor tests cover timeout, oversized code, and structured failures. Docker integration tests require a local Docker daemon and are separated cleanly so standard CI does not depend on them.
 
-CodeForge includes a 25-task benchmark suite ([`benchmark/`](file:///c:/Users/parul/CodeForge/benchmark)) evaluating reliability across basic math, algorithms, data processing, intentional failure recovery, and security boundary attacks:
+## Benchmark
 
-| Metric | Result ([`benchmark/results.json`](file:///c:/Users/parul/CodeForge/benchmark/results.json)) |
-| --- | --- |
-| **Total Evaluation Tasks** | 25 |
-| **Overall Pass Rate** | **100%** |
-| **Pass@1 (First-Attempt Success)** | **100%** |
-| **Pass@3 (Within 3 Attempts)** | **100%** |
-| **Average Attempts** | 1.0 |
+Committed `benchmark/results.json` (2026-09-09):
 
-To run the benchmark suite against your local server:
+| Metric | Value |
+|--------|--------|
+| Tasks | 25 |
+| Success rate | 100% |
+| First-attempt success | 100% |
+| Average attempts | 1.0 |
 
-```bash
-# Terminal 1: Start backend
-cd server && npm run dev
+Re-run against your own server; treat numbers as one measured run.
 
-# Terminal 2: Run benchmark runner
-cd benchmark
-npm install
-npm run bench
-```
+## Security
 
----
+See [SECURITY.md](./SECURITY.md).
 
-## Security Model
+- Prefer `USE_DOCKER=true` for any multi-user or exposed host
+- Local subprocess is **not** isolation
+- Docker is stronger than local, not a microVM
 
-For full threat modeling and mitigation details, see [`SECURITY.md`](file:///c:/Users/parul/CodeForge/SECURITY.md):
+## Production notes
 
-- API rate limiting (`express-rate-limit`) on `/api` and `/api/runs`
-- Security response headers via `helmet`
-- JSON payload body limit capped at 1 MB
-- Strict environment sanitization ensuring LLM API keys are never leaked to child runtimes
+- Choose real keys or mock mode deliberately
+- Tighten CORS to your frontend origin
+- Never commit `.env`
+- Prefer Docker sandbox with a real host daemon
+- Add authentication before public exposure (not in this MVP)
 
----
+## Stack
 
-## License
-
-Private project. All rights reserved.
+TypeScript · Express · React · Vite · Socket.IO · Docker · Gemini / Groq · optional PostgreSQL

@@ -297,6 +297,17 @@ function generateMockCode(taskOrPrompt: string): GenerationResult {
 }
 
 // ---------- Public entry ----------
+/**
+ * Phase 0: mock fallback is gated by ALLOW_MOCK_FALLBACK / USE_MOCK_LLM / NODE_ENV=test.
+ * Outside those, provider outage returns provider_unavailable instead of fake success.
+ */
+function mockAllowed(): boolean {
+  if (process.env.USE_MOCK_LLM === "true") return true;
+  if (process.env.ALLOW_MOCK_FALLBACK === "true") return true;
+  if (process.env.NODE_ENV === "test") return true;
+  return false;
+}
+
 export async function generateCode(taskOrPrompt: string): Promise<GenerationResult> {
   if (process.env.USE_MOCK_LLM === "true") {
     return generateMockCode(taskOrPrompt);
@@ -317,10 +328,19 @@ export async function generateCode(taskOrPrompt: string): Promise<GenerationResu
   if (process.env.GROQ_API_KEY) {
     const groq = await generateWithGroq(prompt);
     if (groq.success) return groq;
-    console.warn(`[CodeForge] Groq failed (${groq.error}). Falling back to mock...`);
+    console.warn(`[CodeForge] Groq failed (${groq.error}).`);
   }
 
-  // 3. Mock
-  console.warn("[CodeForge] No working LLM keys. Using mock generator.");
-  return generateMockCode(taskOrPrompt);
+  // 3. Mock only when explicitly allowed
+  if (mockAllowed()) {
+    console.warn("[CodeForge] Using mock generator (ALLOW_MOCK_FALLBACK or test).");
+    return generateMockCode(taskOrPrompt);
+  }
+
+  return {
+    success: false,
+    error: "provider_unavailable: no working LLM provider and mock fallback disabled",
+    provider: "none",
+    model: "none",
+  };
 }

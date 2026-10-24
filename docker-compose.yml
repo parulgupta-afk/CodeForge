@@ -1,73 +1,21 @@
-# CodeForge Multi-Service Docker Compose
-# Run full stack: docker compose up -d
-# Run backend only: docker compose up -d backend
-# Run with PostgreSQL: docker compose --profile db up -d
+# Runs the backend API container only.
+# USE_DOCKER=false is intentional: Docker-in-Docker is not configured.
+# Secure sandboxing needs the Node process on a host with Docker daemon
+# and USE_DOCKER=true in server/.env.
+#
+# Env: server/.env (same names as server/.env.example)
 
 services:
   backend:
     build:
       context: .
       dockerfile: docker/backend.Dockerfile
-    container_name: codeforge-backend
     ports:
       - "3001:3001"
     env_file:
-      - path: server/.env
-        required: false
+      - server/.env
     environment:
       - NODE_ENV=production
       - PORT=3001
-      - CORS_ORIGIN=http://localhost:5173,http://localhost:3000,http://localhost:80
-      # Set USE_DOCKER=true and uncomment the docker.sock volume below
-      # if you want the backend to spawn sandbox containers on host Docker.
       - USE_DOCKER=false
-      - SANDBOX_IMAGE=python:3.12-slim
-    # volumes:
-    #   - /var/run/docker.sock:/var/run/docker.sock
-    healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
     restart: unless-stopped
-
-  frontend:
-    build:
-      context: .
-      dockerfile: docker/frontend.Dockerfile
-      args:
-        - VITE_API_URL=http://localhost:3001
-        - VITE_WS_URL=http://localhost:3001
-    container_name: codeforge-frontend
-    ports:
-      - "5173:80"
-    depends_on:
-      backend:
-        condition: service_healthy
-    restart: unless-stopped
-
-  # Optional PostgreSQL database for run persistence
-  postgres:
-    image: postgres:16-alpine
-    container_name: codeforge-postgres
-    profiles:
-      - full
-      - db
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=codeforge
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
-volumes:
-  postgres_data:

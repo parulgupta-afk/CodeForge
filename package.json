@@ -2,19 +2,9 @@
   "name": "codeforge",
   "version": "0.1.0",
   "private": true,
-  "description": "CodeForge — Autonomous coding agent with Docker-sandboxed execution and self-repair",
   "scripts": {
-    "dev": "npm run dev:server",
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev",
-    "build": "cd server && npm run build && cd ../client && npm run build",
-    "test": "cd server && npm test",
-    "test:docker": "cd server && npm run test:docker",
-    "typecheck": "cd server && npm run typecheck",
-    "bench": "cd benchmark && npm run bench",
-    "docker:build": "docker compose build",
-    "docker:up": "docker compose up -d",
-    "docker:down": "docker compose down",
-    "docker:logs": "docker compose logs -f"
+    "build": "cd server && npm run build && cd ../client && npm run build"
   }
 }

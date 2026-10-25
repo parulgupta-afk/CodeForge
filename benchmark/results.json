@@ -1,130 +1,143 @@
 {
   "total": 25,
-  "successCount": 24,
-  "successRate": 96,
-  "firstAttemptSuccessRate": 96,
-  "withinThreeAttemptsRate": 96,
+  "successCount": 12,
+  "successRate": 48,
+  "firstAttemptSuccessRate": 48,
+  "withinThreeAttemptsRate": 48,
   "averageAttempts": 1,
   "failureCategories": {
-    "quota_exceeded": 1
+    "NetworkOrServer": 13
   },
   "results": [
     {
       "taskId": "task01",
       "category": "basic",
       "title": "Average 1 to 100",
-      "success": true,
-      "attempts": 1,
-      "durationMs": 1775,
-      "finalOutput": "50.5"
+      "success": false,
+      "attempts": 0,
+      "errorCategory": "NetworkOrServer",
+      "durationMs": 132,
+      "finalError": "fetch failed"
     },
     {
       "taskId": "task02",
       "category": "basic",
       "title": "Sum of evens",
-      "success": true,
-      "attempts": 1,
-      "durationMs": 1242,
-      "finalOutput": "650"
+      "success": false,
+      "attempts": 0,
+      "errorCategory": "NetworkOrServer",
+      "durationMs": 14,
+      "finalError": "fetch failed"
     },
     {
       "taskId": "task03",
       "category": "basic",
       "title": "Factorial 10",
-      "success": true,
-      "attempts": 1,
-      "durationMs": 3403,
-      "finalOutput": "3628800"
+      "success": false,
+      "attempts": 0,
+      "errorCategory": "NetworkOrServer",
+      "durationMs": 10,
+      "finalError": "fetch failed"
     },
     {
       "taskId": "task04",
       "category": "basic",
       "title": "Reverse string",
-      "success": true,
-      "attempts": 1,
-      "durationMs": 1316,
-      "finalOutput": "egroFedoC"
+      "success": false,
+      "attempts": 0,
+      "errorCategory": "NetworkOrServer",
+      "durationMs": 10,
+      "finalError": "fetch failed"
     },
     {
       "taskId": "task05",
       "category": "basic",
       "title": "Palindrome",
-      "success": true,
-      "attempts": 1,
-      "durationMs": 1173,
-      "finalOutput": "True"
+      "success": false,
+      "attempts": 0,
+      "errorCategory": "NetworkOrServer",
+      "durationMs": 12,
+      "finalError": "fetch failed"
     },
     {
       "taskId": "task06",
       "category": "data",
       "title": "JSON sum",
-      "success": true,
-      "attempts": 1,
-      "durationMs": 1495,
-      "finalOutput": "15"
+      "success": false,
+      "attempts": 0,
+      "errorCategory": "NetworkOrServer",
+      "durationMs": 11,
+      "finalError": "fetch failed"
     },
     {
       "taskId": "task07",
       "category": "data",
       "title": "Word count",
-      "success": true,
-      "attempts": 1,
-      "durationMs": 1085,
-      "finalOutput": "9"
+      "success": false,
+      "attempts": 0,
+      "errorCategory": "NetworkOrServer",
+      "durationMs": 6,
+      "finalError": "fetch failed"
     },
     {
       "taskId": "task08",
       "category": "data",
       "title": "Unique sorted",
-      "success": true,
-      "attempts": 1,
-      "durationMs": 1329,
-      "finalOutput": "1 2 3 4"
+      "success": false,
+      "attempts": 0,
+      "errorCategory": "NetworkOrServer",
+      "durationMs": 15,
+      "finalError": "fetch failed"
     },
     {
       "taskId": "task09",
       "category": "data",
       "title": "Max value",
-      "success": true,
-      "attempts": 1,
-      "durationMs": 1101,
-      "finalOutput": "56"
+      "success": false,
+      "attempts": 0,
+      "errorCategory": "NetworkOrServer",
+      "durationMs": 28,
+      "finalError": "fetch failed"
     },
     {
       "taskId": "task10",
       "category": "data",
       "title": "Dict keys",
-      "success": true,
-      "attempts": 1,
-      "durationMs": 1065,
-      "finalOutput": "a,b,c"
+      "success": false,
+      "attempts": 0,
+      "errorCategory": "NetworkOrServer",
+      "durationMs": 9,
+      "finalError": "fetch failed"
     },
     {
       "taskId": "task11",
       "category": "data",
       "title": "FizzBuzz sample",
-      "success": true,
-      "attempts": 1,
-      "durationMs": 1339,
-      "finalOutput": "1\r\n2\r\nFizz\r\n4\r\nBuzz\r\nFizz\r\n7\r\n8\r\nFizz\r\nBuzz\r\n11\r\nFizz\r\n13\r\n14\r\nFizzBuzz"
+      "success": false,
+      "attempts": 0,
+      "errorCategory": "NetworkOrServer",
+      "durationMs": 8,
+      "finalError": "fetch failed"
     },
     {
       "taskId": "task12",
       "category": "data",
       "title": "CSV average",
-      "success": true,
-      "attempts": 1,
-      "durationMs": 1356,
-      "finalOutput": "20.0"
+      "success": false,
+      "attempts": 0,
+      "errorCategory": "NetworkOrServer",
+      "durationMs": 8,
+      "finalError": "fetch failed"
     },
     {
       "taskId": "task13",
       "category": "algo",
       "title": "Fibonacci 10",
-      "success": true,
-      "attempts": 1,
-      "durationMs": 1435,
-      "finalOutput": "0 1 1 2 3 5 8 13 21 34"
+      "success": false,
+      "attempts": 0,
+      "errorCategory": "NetworkOrServer",
+      "durationMs": 8,
+      "finalError": "fetch failed"
     },
     {
       "taskId": "task14",
@@ -132,7 +145,7 @@
       "title": "Prime check",
       "success": true,
       "attempts": 1,
-      "durationMs": 1185,
+      "durationMs": 2905,
       "finalOutput": "True"
     },
     {
@@ -141,7 +154,7 @@
       "title": "GCD",
       "success": true,
       "attempts": 1,
-      "durationMs": 1268,
+      "durationMs": 1305,
       "finalOutput": "6"
     },
     {
@@ -150,7 +163,7 @@
       "title": "Missing pandas",
       "success": true,
       "attempts": 1,
-      "durationMs": 3970,
+      "durationMs": 3826,
       "finalOutput": "2.0"
     },
     {
@@ -159,7 +172,7 @@
       "title": "Type error bait",
       "success": true,
       "attempts": 1,
-      "durationMs": 1197,
+      "durationMs": 1403,
       "finalOutput": "5points"
     },
     {
@@ -168,8 +181,8 @@
       "title": "Index error bait",
       "success": true,
       "attempts": 1,
-      "durationMs": 3035,
-      "finalOutput": "Index out of range, recovery successful."
+      "durationMs": 1262,
+      "finalOutput": "Index out of range, recovered successfully."
     },
     {
       "taskId": "task19",
@@ -177,7 +190,7 @@
       "title": "Timeout bait",
       "success": true,
       "attempts": 1,
-      "durationMs": 1295,
+      "durationMs": 1403,
       "finalOutput": "1\r\n2\r\n3\r\n4\r\n5\r\n6\r\n7\r\n8\r\n9\r\n10\r\ndone"
     },
     {
@@ -186,7 +199,7 @@
       "title": "No network",
       "success": true,
       "attempts": 1,
-      "durationMs": 1007,
+      "durationMs": 1002,
       "finalOutput": "offline-ok"
     },
     {
@@ -195,7 +208,7 @@
       "title": "List comprehension",
       "success": true,
       "attempts": 1,
-      "durationMs": 1208,
+      "durationMs": 1622,
       "finalOutput": "1 4 9 16 25"
     },
     {
@@ -204,7 +217,7 @@
       "title": "Sort dict by value",
       "success": true,
       "attempts": 1,
-      "durationMs": 1068,
+      "durationMs": 1387,
       "finalOutput": "c\r\nb\r\na"
     },
     {
@@ -213,7 +226,7 @@
       "title": "Binary search length",
       "success": true,
       "attempts": 1,
-      "durationMs": 1553,
+      "durationMs": 1576,
       "finalOutput": "3"
     },
     {
@@ -222,19 +235,18 @@
       "title": "String title case",
       "success": true,
       "attempts": 1,
-      "durationMs": 1083,
+      "durationMs": 921,
       "finalOutput": "Code Forge Agent"
     },
     {
       "taskId": "task25",
       "category": "data",
       "title": "Filter positives",
-      "success": false,
+      "success": true,
       "attempts": 1,
-      "errorCategory": "quota_exceeded",
-      "durationMs": 6,
-      "finalError": "quota_exceeded"
+      "durationMs": 1233,
+      "finalOutput": "3 5 8"
     }
   ],
-  "generatedAt": "2026-10-25T06:10:49.405Z"
+  "generatedAt": "2026-10-25T11:40:11.640Z"
 }

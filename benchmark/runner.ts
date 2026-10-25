@@ -13,6 +13,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 const API = process.env.CODEFORGE_API || "http://localhost:3001";
+const API_TOKEN = process.env.CODEFORGE_TOKEN || process.env.API_TOKEN || "demo-token";
 const TASKS_DIR = path.join(__dirname, "tasks");
 const RESULTS_FILE = path.join(__dirname, "results.json");
 const DELAY_MS = Number(process.env.BENCH_DELAY_MS || 3500); // pause between tasks to avoid API rate limits
@@ -47,10 +48,13 @@ async function loadTasks(): Promise<Task[]> {
 
 async function runOne(task: Task): Promise<TaskResult> {
   const start = Date.now();
-  try {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (API_TOKEN) {
+      headers["Authorization"] = `Bearer ${API_TOKEN}`;
+    }
     const res = await fetch(`${API}/api/runs`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify({ task: task.task }),
     });
     const data: any = await res.json();

@@ -40,6 +40,7 @@ async function run() {
   console.log("provider fallback tests\n");
 
   const prev = { ...process.env };
+  process.env.NODE_ENV = "test";
 
   // Mock only
   {

@@ -166,10 +166,14 @@ export function evaluate(input: EvaluateInput): EvaluatorVerdict {
     hiddenCheck?.status === "passed" ||
     (hiddenCheck?.status === "not_run" && failed.length === 0);
 
+  const visibleCheck = checks.find((c) => c.name === "visible_tests");
+  const isPartial =
+    visibleCheck?.status === "passed" && hiddenCheck?.status === "failed";
+
   let verdict: VerdictKind;
   if (failed.length === 0 && required.length > 0) {
     verdict = "verified";
-  } else if (passed.length > 0 && failed.length > 0) {
+  } else if (isPartial) {
     verdict = "partial";
   } else {
     verdict = "failed";

@@ -2,7 +2,7 @@
 
 Autonomous coding agent with sandboxed execution.
 
-```
+```text
 Task → LLM generates Python → execute in sandbox → classify errors → repair (max 3) → result
 ```
 
@@ -10,7 +10,7 @@ Focus: bounded autonomous repair, isolation of untrusted code, measurable reliab
 
 ## Architecture
 
-```
+```text
 React Studio (Vite) ──Socket.IO──► Express orchestrator
                                       │
                          ┌────────────┼────────────┐
@@ -36,7 +36,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173
+Open <http://localhost:5173>
 
 **Canonical backend environment file:** `server/.env` (copy from `server/.env.example`). The backend loads only `server/.env`.
 

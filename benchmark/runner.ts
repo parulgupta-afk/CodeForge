@@ -48,6 +48,7 @@ async function loadTasks(): Promise<Task[]> {
 
 async function runOne(task: Task): Promise<TaskResult> {
   const start = Date.now();
+  try {
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (API_TOKEN) {
       headers["Authorization"] = `Bearer ${API_TOKEN}`;

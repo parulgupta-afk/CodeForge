@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
+    "dev": "npx ts-node runner.ts",
     "bench": "npx ts-node runner.ts"
   },
   "devDependencies": {

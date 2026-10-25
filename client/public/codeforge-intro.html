@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>CodeForge Intro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&amp;family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    * {
+      user-select: none;
+      -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #050811;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    canvas {
+      display: block;
+      touch-action: none;
+    }
+    .glass-pill {
+      background: rgba(10, 16, 28, 0.82);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(0, 222, 252, 0.22);
+      box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.05) inset;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-pill:hover {
+      border-color: rgba(0, 222, 252, 0.45);
+      box-shadow: 0 20px 48px -4px rgba(0, 222, 252, 0.22), 0 0 20px rgba(0, 222, 252, 0.15);
+    }
+    .glass-btn {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-btn:hover {
+      transform: translateY(-1.5px);
+      filter: brightness(1.18);
+    }
+    .glass-btn:active {
+      transform: scale(0.96) translateY(0);
+      filter: brightness(1.28);
+    }
+    @keyframes subtleGazeGlow {
+      0%, 100% { opacity: 0.35; filter: blur(54px); transform: translate(-50%, -50%) scale(1); }
+      50% { opacity: 0.75; filter: blur(72px); transform: translate(-50%, -50%) scale(1.15); }
+    }
+    .eye-glow-backdrop {
+      animation: subtleGazeGlow 6s ease-in-out infinite;
+      transition: background-color 0.8s ease, transform 0.25s ease-out;
+    }
+    @keyframes blinkRippleRing {
+      0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.95; border-width: 2.5px; }
+      100% { transform: translate(-50%, -50%) scale(2.6); opacity: 0; border-width: 0.5px; }
+    }
+    .blink-ripple {
+      position: absolute;
+      pointer-events: none;
+      border-radius: 9999px;
+      border: 2px solid #00defc;
+      box-shadow: 0 0 35px #00defc;
+      animation: blinkRippleRing 0.7s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+      z-index: 25;
+    }
+    @keyframes livePulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 10px #00defc; }
+      50% { opacity: 0.45; transform: scale(1.35); box-shadow: 0 0 20px #34d399; }
+    }
+    .live-pulse-dot {
+      animation: livePulseDot 2.2s ease-in-out infinite;
+    }
+    .quote-fade {
+      transition: opacity 0.28s ease, transform 0.28s ease;
+    }
+    .quote-fade.fade-out {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    .quote-fade.fade-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 222, 252, 0.35);
+      border-radius: 4px;
+    }
+  </style>
+
+<!-- CodeForge intro layer (added on top of the untouched eye artwork) -->
+<style id="cf-intro-style">
+  #cfIntro{position:absolute;inset:0;z-index:15;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:clamp(84px,11vh,104px) 24px clamp(96px,12vh,112px);text-align:center;font-family:'Plus Jakarta Sans','JetBrains Mono',sans-serif;transition:opacity .7s ease,transform .7s ease,filter .7s ease}
+  #cfIntro.leaving{opacity:0;transform:scale(1.06);filter:blur(8px)}
+  #cfIntro::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(5,8,17,.82) 0%,rgba(5,8,17,.35) 26%,rgba(5,8,17,0) 40%,rgba(5,8,17,0) 62%,rgba(5,8,17,.7) 100%)}
+  .cf-top,.cf-bottom{display:flex;flex-direction:column;align-items:center;gap:14px;max-width:900px}
+  .cf-sub-m{display:none}
+  @media (min-width:901px){.cf-h1{font-size:clamp(34px,3.6vw,50px);white-space:nowrap}.cf-h1 br{display:none}}
+  @media (max-width:900px){.cf-sub-m{display:block}.cf-sub-d{display:none}}
+  .cf-eyebrow{display:inline-flex;align-items:center;gap:10px;font:600 12px/1 'JetBrains Mono',monospace;letter-spacing:.28em;color:#a3eeff;text-transform:uppercase}
+  .cf-logo{width:30px;height:30px;border:1.5px solid #00defc;border-radius:8px;display:grid;place-items:center;font:700 13px 'JetBrains Mono',monospace;color:#00defc;box-shadow:0 0 18px rgba(0,222,252,.45),inset 0 0 10px rgba(0,222,252,.18)}
+  .cf-h1{margin:0;font-weight:700;font-size:clamp(34px,5.4vw,66px);line-height:1.04;letter-spacing:-.035em;color:#eef6ff;text-shadow:0 4px 40px rgba(0,0,0,.7)}
+  .cf-h1 em{font-style:normal;background:linear-gradient(100deg,#00defc,#a3eeff 38%,#d3bbff 62%,#00defc);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:cfShine 6s linear infinite}
+  .cf-sub{margin:0;font-size:clamp(16px,1.7vw,20px);line-height:1.55;color:#bac9cd;max-width:560px;text-shadow:0 2px 18px rgba(0,0,0,.8)}
+  .cf-cta{pointer-events:auto;position:relative;display:inline-flex;align-items:center;gap:12px;height:58px;padding:0 32px;border-radius:99px;border:1px solid rgba(0,222,252,.7);background:linear-gradient(180deg,#00defc,#00b8d4);color:#021419;font:700 17px 'Plus Jakarta Sans',sans-serif;letter-spacing:.01em;cursor:pointer;overflow:hidden;box-shadow:0 14px 44px -10px rgba(0,222,252,.7),0 0 0 0 rgba(0,222,252,.5);animation:cfRing 2.6s ease-out infinite;transition:transform .25s cubic-bezier(.16,1,.3,1),filter .25s}
+  .cf-cta:hover{transform:translateY(-3px) scale(1.03);filter:brightness(1.1)}
+  .cf-cta:active{transform:scale(.97)}
+  .cf-cta:focus-visible{outline:3px solid #d3bbff;outline-offset:4px}
+  .cf-cta::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-130%);animation:cfSweep 3.8s ease-in-out 2.2s infinite}
+  .cf-cta svg{width:20px;height:20px;transition:transform .25s}
+  .cf-cta:hover svg{transform:translateX(5px)}
+  .cf-key{font:500 12px 'JetBrains Mono',monospace;color:#859397;letter-spacing:.06em}
+  .cf-key kbd{padding:2px 7px;border-radius:6px;border:1px solid rgba(0,222,252,.35);color:#a3eeff;background:rgba(0,0,0,.4);font:600 11px 'JetBrains Mono',monospace}
+  .cf-steps{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:6px}
+  .cf-step{display:inline-flex;align-items:center;gap:10px;padding:9px 16px 9px 10px;border-radius:99px;background:rgba(10,16,28,.78);border:1px solid rgba(0,222,252,.24);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font:500 14px 'Plus Jakarta Sans',sans-serif;color:#dde2f3}
+  .cf-step b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:rgba(0,222,252,.14);border:1px solid rgba(0,222,252,.5);color:#00defc;font:700 12px 'JetBrains Mono',monospace}
+  .cf-link{width:22px;height:2px;background:linear-gradient(90deg,rgba(0,222,252,0),#00defc,rgba(0,222,252,0));background-size:200% 100%;animation:cfFlow 1.8s linear infinite}
+  .cf-scan{position:absolute;left:0;right:0;top:0;height:2px;z-index:16;pointer-events:none;background:linear-gradient(90deg,transparent,#00defc,transparent);box-shadow:0 0 28px 6px rgba(0,222,252,.55);opacity:0;animation:cfScan 1.9s cubic-bezier(.5,0,.2,1) .15s 1 both}
+  .cf-in{opacity:0;animation:cfIn 1s cubic-bezier(.16,1,.3,1) both}
+  @keyframes cfIn{from{opacity:0;transform:translateY(22px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+  @keyframes cfShine{to{background-position:-220% 0}}
+  @keyframes cfFlow{to{background-position:-200% 0}}
+  @keyframes cfSweep{0%,55%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+  @keyframes cfRing{0%{box-shadow:0 14px 44px -10px rgba(0,222,252,.7),0 0 0 0 rgba(0,222,252,.5)}70%,100%{box-shadow:0 14px 44px -10px rgba(0,222,252,.7),0 0 0 18px rgba(0,222,252,0)}}
+  @keyframes cfScan{0%{top:0;opacity:0}10%{opacity:1}90%{opacity:.9}100%{top:100%;opacity:0}}
+  @media (max-width:640px){.cf-link{display:none}.cf-step{font-size:13px}#cfIntro{padding-bottom:128px}}
+  @media (prefers-reduced-motion:reduce){.cf-in,.cf-scan,.cf-cta,.cf-cta::after,.cf-h1 em,.cf-link{animation:none!important;opacity:1}}
+</style>
+</head>
+<body class="relative w-full h-full bg-[#050811] text-[#dde2f3] overflow-hidden flex flex-col justify-between selection:bg-cyan-500/30">
+<!-- Interactive Generative HTML/DOM Syntax Canvas -->
+<canvas class="absolute inset-0 w-full h-full z-0 cursor-crosshair" id="eyeCanvas"></canvas>
+<!-- Atmospheric Ambient Glow Backdrop behind Canvas center -->
+<div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[680px] h-[440px] rounded-full eye-glow-backdrop bg-cyan-500/25 mix-blend-screen z-0" id="ambientGlow"></div>
+<!-- Blink Ripple Anchor Container -->
+<div class="pointer-events-none absolute inset-0 z-20 overflow-hidden" id="rippleContainer"></div>
+<!-- Real-Time Cursor DOM Micro-Inspect Ribbon Tooltip -->
+<div class="pointer-events-none absolute z-30 opacity-0 transition-opacity duration-200" id="cursorInspectTooltip" style="transform: translate(16px, 16px);">
+<div class="glass-pill px-3 py-1.5 rounded-lg border border-cyan-400/50 shadow-2xl backdrop-blur-xl flex items-center space-x-2 text-[11px] font-mono whitespace-nowrap">
+<span class="w-1.5 h-1.5 rounded-full bg-[#00defc] animate-ping"></span>
+<span class="text-cyan-200" id="tooltipContent">&lt;div class="ocular-sclera"&gt;</span>
+</div>
+</div>
+<!-- Header HUD: Telemetry & Real-Time HTML DOM Stream Inspector -->
+<header class="relative z-10 p-4 md:p-6 flex items-start justify-between pointer-events-none">
+<div class="pointer-events-auto max-w-[340px] md:max-w-xl group">
+<div class="flex items-center space-x-2">
+<span class="inline-block w-2.5 h-2.5 rounded-full bg-[#00defc] live-pulse-dot" id="liveDot"></span>
+<h1 class="text-xs uppercase tracking-[0.24em] font-semibold text-[#a3eeff] font-['JetBrains_Mono'] drop-shadow-[0_0_8px_rgba(0,222,252,0.45)]">
+          The Eye Within Code
+        </h1>
+<span class="text-[9px] px-1.5 py-0.5 rounded border border-[#00defc]/40 text-[#00defc] bg-[#00defc]/10 font-mono tracking-wider transition-all duration-300 group-hover:border-[#00defc]/80 group-hover:shadow-[0_0_12px_rgba(0,222,252,0.5)]">DOM MATRIX v3.2</span>
+</div>
+<!-- Active Focus HTML Tag Inspector Stream -->
+<button class="text-left w-full cursor-pointer focus:outline-none mt-2" id="quoteTickerBtn" title="Click to sample next DOM code sentence">
+<p class="text-[11px] font-mono tracking-tight truncate quote-fade bg-black/80 px-3 py-1.5 rounded-md border border-cyan-500/30 backdrop-blur-md shadow-xl hover:border-cyan-400/70 transition-all flex items-center justify-between group/quote" id="activeQuoteTicker">
+<span class="truncate font-mono" id="quoteText"><span class="text-cyan-400">&lt;iris-strata</span> <span class="text-sky-300">radial</span>=<span class="text-emerald-300">"01"</span> <span class="text-sky-300">density</span>=<span class="text-amber-300">"0.98"</span><span class="text-cyan-400">&gt;</span></span>
+<span class="text-[10px] text-cyan-400/90 ml-2 font-mono shrink-0 opacity-75 group-hover/quote:opacity-100 transition-opacity">↻ inspect</span>
+</p>
+</button>
+</div>
+<!-- Live Telemetry Badges -->
+<div class="pointer-events-auto flex items-center space-x-2 glass-pill px-3.5 py-1.5 rounded-xl text-[11px] text-[#bac9cd] tracking-wider border border-[#00defc]/30 font-mono shadow-xl transition-transform hover:scale-[1.02]">
+<div class="flex items-center space-x-1 hover:text-white transition-colors" title="Calculated active HTML element tags in render tree">
+<span class="text-slate-400">NODES</span>
+<span class="text-[#3efce8] font-bold transition-all duration-300" id="nodesBadge">1,824</span>
+</div>
+<span class="text-slate-600">|</span>
+<div class="flex items-center space-x-1 hover:text-white transition-colors" title="Rendered syntax tokens and attribute characters">
+<span class="text-slate-400">CHARS</span>
+<span class="text-[#a3eeff] font-bold transition-all duration-300" id="tokensBadge">54.2k</span>
+</div>
+<span class="text-slate-600 hidden sm:inline">|</span>
+<div class="hidden sm:flex items-center space-x-1 hover:text-white transition-colors" title="Active requestAnimationFrame rate">
+<span class="text-[#00defc] font-bold transition-all duration-200" id="fpsBadge">60</span>
+<span class="text-slate-500 text-[10px]">FPS</span>
+</div>
+<span class="text-slate-600">|</span>
+<div class="flex items-center space-x-1 cursor-pointer hover:text-[#3efce8] transition-colors" id="telemetryZoomPill" title="Current DOM zoom magnification scale">
+<span class="font-bold text-[#d3bbff] transition-all duration-200" id="zoomBadge">1.0x</span>
+</div>
+<span class="text-slate-600 hidden md:inline">|</span>
+<button class="hidden md:flex items-center space-x-1 text-slate-400 hover:text-cyan-300 transition-colors" id="hotkeyBtn" title="Keyboard hotkeys modal [H]">
+<span class="text-[10px] border border-slate-600 px-1 rounded">H</span>
+</button>
+</div>
+</header>
+
+<!-- CodeForge intro layer -->
+<div class="cf-scan" aria-hidden="true"></div>
+<section id="cfIntro" aria-label="CodeForge introduction">
+  <div class="cf-top">
+    <div class="cf-eyebrow cf-in" style="animation-delay:.5s"><span class="cf-logo">[/]</span>CodeForge</div>
+    <h2 class="cf-h1 cf-in" style="animation-delay:.7s">The AI that fixes code<br> <em>and shows its work.</em></h2>
+    <p class="cf-sub cf-sub-m cf-in" style="animation-delay:.95s">It reads your code, fixes the bug, and tests the fix. Every result comes with proof you can see.</p>
+  </div>
+  <div class="cf-bottom">
+    <p class="cf-sub cf-sub-d cf-in" style="animation-delay:.95s">It fixes the bug, tests the fix, and shows you the proof.</p>
+    <button class="cf-cta cf-in" id="cfEnter" type="button" style="animation-delay:1.25s">Enter CodeForge
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+    <div class="cf-key cf-in" style="animation-delay:1.4s">or press <kbd>ENTER</kbd></div>
+    <div class="cf-steps cf-in" style="animation-delay:1.6s" aria-label="How CodeForge works">
+      <span class="cf-step"><b>1</b>It fixes</span><i class="cf-link"></i>
+      <span class="cf-step"><b>2</b>It tests</span><i class="cf-link"></i>
+      <span class="cf-step"><b>3</b>It proves</span>
+    </div>
+  </div>
+</section>
+<!-- Interactive Center Touch Notification -->
+<div class="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center transition-opacity duration-700 opacity-80" id="gestureHint">
+<div class="glass-pill px-4 py-2 rounded-full flex items-center space-x-2.5 text-xs text-[#a3eeff] shadow-2xl border border-cyan-500/40 font-mono animate-pulse">
+<svg class="w-4 h-4 text-[#00defc]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Move cursor to steer ocular gaze · Tap or SPACE to trigger blink</span>
+</div>
+</div>
+<!-- Keyboard Shortcuts & Controls Modal Overlay -->
+<div class="hidden pointer-events-auto fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md transition-opacity" id="hotkeyModal">
+<div class="glass-pill rounded-2xl p-6 border border-cyan-400/40 max-w-sm w-full mx-4 shadow-2xl font-mono text-xs text-slate-200">
+<div class="flex justify-between items-center mb-4 pb-2 border-b border-cyan-500/20">
+<h3 class="text-sm font-bold text-cyan-300 uppercase tracking-wider">Keyboard Hotkeys</h3>
+<button class="text-slate-400 hover:text-white px-2 py-0.5 rounded" id="closeHotkeyModalBtn">✕</button>
+</div>
+<div class="space-y-2.5">
+<div class="flex justify-between items-center">
+<span>Trigger Eyelid Blink</span>
+<kbd class="px-2 py-1 rounded bg-black/60 border border-cyan-500/40 text-cyan-300 font-bold">SPACE</kbd>
+</div>
+<div class="flex justify-between items-center">
+<span>Macro Zoom Inspection (2.5x)</span>
+<kbd class="px-2 py-1 rounded bg-black/60 border border-cyan-500/40 text-cyan-300 font-bold">Z</kbd>
+</div>
+<div class="flex justify-between items-center">
+<span>Switch Syntax Theme</span>
+<kbd class="px-2 py-1 rounded bg-black/60 border border-cyan-500/40 text-cyan-300 font-bold">C</kbd>
+</div>
+<div class="flex justify-between items-center">
+<span>Toggle Auto Blink</span>
+<kbd class="px-2 py-1 rounded bg-black/60 border border-cyan-500/40 text-cyan-300 font-bold">B</kbd>
+</div>
+<div class="flex justify-between items-center">
+<span>Toggle DOM Inspector Drawer</span>
+<kbd class="px-2 py-1 rounded bg-black/60 border border-cyan-500/40 text-cyan-300 font-bold">D / I</kbd>
+</div>
+<div class="flex justify-between items-center">
+<span>Re-synthesize DOM Trees</span>
+<kbd class="px-2 py-1 rounded bg-black/60 border border-cyan-500/40 text-cyan-300 font-bold">R</kbd>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Floating HUD & Controls Bar -->
+<footer class="relative z-20 p-4 pb-6 flex flex-col items-center space-y-3 pointer-events-none">
+<!-- Code Inspector Drawer (DOM & Syntax Stream) -->
+<div class="hidden pointer-events-auto w-full max-w-lg glass-pill rounded-2xl p-4 border border-[#00defc]/35 shadow-2xl transition-all duration-300 font-mono text-xs max-h-[82vh] overflow-y-auto mb-2" id="controlsDrawer">
+<div class="flex justify-between items-center pb-2.5 border-b border-cyan-500/20 mb-3">
+<div class="flex items-center space-x-2">
+<span class="w-2 h-2 rounded-full bg-[#3efce8] animate-ping"></span>
+<span class="uppercase tracking-widest text-[#a3eeff] font-semibold text-[11px]">Ocular DOM Matrix Inspector</span>
+</div>
+<button class="text-slate-400 hover:text-white text-xs px-2 py-0.5 rounded-md hover:bg-white/10 transition-colors" id="closeDrawerBtn">✕</button>
+</div>
+<!-- Quick Toggles -->
+<div class="grid grid-cols-2 gap-2 text-xs mb-3">
+<button class="glass-btn flex items-center justify-between px-3 py-2 rounded-xl bg-[#161c28]/80 border border-slate-700/60 text-slate-200 hover:border-[#00defc]/50 hover:text-white" id="toggleAutoBlinkBtn">
+<span>Auto Blink [B]</span>
+<span class="text-[#00defc] font-bold text-[10px] px-1.5 py-0.5 rounded bg-cyan-950/60 border border-cyan-500/30" id="blinkStateLabel">ON</span>
+</button>
+<button class="glass-btn flex items-center justify-between px-3 py-2 rounded-xl bg-[#161c28]/80 border border-slate-700/60 text-slate-200 hover:border-[#00defc]/50 hover:text-white" id="toggleZoomBtn">
+<span>Macro Zoom [Z]</span>
+<span class="text-[#00defc] font-bold text-[10px] px-1.5 py-0.5 rounded bg-cyan-950/60 border border-cyan-500/30" id="zoomStateLabel">1.0x</span>
+</button>
+<button class="glass-btn col-span-2 flex items-center justify-between px-3 py-2 rounded-xl bg-[#161c28]/80 border border-slate-700/60 text-slate-200 hover:border-[#00defc]/50 hover:text-white" id="switchPaletteBtn">
+<span class="flex items-center space-x-1.5">
+<span class="w-2 h-2 rounded-full bg-[#00defc]" id="paletteDrawerDot"></span>
+<span>Syntax Theme [C]</span>
+</span>
+<span class="text-[#3efce8] font-medium text-[11px] truncate max-w-[200px]" id="paletteNameLabel">Midnight Cyan Matrix</span>
+</button>
+<button class="glass-btn col-span-2 flex items-center justify-center space-x-2 py-2 rounded-xl bg-gradient-to-r from-cyan-950/80 via-blue-950/80 to-purple-950/80 border border-[#00defc]/40 text-[#a3eeff] font-medium hover:border-[#00defc] hover:shadow-[0_0_16px_rgba(0,222,252,0.4)]" id="regenSeedBtn">
+<svg class="w-3.5 h-3.5 text-[#00defc] animate-spin" fill="none" stroke="currentColor" style="animation-duration: 8s;" viewbox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Re-synthesize DOM Trees &amp; Attributes [R]</span>
+</button>
+</div>
+<!-- Zoom Manual Slider -->
+<div class="p-2.5 rounded-xl bg-black/50 border border-white/5 space-y-1.5 mb-3">
+<div class="flex justify-between text-[10px] text-slate-300">
+<span>Zoom Magnification: <span class="text-[#00defc] font-bold" id="sliderZoomVal">1.0x</span></span>
+<span class="text-slate-400">Wide (1.0x) → Macro Inspection (2.5x)</span>
+</div>
+<input class="w-full accent-[#00defc] bg-slate-800 rounded-lg cursor-pointer h-1.5" id="zoomSlider" max="2.5" min="1.0" step="0.05" type="range" value="1.0"/>
+</div>
+<!-- Live Stream Inspector Peek -->
+<div class="rounded-xl bg-black/80 border border-cyan-500/30 p-2.5 text-[10px] space-y-1.5 font-mono text-slate-300">
+<div class="text-[#00defc] font-semibold text-[10px] flex items-center justify-between">
+<span>&lt;!-- LIVING DOM OCULAR STREAM --&gt;</span>
+<span class="text-xs text-[#3efce8]" id="apertureState">Aperture: 100%</span>
+</div>
+<div class="truncate text-cyan-300" id="liveQuoteStream">&lt;iris-strata radial="01" density="0.95" wavelength="488nm"/&gt;</div>
+<div class="truncate text-sky-400" id="liveIrisResonance">&lt;div class="iris-spoke" data-tier="07" data-polar-spoke="84"&gt;</div>
+<div class="truncate text-violet-300" id="livePupilDilation">&lt;span class="pupil-singularity" data-dilation="1.00" data-void="true"&gt;</div>
+<div class="truncate text-amber-300">&lt;light class="specular-caustic" intensity="1.00" data-photon="glint-01"/&gt;</div>
+</div>
+</div>
+<!-- Quick Action Navigation Bar -->
+<div class="pointer-events-auto flex items-center justify-between w-full max-w-md glass-pill px-3 py-2 rounded-2xl border border-[#00defc]/35 shadow-2xl">
+<!-- Blink Action Trigger -->
+<button class="glass-btn flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-[#00defc]/15 border border-[#00defc]/40 text-[#a3eeff] text-xs font-mono font-medium hover:bg-[#00defc]/25 hover:border-[#00defc] hover:shadow-[0_0_16px_rgba(0,222,252,0.4)]" id="triggerBlinkBtn" title="Trigger organic eyelid blink (SPACE)">
+<svg class="w-4 h-4 text-[#00defc] transition-transform duration-200" fill="none" id="blinkBtnIcon" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="font-semibold">Blink</span>
+</button>
+<!-- Macro Zoom Manual Toggle -->
+<button class="glass-btn flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-200 text-xs font-mono hover:bg-white/10 hover:border-[#d3bbff]/50 hover:text-white" id="quickZoomBtn" title="Toggle Macro Zoom inspection view to read HTML tags [Z]">
+<svg class="w-4 h-4 text-[#d3bbff] transition-transform duration-300" fill="none" id="zoomIcon" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span id="quickZoomLabel">Macro Zoom</span>
+</button>
+<!-- Theme Quick Cycle -->
+<button class="glass-btn flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-200 text-xs font-mono hover:bg-white/10 hover:border-[#3efce8]/50 hover:text-white" id="quickPaletteBtn" title="Switch syntax palette [C]">
+<div class="w-3.5 h-3.5 rounded-full bg-[#00defc] shadow-[0_0_10px_#00defc] transition-all duration-500" id="paletteDot"></div>
+<span>Theme</span>
+</button>
+<!-- Settings / Inspector Toggle -->
+<button class="glass-btn flex items-center space-x-1 p-2 px-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:border-[#00defc]/50 hover:bg-[#00defc]/10" id="toggleControlsBtn" title="Open DOM Inspector [D]">
+<svg class="w-4 h-4 text-[#3efce8]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="text-[11px] font-mono font-medium">&lt;/&gt; DOM</span>
+</button>
+</div>
+</footer>
+<!-- Complete High-Density Generative HTML/DOM Syntax Eye Engine -->
+<script>
+    /* ============================================================================
+       1. AUTHENTIC HTML CODE STRINGS & DOM ATTRIBUTE SENTENCES
+       ============================================================================ */
+    const HTML_FIELD_ELEMENTS = [
+      '<section class="orbital-cortex" data-stream="hermite-mesh" aria-hidden="true">',
+      '<div id="perceptual-matrix" data-render="gl-canvas" data-framerate="60fps">',
+      '<canvas data-depth="2.5x" data-stencil="retina-vortex" data-scale="viewport">',
+      '<meta name="neural-lens" content="visual-cortex-stream" charset="utf-8">',
+      '<span class="photonic-carrier" style="opacity: 0.88; filter: blur(0.1px);">',
+      '<link rel="stylesheet" href="https://dom.matrix/retina.v3.css" media="all">',
+      '<path d="M-1,0 Q0,-1.04 1,0" data-hermite="spline" stroke="currentColor"/>',
+      '<template id="ocular-stream" data-streamline="arctan2(dy,dx)">',
+      '<div class="synaptic-field" data-coherence="0.985" data-latency="1.2ms">'
+    ];
+
+    const HTML_SCLERA_ELEMENTS = [
+      '<div class="sclera" data-vein="lateral" data-opacity="0.92">',
+      '<span class="collagen-sheet" data-tension="0.84" data-hydration="78%">',
+      '<path d="M-320,0 C-160,-90 160,-90 320,0" stroke="#bae6fd"/>',
+      '<canvas class="retinal-vascular-mesh" data-density="dense"/>',
+      '<div class="episcleral-network" data-refraction="1.376">',
+      '<span class="tenon-capsule" style="color:#e0f2fe; opacity:0.85;">',
+      '<section class="corneal-periphery" data-curvature="0.824">',
+      '<aside class="anterior-ciliary" data-flow="pulsatile-60fps">'
+    ];
+
+    const HTML_IRIS_RING_ELEMENTS = [
+      '<iris-strata radial="01" density="0.98" wavelength="488nm"/>',
+      '<div class="iris-ring" tier="03" spoke="84" aperture="100%">',
+      '<span class="crypt" freq="84" pigment="cyan-melanin">',
+      '<circle cx="0" cy="0" r="140" fill="none" stroke="var(--cyan)"/>',
+      '<path d="M0,-120 A120,120 0 1,1 0,120" stroke="var(--teal)"/>',
+      '<g class="collarette-stratum" data-dilator="pupillae"/>',
+      '<span class="fuchs-crypt" depth="0.42mm" irid="luminescent">',
+      '<div class="ciliary-zone" data-polar="phi*12" resonance="active">'
+    ];
+
+    const HTML_IRIS_SPOKE_ELEMENTS = [
+      '<span class="spoke" spoke="01" theta="rad"/>',
+      '<line x1="0" y1="52" x2="0" y2="152" stroke="cyan"/>',
+      '<path d="M0,48 L0,150" stroke="#3efce8"/>',
+      '<radial-fiber len="98" flux="photons"/>',
+      '<g spoke-vector="vec2(r,phi)"/>',
+      '<spoke-band freq="488nm" glow="true"/>'
+    ];
+
+    const HTML_LIMBAL_ELEMENTS = [
+      '<boundary class="limbal-ring" radius="164px" contrast="0.96"/>',
+      '<circle cx="0" cy="0" r="162" stroke="#0284c7" stroke-width="2"/>',
+      '<div class="limbal-transition" data-sclera-to-iris="steep"/>',
+      '<path class="limbus-perimeter" d="M0,-162 A162,162 0 1,1 0,162"/>'
+    ];
+
+    const HTML_PUPIL_ELEMENTS = [
+      '<pupil-aperture r="48" dilate="1.0" void="true"/>',
+      '<span class="pupil-singularity" black-hole="0x000"/>',
+      '<portal target="infinite-darkness" photon-sink="0.999"/>',
+      '<circle r="46" fill="#000206" data-event-horizon="true"/>'
+    ];
+
+    const HTML_HIGHLIGHT_ELEMENTS = [
+      '<light class="specular-caustic" intensity="1.00"/>',
+      '<span class="corneal-glint" x="48" y="24" r="8"/>',
+      '<circle cx="28" cy="20" r="10" fill="#ffffff"/>',
+      '<photon-star lumens="420" filter="url(#glow)"/>'
+    ];
+
+    const HTML_EYELID_RIMS = [
+      '<path class="palpebral-arch-upper" d="M-460,0 C-230,-165 230,-165 460,0"/>',
+      '<path class="palpebral-arch-lower" d="M-460,0 C-230,145 230,145 460,0"/>',
+      '<aside class="ciliary-margin" data-meibomian="active"/>',
+      '<div class="orbicularis-oculi" innervate="cranial-VII"/>'
+    ];
+
+    function pickRandom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    /* ============================================================================
+       2. THREE HIGH-CONTRAST SYNTAX THEMES
+       ============================================================================ */
+    const THEMES = [
+      {
+        name: "Midnight Cyan Matrix",
+        canvasBg: "#050811",
+        fieldBase: "#142540",
+        fieldCrease: "#1d4474",
+        scleraBg: "#081324",
+        scleraLines: "#7dd3fc",
+        scleraDim: "#38bdf8",
+        scleraGlow: "rgba(56, 189, 248, 0.4)",
+        irisBg: "#02172b",
+        limbalStroke: "#0284c7",
+        irisColors: ["#00defc", "#3efce8", "#38bdf8", "#818cf8", "#a78bfa", "#59ffec", "#ffffff"],
+        spokeColors: ["#00defc", "#3efce8", "#67e8f9", "#38bdf8", "#ffffff"],
+        pupilBg: "#010306",
+        pupilBorder: "#00defc",
+        pupilTag: "#38bdf8",
+        pupilCenterText: "#00defc",
+        highlightText: "#ffffff",
+        highlightGlow: "#00defc",
+        rimText: "#00defc",
+        accent: "#00defc"
+      },
+      {
+        name: "Bioluminescent Emerald",
+        canvasBg: "#030d0d",
+        fieldBase: "#0d2b27",
+        fieldCrease: "#164e46",
+        scleraBg: "#061816",
+        scleraLines: "#6ee7b7",
+        scleraDim: "#34d399",
+        scleraGlow: "rgba(52, 211, 153, 0.4)",
+        irisBg: "#03201d",
+        limbalStroke: "#059669",
+        irisColors: ["#34d399", "#3efce8", "#2dd4bf", "#10b981", "#a7f3d0", "#a3e635", "#ffffff"],
+        spokeColors: ["#34d399", "#3efce8", "#6ee7b7", "#a7f3d0", "#ffffff"],
+        pupilBg: "#010504",
+        pupilBorder: "#34d399",
+        pupilTag: "#34d399",
+        pupilCenterText: "#3efce8",
+        highlightText: "#ffffff",
+        highlightGlow: "#34d399",
+        rimText: "#3efce8",
+        accent: "#34d399"
+      },
+      {
+        name: "Astral Violet Codex",
+        canvasBg: "#090614",
+        fieldBase: "#271745",
+        fieldCrease: "#422072",
+        scleraBg: "#120a22",
+        scleraLines: "#c084fc",
+        scleraDim: "#a855f7",
+        scleraGlow: "rgba(168, 85, 247, 0.4)",
+        irisBg: "#180a33",
+        limbalStroke: "#7e22ce",
+        irisColors: ["#c084fc", "#e879f9", "#f43f5e", "#818cf8", "#38bdf8", "#f0abfc", "#ffffff"],
+        spokeColors: ["#e879f9", "#d8b4fe", "#c084fc", "#f472b6", "#ffffff"],
+        pupilBg: "#030108",
+        pupilBorder: "#a855f7",
+        pupilTag: "#c084fc",
+        pupilCenterText: "#e879f9",
+        highlightText: "#ffffff",
+        highlightGlow: "#c084fc",
+        rimText: "#c084fc",
+        accent: "#a855f7"
+      }
+    ];
+
+    /* ============================================================================
+       3. EYE ANATOMY & CUBIC HERMITE STREAMLINES
+       ============================================================================ */
+    function evalEyelidCurves(u, openness, geom) {
+      const uC = Math.max(-1.0, Math.min(1.0, u));
+      const env = Math.pow(Math.max(0.0, 1.0 - uC * uC), 0.76);
+      const upperArch = 1.0 - 0.10 * uC - 0.05 * (uC * uC);
+      const lowerArch = 0.92 + 0.12 * uC - 0.04 * (uC * uC);
+
+      let yUpperOpen = -geom.eyeHalfH * 1.08 * env * upperArch;
+      let yLowerOpen = geom.eyeHalfH * 0.94 * env * lowerArch;
+
+      const medialDip = 0.08 * geom.eyeHalfH * Math.exp(-Math.pow((uC + 0.88) / 0.22, 2));
+      const lateralSweep = -0.05 * geom.eyeHalfH * Math.exp(-Math.pow((uC - 0.86) / 0.25, 2));
+      const cornerLine = medialDip + lateralSweep;
+
+      yUpperOpen += cornerLine;
+      yLowerOpen += cornerLine;
+
+      const yClosed = geom.eyeHalfH * 0.12 * env + cornerLine;
+      const t = Math.max(0.0, Math.min(1.0, openness));
+
+      return {
+        upper: yClosed * (1.0 - t) + yUpperOpen * t,
+        lower: yClosed * (1.0 - t) + yLowerOpen * t
+      };
+    }
+
+    function evalFieldStreamlineY(x, baseYOffset, geom) {
+      const u = (x - geom.centerX) / geom.eyeHalfW;
+      const gaussianBell = Math.exp(-0.5 * Math.pow(u / 0.80, 2));
+      const normY = Math.abs(baseYOffset) / Math.max(1.0, geom.eyeHalfH);
+      const distAtten = Math.exp(-normY / 2.0);
+      const archPush = baseYOffset * 0.40 * gaussianBell * distAtten;
+      return geom.centerY + baseYOffset + archPush;
+    }
+
+    /* ============================================================================
+       4. MAIN GENERATIVE EYE ENGINE
+       ============================================================================ */
+    class EyeCodeArtwork {
+      constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        this.themeIdx = 0;
+        this.autoBlink = true;
+        this.currentZoom = 1.0;
+        this.targetZoom = 1.0;
+
+        // Blink state
+        this.isBlinking = false;
+        this.blinkStart = 0;
+        this.closeDur = 0.11;
+        this.holdDur = 0.035;
+        this.openDur = 0.19;
+        this.nextBlinkTime = performance.now() + 3800;
+        this.openness = 1.0;
+
+        // Gaze tracking
+        this.gazeX = 0;
+        this.gazeY = 0;
+        this.targetGazeX = 0;
+        this.targetGazeY = 0;
+        this.gazeVelX = 0;
+        this.gazeVelY = 0;
+        this.lastPointerTime = performance.now();
+        this.pointerPos = { x: 0, y: 0 };
+
+        // Data arrays
+        this.fieldLines = [];
+        this.scleraLines = [];
+        this.limbalTokens = [];
+        this.irisRings = [];
+        this.irisSpokes = [];
+        this.pupilRings = [];
+        this.highlights = [];
+        this.eyelidRims = [];
+
+        this.fpsHistory = [];
+        this.lastFrameTime = performance.now();
+
+        this.resize();
+        this.bindEvents();
+        this.buildDomCodeArtwork();
+      }
+
+      resize() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        this.w = window.innerWidth;
+        this.h = window.innerHeight;
+        this.canvas.width = this.w * dpr;
+        this.canvas.height = this.h * dpr;
+        this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+        this.ctx.scale(dpr, dpr);
+
+        const baseDim = Math.min(this.w, this.h);
+        const scale = Math.max(0.85, Math.min(this.w / 440.0, this.h / 860.0) * 1.15);
+
+        this.geom = {
+          screenW: this.w,
+          screenH: this.h,
+          centerX: this.w * 0.5,
+          centerY: this.h * 0.48,
+          eyeHalfW: Math.min(this.w * 0.44, 460),
+          eyeHalfH: Math.min(this.h * 0.20, 175),
+          irisRadius: Math.min(baseDim * 0.26, 160),
+          pupilRadius: Math.min(baseDim * 0.26 * 0.36, 56),
+          scale
+        };
+      }
+
+      buildDomCodeArtwork() {
+        const g = this.geom;
+        let nodeCount = 0;
+        let charCount = 0;
+
+        // 1. Virtual Background Typography Grid
+        this.fieldLines = [];
+        const virtualW = g.screenW * 1.4;
+        const virtualH = g.screenH * 1.4;
+        const rowSpacing = Math.max(16.0, 19.0 * g.scale);
+        const yLimit = virtualH * 0.5;
+
+        for (let baseY = -yLimit; baseY <= yLimit; baseY += rowSpacing) {
+          const rIdx = Math.floor((baseY + yLimit) / rowSpacing);
+          const fsize = rIdx % 3 === 0 ? 10.5 * g.scale : 9.0 * g.scale;
+          let curX = -virtualW * 0.5 + (Math.random() * 20);
+
+          while (curX < virtualW * 0.5) {
+            const rawElement = pickRandom(HTML_FIELD_ELEMENTS);
+            const approxW = rawElement.length * fsize * 0.60;
+            const wx = g.centerX + curX + approxW * 0.5;
+            const wy = evalFieldStreamlineY(wx, baseY, g);
+            const slope = (evalFieldStreamlineY(wx + 10, baseY, g) - evalFieldStreamlineY(wx - 10, baseY, g)) / 20.0;
+            const angle = Math.atan(slope);
+
+            const uRel = (wx - g.centerX) / g.eyeHalfW;
+            const dy = wy - g.centerY;
+            const curves = evalEyelidCurves(uRel, 1.0, g);
+
+            let isNearCrease = false;
+            if (Math.abs(uRel) <= 1.08 && (curves.upper - 36 * g.scale) <= dy && dy <= (curves.lower + 36 * g.scale)) {
+              isNearCrease = true;
+            }
+
+            this.fieldLines.push({
+              text: rawElement,
+              wx, wy,
+              fsize,
+              angle,
+              isNearCrease,
+              phase: Math.random() * Math.PI * 2,
+              alpha: isNearCrease ? 0.70 : 0.35
+            });
+
+            nodeCount++;
+            charCount += rawElement.length;
+            curX += approxW + (16.0 * g.scale);
+          }
+        }
+
+        // 2. Ordered Anatomical Sclera Strings (Eyeball White / Palpebral Interior)
+        this.scleraLines = [];
+        const nScleraRows = 24;
+        for (let r = 0; r < nScleraRows; r++) {
+          const vFrac = (r + 0.5) / nScleraRows;
+          const fsize = Math.max(8.5, (9.0 + 2.0 * Math.sin(vFrac * Math.PI)) * g.scale);
+          let u = -0.95;
+
+          while (u < 0.95) {
+            const sentence = pickRandom(HTML_SCLERA_ELEMENTS);
+            const approxW = sentence.length * fsize * 0.61;
+            const du = (approxW + 12.0 * g.scale) / g.eyeHalfW;
+            const uMid = u + du * 0.5;
+
+            if (uMid > 0.95) break;
+
+            const cOpen = evalEyelidCurves(uMid, 1.0, g);
+            const heightSpan = cOpen.lower - cOpen.upper;
+
+            if (heightSpan > fsize * 0.8) {
+              const wyRel = cOpen.upper + vFrac * heightSpan;
+              const wxRel = uMid * g.eyeHalfW;
+
+              const cPrev = evalEyelidCurves(uMid - 0.03, 1.0, g);
+              const cNext = evalEyelidCurves(uMid + 0.03, 1.0, g);
+              const y0 = cPrev.upper + vFrac * (cPrev.lower - cPrev.upper);
+              const y2 = cNext.upper + vFrac * (cNext.lower - cNext.upper);
+              const slope = (y2 - y0) / (0.06 * g.eyeHalfW);
+              const angle = Math.atan(slope);
+
+              // Contrast falloff: brighter towards center, subtly shaded near lids
+              const distCenter = Math.hypot(uMid * 1.05, (vFrac - 0.5) * 1.5);
+              const brightness = Math.max(0.65, 1.25 - 0.55 * distCenter);
+
+              this.scleraLines.push({
+                text: sentence,
+                wxRel, wyRel,
+                fsize, angle,
+                brightness,
+                driftPhase: Math.random() * Math.PI * 2
+              });
+
+              nodeCount++;
+              charCount += sentence.length;
+            }
+            u += du;
+          }
+        }
+
+        // 3. Limbal Ring Boundary Tokens (Distinct outer boundary circle between iris & sclera)
+        this.limbalTokens = [];
+        const nLimbal = 36;
+        const limbalRadius = g.irisRadius * 1.02;
+        for (let i = 0; i < nLimbal; i++) {
+          const angle = (i / nLimbal) * Math.PI * 2;
+          const token = pickRandom(HTML_LIMBAL_ELEMENTS);
+          this.limbalTokens.push({
+            text: token,
+            angle,
+            radius: limbalRadius,
+            fsize: Math.max(7.5, 8.5 * g.scale)
+          });
+          nodeCount++;
+          charCount += token.length;
+        }
+
+        // 4. Concentric Iris Rings (Strict polar coordinate stepped concentric circles from pupil to iris edge)
+        this.irisRings = [];
+        const nRings = 11;
+        for (let ringIdx = 0; ringIdx < nRings; ringIdx++) {
+          const tRing = ringIdx / (nRings - 1);
+          // Radius strictly stepped from pupil border to iris edge
+          const rad = g.pupilRadius + 6 + tRing * (g.irisRadius - g.pupilRadius - 10);
+          const fsize = Math.max(8.0, (8.5 + (1.0 - tRing) * 2.0) * g.scale);
+          const circumference = 2 * Math.PI * rad;
+          const ringSpeed = (ringIdx % 2 === 0 ? 1 : -1) * (0.00015 + (1.0 - tRing) * 0.00025);
+
+          let curTheta = (ringIdx * 0.45);
+          const endTheta = curTheta + Math.PI * 2;
+
+          while (curTheta < endTheta) {
+            const rawTag = pickRandom(HTML_IRIS_RING_ELEMENTS);
+            const wLen = rawTag.length * fsize * 0.60;
+            const dTheta = (wLen + 10.0 * g.scale) / rad;
+            const thMid = curTheta + dTheta * 0.5;
+
+            if (thMid > endTheta) break;
+
+            this.irisRings.push({
+              text: rawTag,
+              rad,
+              thMid,
+              baseTh: thMid,
+              fsize,
+              tRing,
+              ringIdx,
+              speed: ringSpeed,
+              colorIdx: (ringIdx + Math.floor(thMid * 2.5)) % THEMES[0].irisColors.length
+            });
+
+            nodeCount++;
+            charCount += rawTag.length;
+            curTheta += dTheta;
+          }
+        }
+
+        // 5. Radial Iris Spokes (72 evenly spaced spokes radiating from pupil outward)
+        this.irisSpokes = [];
+        const nSpokes = 72;
+        for (let s = 0; s < nSpokes; s++) {
+          const baseTheta = (s / nSpokes) * Math.PI * 2;
+          const spokeTag = pickRandom(HTML_IRIS_SPOKE_ELEMENTS);
+          const fsize = Math.max(7.0, (7.5 + (s % 3 === 0 ? 1.0 : 0.0)) * g.scale);
+          const rInner = g.pupilRadius + 8;
+          const rOuter = g.irisRadius - 6;
+
+          this.irisSpokes.push({
+            text: spokeTag,
+            rInner,
+            rOuter,
+            rMid: (rInner + rOuter) * 0.5,
+            baseTheta,
+            fsize,
+            alpha: 0.85 + (s % 2 === 0 ? 0.15 : 0.0),
+            colorIdx: s % THEMES[0].spokeColors.length
+          });
+
+          nodeCount++;
+          charCount += spokeTag.length;
+        }
+
+        // 6. Pupil Aperture Margin & Singularity Void Rings
+        this.pupilRings = [];
+        const pupilSteps = [0.92, 0.75, 0.55, 0.35];
+        pupilSteps.forEach((pFrac, idx) => {
+          const rad = g.pupilRadius * pFrac;
+          const fsize = Math.max(7.2, (7.5 + (1.0 - pFrac) * 2.0) * g.scale);
+          let th = (idx * 0.6);
+          const thEnd = th + Math.PI * 2;
+          const pSpeed = (idx % 2 === 0 ? 0.00018 : -0.00018);
+
+          while (th < thEnd) {
+            const pTag = pickRandom(HTML_PUPIL_ELEMENTS);
+            const wLen = pTag.length * fsize * 0.60;
+            const dTh = Math.max(0.40, (wLen + 8.0 * g.scale) / Math.max(14.0, rad));
+            const thMid = th + dTh * 0.5;
+
+            if (thMid > thEnd) break;
+
+            this.pupilRings.push({
+              text: pTag,
+              rad,
+              thMid,
+              baseTh: thMid,
+              speed: pSpeed,
+              fsize,
+              isRim: idx === 0
+            });
+
+            nodeCount++;
+            charCount += pTag.length;
+            th += dTh;
+          }
+        });
+
+        // 7. Corneal Specular Highlights / Glints (Life glints)
+        this.highlights = [];
+        const hlTags = HTML_HIGHLIGHT_ELEMENTS;
+        for (let i = 0; i < hlTags.length; i++) {
+          const row = Math.floor(i / 2) - 0.8;
+          const col = (i % 2) - 0.5;
+          const fsize = Math.max(8.5, 9.8 * g.scale);
+
+          this.highlights.push({
+            text: hlTags[i],
+            row, col,
+            fsize,
+            alpha: 0.98
+          });
+
+          nodeCount++;
+          charCount += hlTags[i].length;
+        }
+
+        // 8. Eyelid Contours & Margin Rims
+        this.eyelidRims = [];
+        [-1, 1].forEach((dir) => {
+          const isUpper = (dir === -1);
+          let u = -0.96;
+          const fsize = Math.max(9.5, (isUpper ? 11.0 : 9.5) * g.scale);
+
+          while (u < 0.96) {
+            const rawRim = pickRandom(HTML_EYELID_RIMS);
+            const approxW = rawRim.length * fsize * 0.61;
+            const du = (approxW + 10.0 * g.scale) / g.eyeHalfW;
+            const uMid = u + du * 0.5;
+
+            if (uMid > 0.96) break;
+
+            this.eyelidRims.push({
+              text: rawRim,
+              u: uMid,
+              isUpper,
+              vOffset: isUpper ? -8.0 * g.scale : 8.0 * g.scale,
+              fsize
+            });
+
+            nodeCount++;
+            charCount += rawRim.length;
+            u += du;
+          }
+        });
+
+        // Update telemetry counters
+        const nBadge = document.getElementById("nodesBadge");
+        if (nBadge) nBadge.innerText = nodeCount.toLocaleString();
+
+        const tBadge = document.getElementById("tokensBadge");
+        if (tBadge) tBadge.innerText = (charCount > 1000 ? (charCount / 1000).toFixed(1) + 'k' : charCount);
+
+        this.cycleQuoteText();
+      }
+
+      cycleQuoteText() {
+        const quoteEl = document.getElementById("activeQuoteTicker");
+        const quoteTxt = document.getElementById("quoteText");
+        const streamEl = document.getElementById("liveQuoteStream");
+        const nextTag = pickRandom(HTML_IRIS_RING_ELEMENTS.concat(HTML_SCLERA_ELEMENTS));
+
+        if (quoteEl && quoteTxt) {
+          quoteEl.classList.add("fade-out");
+          setTimeout(() => {
+            const formatted = nextTag
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/([a-zA-Z0-9_-]+)=/g, '<span class="text-sky-300">$1</span>=')
+              .replace(/"([^"]*)"/g, '"<span class="text-amber-300">$1</span>"');
+            quoteTxt.innerHTML = formatted;
+            quoteEl.classList.remove("fade-out");
+            quoteEl.classList.add("fade-in");
+            setTimeout(() => quoteEl.classList.remove("fade-in"), 300);
+          }, 200);
+        }
+        if (streamEl) {
+          streamEl.innerText = nextTag;
+        }
+      }
+
+      spawnBlinkRipple(x, y) {
+        const container = document.getElementById("rippleContainer");
+        if (!container) return;
+        const ripple = document.createElement("div");
+        ripple.className = "blink-ripple";
+        const th = THEMES[this.themeIdx];
+        ripple.style.left = `${x || this.geom.centerX + this.gazeX}px`;
+        ripple.style.top = `${y || this.geom.centerY + this.gazeY}px`;
+        ripple.style.width = `${this.geom.irisRadius * 2.2}px`;
+        ripple.style.height = `${this.geom.eyeHalfH * 1.8}px`;
+        ripple.style.borderColor = th.accent;
+        ripple.style.boxShadow = `0 0 45px ${th.accent}`;
+        container.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 700);
+
+        const bIcon = document.getElementById("blinkBtnIcon");
+        if (bIcon) {
+          bIcon.style.transform = "scaleY(0.2)";
+          setTimeout(() => { bIcon.style.transform = "scaleY(1)"; }, 220);
+        }
+      }
+
+      triggerBlink(allowDouble = true) {
+        const now = performance.now();
+        this.isBlinking = true;
+        this.blinkStart = now;
+        this.closeDur = 0.11 + Math.random() * 0.03;
+        this.holdDur = 0.035 + Math.random() * 0.02;
+        this.openDur = 0.19 + Math.random() * 0.04;
+        this.nextBlinkTime = now + 4200 + Math.random() * 2500;
+      }
+
+      toggleMacroZoom() {
+        if (this.targetZoom > 1.2) {
+          this.targetZoom = 1.0;
+        } else {
+          this.targetZoom = 2.5;
+        }
+        this.updateZoomLabels();
+      }
+
+      updateZoomLabels() {
+        const zLbl = document.getElementById("quickZoomLabel");
+        if (zLbl) zLbl.innerText = this.targetZoom > 1.2 ? "Wide (1.0x)" : "Macro Zoom";
+        
+        const zState = document.getElementById("zoomStateLabel");
+        if (zState) zState.innerText = `${this.targetZoom.toFixed(1)}x`;
+
+        const slider = document.getElementById("zoomSlider");
+        if (slider) slider.value = this.targetZoom;
+
+        const sv = document.getElementById("sliderZoomVal");
+        if (sv) sv.innerText = `${this.targetZoom.toFixed(1)}x`;
+      }
+
+      cycleTheme() {
+        this.themeIdx = (this.themeIdx + 1) % THEMES.length;
+        const th = THEMES[this.themeIdx];
+
+        document.body.style.backgroundColor = th.canvasBg;
+
+        const lbl = document.getElementById("paletteNameLabel");
+        if (lbl) lbl.innerText = th.name;
+
+        const glow = document.getElementById("ambientGlow");
+        if (glow) {
+          glow.style.backgroundColor = th.accent;
+          glow.style.boxShadow = `0 0 70px ${th.accent}`;
+        }
+
+        const dot = document.getElementById("paletteDot");
+        if (dot) {
+          dot.style.background = th.accent;
+          dot.style.boxShadow = `0 0 12px ${th.accent}`;
+        }
+
+        const dDot = document.getElementById("paletteDrawerDot");
+        if (dDot) dDot.style.background = th.accent;
+
+        const liveDot = document.getElementById("liveDot");
+        if (liveDot) {
+          liveDot.style.background = th.accent;
+          liveDot.style.boxShadow = `0 0 10px ${th.accent}`;
+        }
+
+        const resEl = document.getElementById("liveIrisResonance");
+        if (resEl) {
+          resEl.innerText = `<div class="iris-spoke" theme="${th.name.toLowerCase().replace(/ /g, '_')}" accent="${th.accent}">`;
+        }
+
+        this.buildDomCodeArtwork();
+      }
+
+      toggleDrawer(force) {
+        const drawer = document.getElementById("controlsDrawer");
+        if (!drawer) return;
+        if (force !== undefined) {
+          if (force) drawer.classList.remove("hidden");
+          else drawer.classList.add("hidden");
+        } else {
+          drawer.classList.toggle("hidden");
+        }
+      }
+
+      toggleHotkeyModal(show) {
+        const modal = document.getElementById("hotkeyModal");
+        if (!modal) return;
+        if (show !== undefined) {
+          if (show) modal.classList.remove("hidden");
+          else modal.classList.add("hidden");
+        } else {
+          modal.classList.toggle("hidden");
+        }
+      }
+
+      bindEvents() {
+        window.addEventListener('resize', () => {
+          this.resize();
+          this.buildDomCodeArtwork();
+        });
+
+        const onPointerMove = (clientX, clientY) => {
+          this.pointerPos.x = clientX;
+          this.pointerPos.y = clientY;
+          const nx = (clientX - this.w * 0.5) / (this.w * 0.5);
+          const ny = (clientY - this.h * 0.5) / (this.h * 0.5);
+          // Anatomical human eye movement limits
+          const maxGx = this.geom.eyeHalfW * 0.26;
+          const maxGy = this.geom.eyeHalfH * 0.22;
+          this.targetGazeX = Math.max(-maxGx, Math.min(maxGx, nx * maxGx));
+          this.targetGazeY = Math.max(-maxGy, Math.min(maxGy, ny * maxGy));
+          this.lastPointerTime = performance.now();
+
+          // Tooltip micro-inspector
+          const tooltip = document.getElementById("cursorInspectTooltip");
+          const tContent = document.getElementById("tooltipContent");
+          if (tooltip && tContent) {
+            const distEye = Math.hypot(clientX - (this.geom.centerX + this.gazeX), clientY - (this.geom.centerY + this.gazeY));
+            if (distEye < this.geom.irisRadius * 1.05) {
+              tooltip.style.left = `${clientX}px`;
+              tooltip.style.top = `${clientY}px`;
+              tooltip.style.opacity = '1';
+
+              if (distEye < this.geom.pupilRadius * 1.05) {
+                tContent.innerHTML = `&lt;<span class="text-cyan-300">pupil-aperture</span> r="<span class="text-amber-300">48</span>"&gt;`;
+              } else {
+                tContent.innerHTML = `&lt;<span class="text-cyan-300">iris-strata</span> r="<span class="text-emerald-300">${Math.round(distEye)}px</span>"&gt;`;
+              }
+            } else if (distEye < this.geom.eyeHalfW) {
+              tooltip.style.left = `${clientX}px`;
+              tooltip.style.top = `${clientY}px`;
+              tooltip.style.opacity = '0.9';
+              tContent.innerHTML = `&lt;<span class="text-cyan-300">sclera</span> vein="<span class="text-sky-300">lateral</span>"&gt;`;
+            } else {
+              tooltip.style.opacity = '0';
+            }
+          }
+        };
+
+        this.canvas.addEventListener('pointerdown', (e) => {
+          onPointerMove(e.clientX, e.clientY);
+          this.triggerBlink(false);
+          this.spawnBlinkRipple(e.clientX, e.clientY);
+          const hint = document.getElementById("gestureHint");
+          if (hint) hint.style.opacity = '0';
+        });
+
+        window.addEventListener('pointermove', (e) => {
+          onPointerMove(e.clientX, e.clientY);
+        });
+
+        window.addEventListener('keydown', (e) => {
+          const key = e.key.toLowerCase();
+          if (e.code === 'Space') {
+            e.preventDefault();
+            this.triggerBlink(false);
+            this.spawnBlinkRipple();
+          } else if (key === 'b') {
+            this.autoBlink = !this.autoBlink;
+            const lbl = document.getElementById("blinkStateLabel");
+            if (lbl) lbl.innerText = this.autoBlink ? "ON" : "OFF";
+          } else if (key === 'z') {
+            this.toggleMacroZoom();
+          } else if (key === 'c') {
+            this.cycleTheme();
+          } else if (key === 'r') {
+            this.buildDomCodeArtwork();
+          } else if (key === 'd' || key === 'i') {
+            this.toggleDrawer();
+          } else if (key === 'h') {
+            this.toggleHotkeyModal();
+          } else if (key === 'escape') {
+            this.toggleHotkeyModal(false);
+            this.toggleDrawer(false);
+          }
+        });
+
+        document.getElementById("triggerBlinkBtn")?.addEventListener('click', () => {
+          this.triggerBlink(false);
+          this.spawnBlinkRipple();
+        });
+
+        document.getElementById("quickZoomBtn")?.addEventListener('click', () => {
+          this.toggleMacroZoom();
+          const zIcon = document.getElementById("zoomIcon");
+          if (zIcon) {
+            zIcon.style.transform = "scale(1.25) rotate(15deg)";
+            setTimeout(() => { zIcon.style.transform = "scale(1) rotate(0deg)"; }, 220);
+          }
+        });
+
+        document.getElementById("toggleZoomBtn")?.addEventListener('click', () => this.toggleMacroZoom());
+        document.getElementById("telemetryZoomPill")?.addEventListener('click', () => this.toggleMacroZoom());
+        document.getElementById("toggleAutoBlinkBtn")?.addEventListener('click', () => {
+          this.autoBlink = !this.autoBlink;
+          const lbl = document.getElementById("blinkStateLabel");
+          if (lbl) lbl.innerText = this.autoBlink ? "ON" : "OFF";
+        });
+
+        document.getElementById("switchPaletteBtn")?.addEventListener('click', () => this.cycleTheme());
+        document.getElementById("quickPaletteBtn")?.addEventListener('click', () => this.cycleTheme());
+        document.getElementById("regenSeedBtn")?.addEventListener('click', () => this.buildDomCodeArtwork());
+        document.getElementById("quoteTickerBtn")?.addEventListener('click', () => this.cycleQuoteText());
+        document.getElementById("toggleControlsBtn")?.addEventListener('click', () => this.toggleDrawer());
+        document.getElementById("closeDrawerBtn")?.addEventListener('click', () => this.toggleDrawer(false));
+        document.getElementById("hotkeyBtn")?.addEventListener('click', () => this.toggleHotkeyModal(true));
+        document.getElementById("closeHotkeyModalBtn")?.addEventListener('click', () => this.toggleHotkeyModal(false));
+
+        const slider = document.getElementById("zoomSlider");
+        if (slider) {
+          slider.addEventListener('input', (e) => {
+            this.targetZoom = parseFloat(e.target.value);
+            this.updateZoomLabels();
+          });
+        }
+      }
+
+      updateBlink(now) {
+        if (this.autoBlink && !this.isBlinking && now >= this.nextBlinkTime) {
+          this.triggerBlink(true);
+        }
+        if (!this.isBlinking) return 1.0;
+
+        const elapsed = (now - this.blinkStart) / 1000.0;
+        const total = this.closeDur + this.holdDur + this.openDur;
+
+        if (elapsed < this.closeDur) {
+          const u = elapsed / this.closeDur;
+          const ease = 3.0 * (u * u) - 2.0 * (u * u * u);
+          return Math.max(0.0, 1.0 - ease);
+        } else if (elapsed < this.closeDur + this.holdDur) {
+          return 0.0;
+        } else if (elapsed < total) {
+          const u = (elapsed - this.closeDur - this.holdDur) / this.openDur;
+          const ease = 1.0 - Math.pow(1.0 - u, 2.5);
+          return Math.min(1.0, ease);
+        } else {
+          this.isBlinking = false;
+          return 1.0;
+        }
+      }
+
+      render(now) {
+        const dt = Math.min(0.05, Math.max(0.001, (now - this.lastFrameTime) / 1000.0));
+        this.lastFrameTime = now;
+
+        // Telemetry FPS
+        this.fpsHistory.push(1.0 / dt);
+        if (this.fpsHistory.length > 20) this.fpsHistory.shift();
+        const avgFps = Math.round(this.fpsHistory.reduce((a, b) => a + b, 0) / this.fpsHistory.length);
+        const fpsBadge = document.getElementById("fpsBadge");
+        if (fpsBadge && Math.random() < 0.08) fpsBadge.innerText = avgFps;
+
+        // Subtle wander when idle
+        if (now - this.lastPointerTime > 3000) {
+          const maxGx = this.geom.eyeHalfW * 0.18;
+          const maxGy = this.geom.eyeHalfH * 0.14;
+          this.targetGazeX = Math.sin(now * 0.0006) * Math.cos(now * 0.0003) * maxGx;
+          this.targetGazeY = Math.sin(now * 0.00045 + 1.1) * maxGy;
+        }
+
+        // Damped spring physics
+        const springK = 9.0;
+        const damping = 4.2;
+        const ax = (this.targetGazeX - this.gazeX) * springK - this.gazeVelX * damping;
+        const ay = (this.targetGazeY - this.gazeY) * springK - this.gazeVelY * damping;
+        this.gazeVelX += ax * dt;
+        this.gazeVelY += ay * dt;
+        this.gazeX += this.gazeVelX * dt;
+        this.gazeY += this.gazeVelY * dt;
+
+        const glowEl = document.getElementById("ambientGlow");
+        if (glowEl) {
+          glowEl.style.transform = `translate(calc(-50% + ${this.gazeX * 0.45}px), calc(-50% + ${this.gazeY * 0.35}px))`;
+        }
+
+        // Camera zoom
+        this.currentZoom += (this.targetZoom - this.currentZoom) * Math.min(1.0, dt * 5.0);
+        const zoomBadge = document.getElementById("zoomBadge");
+        if (zoomBadge && Math.random() < 0.1) zoomBadge.innerText = `${this.currentZoom.toFixed(1)}x`;
+
+        this.openness = this.updateBlink(now);
+        const apertureEl = document.getElementById("apertureState");
+        if (apertureEl) apertureEl.innerText = `Aperture: ${Math.round(this.openness * 100)}%`;
+
+        const ctx = this.ctx;
+        const g = this.geom;
+        const th = THEMES[this.themeIdx];
+
+        ctx.fillStyle = th.canvasBg;
+        ctx.fillRect(0, 0, this.w, this.h);
+
+        ctx.save();
+        // Camera translation centered on eye with gaze parallax
+        ctx.translate(g.centerX, g.centerY);
+        ctx.scale(this.currentZoom, this.currentZoom);
+        const panFactor = (this.currentZoom - 1.0) / 1.5;
+        ctx.translate(-g.centerX - this.gazeX * 0.85 * panFactor, -g.centerY - this.gazeY * 0.85 * panFactor);
+
+        // -------------------------------------------------------------
+        // LAYER 1: Background Typography Grid
+        // -------------------------------------------------------------
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        for (let i = 0; i < this.fieldLines.length; i++) {
+          const item = this.fieldLines[i];
+          const shimmer = Math.sin(now * 0.0014 + item.phase) * 0.10;
+          ctx.save();
+          ctx.translate(item.wx, item.wy);
+          ctx.rotate(item.angle);
+          ctx.font = `500 ${item.fsize}px 'JetBrains Mono', monospace`;
+          ctx.fillStyle = item.isNearCrease ? th.fieldCrease : th.fieldBase;
+          ctx.globalAlpha = Math.max(0.18, Math.min(0.9, item.alpha + shimmer));
+          ctx.fillText(item.text, 0, 0);
+          ctx.restore();
+        }
+
+        // -------------------------------------------------------------
+        // LAYER 2: Eye Interior (Sclera + Iris + Pupil) clipped to Eyelid Aperture
+        // -------------------------------------------------------------
+        if (this.openness > 0.01) {
+          ctx.save();
+
+          // Build precise Hermite almond eyelid clipping curve
+          ctx.beginPath();
+          const nSteps = 64;
+          const uStep = 2.0 / nSteps;
+          const lidGazeY = this.gazeY * 0.18 * this.openness;
+
+          for (let s = 0; s <= nSteps; s++) {
+            const u = -1.0 + s * uStep;
+            const c = evalEyelidCurves(u, this.openness, g);
+            const x = g.centerX + u * g.eyeHalfW;
+            const y = g.centerY + c.upper + lidGazeY;
+            if (s === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+
+          for (let s = nSteps; s >= 0; s--) {
+            const u = -1.0 + s * uStep;
+            const c = evalEyelidCurves(u, this.openness, g);
+            const x = g.centerX + u * g.eyeHalfW;
+            const y = g.centerY + c.lower + lidGazeY;
+            ctx.lineTo(x, y);
+          }
+          ctx.closePath();
+          ctx.clip();
+
+          // Sclera base illumination backdrop
+          ctx.fillStyle = th.scleraBg;
+          ctx.globalAlpha = 1.0;
+          ctx.fill();
+
+          // A. Sclera Code Markup (Eyeball white)
+          const scleraDx = this.gazeX * 0.22;
+          const scleraDy = this.gazeY * 0.18;
+          for (let i = 0; i < this.scleraLines.length; i++) {
+            const item = this.scleraLines[i];
+            const driftY = Math.sin(now * 0.0008 + item.driftPhase) * 1.5;
+            const wx = g.centerX + item.wxRel + scleraDx;
+            const wy = g.centerY + item.wyRel + scleraDy + driftY;
+
+            ctx.save();
+            ctx.translate(wx, wy);
+            ctx.rotate(item.angle);
+            ctx.font = `500 ${item.fsize}px 'JetBrains Mono', monospace`;
+            ctx.fillStyle = item.brightness > 0.85 ? th.scleraLines : th.scleraDim;
+            ctx.globalAlpha = Math.min(1.0, 0.65 + 0.35 * item.brightness);
+            ctx.fillText(item.text, 0, 0);
+            ctx.restore();
+          }
+
+          // Dynamic iris position
+          const irisX = g.centerX + this.gazeX;
+          const irisY = g.centerY + this.gazeY - g.eyeHalfH * 0.03;
+          const breathe = 1.0 + 0.02 * Math.sin(now * 0.0018);
+
+          // B. Iris Illuminated Radial Base (Glow disc)
+          const irisDiscGrad = ctx.createRadialGradient(irisX, irisY, g.pupilRadius * 0.7, irisX, irisY, g.irisRadius * breathe);
+          irisDiscGrad.addColorStop(0, "rgba(0, 222, 252, 0.55)");
+          irisDiscGrad.addColorStop(0.45, "rgba(2, 23, 43, 0.90)");
+          irisDiscGrad.addColorStop(0.85, "rgba(10, 25, 48, 0.95)");
+          irisDiscGrad.addColorStop(1, "rgba(2, 6, 16, 0.98)");
+          ctx.fillStyle = irisDiscGrad;
+          ctx.beginPath();
+          ctx.arc(irisX, irisY, g.irisRadius * breathe, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Limbal Ring Outer Boundary Circle
+          ctx.strokeStyle = th.limbalStroke;
+          ctx.lineWidth = 3.0;
+          ctx.globalAlpha = 0.85;
+          ctx.beginPath();
+          ctx.arc(irisX, irisY, g.irisRadius * breathe, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Limbal Code Tokens Boundary
+          for (let i = 0; i < this.limbalTokens.length; i++) {
+            const lt = this.limbalTokens[i];
+            const curRad = lt.radius * breathe;
+            const wx = irisX + curRad * Math.cos(lt.angle);
+            const wy = irisY + curRad * Math.sin(lt.angle);
+            let rot = lt.angle + Math.PI * 0.5;
+            if (rot > Math.PI * 0.5 && rot < Math.PI * 1.5) rot += Math.PI;
+
+            ctx.save();
+            ctx.translate(wx, wy);
+            ctx.rotate(rot);
+            ctx.font = `600 ${lt.fsize}px 'JetBrains Mono', monospace`;
+            ctx.fillStyle = th.accent;
+            ctx.globalAlpha = 0.75;
+            ctx.fillText(lt.text, 0, 0);
+            ctx.restore();
+          }
+
+          // C. Radial Iris Spokes (72 radial lines from pupil outward)
+          for (let i = 0; i < this.irisSpokes.length; i++) {
+            const spk = this.irisSpokes[i];
+            const rIn = spk.rInner;
+            const rOut = spk.rOuter * breathe;
+            const wx = irisX + ((rIn + rOut) * 0.5) * Math.cos(spk.baseTheta);
+            const wy = irisY + ((rIn + rOut) * 0.5) * Math.sin(spk.baseTheta);
+
+            let rot = spk.baseTheta;
+            if (rot > Math.PI * 0.5 && rot < Math.PI * 1.5) rot += Math.PI;
+
+            const spokePulse = 0.80 + 0.20 * Math.sin(now * 0.002 + i * 0.2);
+
+            ctx.save();
+            ctx.translate(wx, wy);
+            ctx.rotate(rot);
+            ctx.font = `500 ${spk.fsize}px 'JetBrains Mono', monospace`;
+            ctx.fillStyle = th.spokeColors[spk.colorIdx % th.spokeColors.length];
+            ctx.globalAlpha = spk.alpha * spokePulse;
+            ctx.fillText(spk.text, 0, 0);
+            ctx.restore();
+          }
+
+          // D. Concentric Orbiting Iris Rings (Clean, bright circular code tracks)
+          for (let i = 0; i < this.irisRings.length; i++) {
+            const r = this.irisRings[i];
+            const curTheta = r.baseTh + (now * r.speed);
+            const curRad = r.rad * breathe;
+            const wx = irisX + curRad * Math.cos(curTheta);
+            const wy = irisY + curRad * Math.sin(curTheta);
+
+            let rot = curTheta + Math.PI * 0.5;
+            if (rot > Math.PI * 0.5 && rot < Math.PI * 1.5) rot += Math.PI;
+
+            const glimmer = 0.88 + 0.12 * Math.sin(curTheta * 4.0 + now * 0.002);
+
+            ctx.save();
+            ctx.translate(wx, wy);
+            ctx.rotate(rot);
+            ctx.font = `600 ${r.fsize}px 'JetBrains Mono', monospace`;
+            ctx.fillStyle = th.irisColors[r.colorIdx % th.irisColors.length];
+            ctx.globalAlpha = Math.min(1.0, 0.95 * glimmer);
+            if (glimmer > 0.95) {
+              ctx.shadowColor = th.accent;
+              ctx.shadowBlur = 8;
+            }
+            ctx.fillText(r.text, 0, 0);
+            ctx.restore();
+          }
+
+          // E. Pupil Singularity (Dark center circular void)
+          const pDilation = 1.0 + 0.05 * Math.sin(now * 0.0012) + 0.04 * (1.0 - this.openness);
+          const effPupilR = g.pupilRadius * pDilation;
+
+          const pupilEl = document.getElementById("livePupilDilation");
+          if (pupilEl && Math.random() < 0.05) {
+            pupilEl.innerText = `<span class="pupil-singularity" data-dilation="${pDilation.toFixed(2)}" data-void="true">`;
+          }
+
+          // Crisp black circular hole
+          ctx.beginPath();
+          ctx.arc(irisX, irisY, effPupilR, 0, Math.PI * 2);
+          ctx.fillStyle = th.pupilBg;
+          ctx.globalAlpha = 1.0;
+          ctx.fill();
+
+          // Pupil inner margin border ring
+          ctx.strokeStyle = th.pupilBorder;
+          ctx.lineWidth = 1.8;
+          ctx.globalAlpha = 0.85;
+          ctx.beginPath();
+          ctx.arc(irisX, irisY, effPupilR, 0, Math.PI * 2);
+          ctx.stroke();
+
+          // Pupil inner code tokens
+          for (let i = 0; i < this.pupilRings.length; i++) {
+            const pr = this.pupilRings[i];
+            const curRad = pr.rad * pDilation;
+            const curTh = pr.baseTh + (now * (pr.speed || 0.0001));
+            const wx = irisX + curRad * Math.cos(curTh);
+            const wy = irisY + curRad * Math.sin(curTh);
+
+            let rot = curTh + Math.PI * 0.5;
+            if (rot > Math.PI * 0.5 && rot < Math.PI * 1.5) rot += Math.PI;
+
+            ctx.save();
+            ctx.translate(wx, wy);
+            ctx.rotate(rot);
+            ctx.font = `600 ${pr.fsize}px 'JetBrains Mono', monospace`;
+            ctx.fillStyle = pr.isRim ? th.pupilBorder : th.pupilTag;
+            ctx.globalAlpha = pr.isRim ? 0.92 : 0.70;
+            ctx.fillText(pr.text, 0, 0);
+            ctx.restore();
+          }
+
+          // Pupil deep center tag
+          ctx.save();
+          ctx.translate(irisX, irisY);
+          ctx.font = `700 ${9.0 * g.scale}px 'JetBrains Mono', monospace`;
+          ctx.fillStyle = th.pupilCenterText;
+          ctx.shadowColor = th.accent;
+          ctx.shadowBlur = 10;
+          ctx.globalAlpha = 0.95;
+          ctx.fillText('<void:0x00/>', 0, 0);
+          ctx.restore();
+
+          // F. Corneal Specular Highlights / Glints (Life catchlights)
+          const hlX = irisX - g.irisRadius * 0.35 + this.gazeX * 0.14;
+          const hlY = irisY - g.irisRadius * 0.32 + this.gazeY * 0.14;
+          const tilt = -24.0 * Math.PI / 180.0;
+          const catchlightSparkle = 0.88 + 0.22 * Math.sin(now * 0.004);
+
+          // Glowing bright specular dot
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(hlX, hlY, 9.0 * g.scale, 0, Math.PI * 2);
+          ctx.fillStyle = "#ffffff";
+          ctx.shadowColor = th.highlightGlow;
+          ctx.shadowBlur = 16 * catchlightSparkle;
+          ctx.globalAlpha = 0.98;
+          ctx.fill();
+          ctx.restore();
+
+          // Secondary specular glint
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(hlX + 18.0 * g.scale, hlY + 12.0 * g.scale, 4.0 * g.scale, 0, Math.PI * 2);
+          ctx.fillStyle = "#ffffff";
+          ctx.shadowColor = th.highlightGlow;
+          ctx.shadowBlur = 10;
+          ctx.globalAlpha = 0.85;
+          ctx.fill();
+          ctx.restore();
+
+          // Catchlight syntax characters
+          for (let i = 0; i < this.highlights.length; i++) {
+            const hw = this.highlights[i];
+            const dx = hw.col * 28.0 * g.scale;
+            const dy = hw.row * 12.0 * g.scale;
+            const rx = dx * Math.cos(tilt) - dy * Math.sin(tilt);
+            const ry = dx * Math.sin(tilt) + dy * Math.cos(tilt);
+
+            ctx.save();
+            ctx.translate(hlX + rx, hlY + ry);
+            ctx.rotate(tilt);
+            ctx.font = `700 ${hw.fsize}px 'JetBrains Mono', monospace`;
+            ctx.fillStyle = th.highlightText;
+            ctx.shadowColor = th.highlightGlow;
+            ctx.shadowBlur = 12 * catchlightSparkle;
+            ctx.globalAlpha = Math.min(1.0, hw.alpha * catchlightSparkle);
+            ctx.fillText(hw.text, 0, 0);
+            ctx.restore();
+          }
+
+          ctx.restore(); // End eyelid clip
+        }
+
+        // -------------------------------------------------------------
+        // LAYER 3: Eyelid Contour Margins & Seam Lines
+        // -------------------------------------------------------------
+        for (let i = 0; i < this.eyelidRims.length; i++) {
+          const item = this.eyelidRims[i];
+          const c = evalEyelidCurves(item.u, this.openness, g);
+          const lidGazeY = this.gazeY * 0.18 * this.openness;
+          const wx = g.centerX + item.u * g.eyeHalfW;
+          const baseOffset = item.isUpper ? c.upper : c.lower;
+          const wy = g.centerY + baseOffset + lidGazeY + item.vOffset;
+
+          const cPrev = evalEyelidCurves(item.u - 0.02, this.openness, g);
+          const cNext = evalEyelidCurves(item.u + 0.02, this.openness, g);
+          const y0 = item.isUpper ? cPrev.upper : cPrev.lower;
+          const y2 = item.isUpper ? cNext.upper : cNext.lower;
+          const slope = (y2 - y0) / (0.04 * g.eyeHalfW);
+          const angle = Math.atan(slope);
+
+          ctx.save();
+          ctx.translate(wx, wy);
+          ctx.rotate(angle);
+          ctx.font = `600 ${item.fsize}px 'JetBrains Mono', monospace`;
+          ctx.fillStyle = th.rimText;
+          ctx.shadowColor = th.accent;
+          ctx.shadowBlur = 7;
+          ctx.globalAlpha = 0.95;
+          ctx.fillText(item.text, 0, 0);
+          ctx.restore();
+        }
+
+        ctx.restore(); // End camera transform
+
+        requestAnimationFrame((t) => this.render(t));
+      }
+
+      start() {
+        requestAnimationFrame((t) => this.render(t));
+      }
+    }
+
+    // Initialize application immediately on load
+    window.addEventListener('DOMContentLoaded', () => {
+      const canvas = document.getElementById("eyeCanvas");
+      const app = new EyeCodeArtwork(canvas);
+      app.start();
+    });
+  </script>
+
+<script>
+  /* CodeForge intro: enter button. Change CODEFORGE_HOME to wherever the site lives. */
+  (function () {
+    var CODEFORGE_HOME = "/";
+    var btn = document.getElementById("cfEnter"), intro = document.getElementById("cfIntro"), done = false;
+    function enter() {
+      if (done) return; done = true;
+      // the eye blinks as you step in (uses the artwork's own Space-to-blink)
+      window.dispatchEvent(new KeyboardEvent("keydown", { key: " ", code: "Space" }));
+      intro.classList.add("leaving");
+      document.body.style.transition = "opacity .7s ease"; document.body.style.opacity = "0";
+      setTimeout(function () {
+        // inside the CodeForge app: tell the parent page to open the site; standalone: just go home
+        if (window.parent && window.parent !== window) window.parent.postMessage({ type: "codeforge:enter" }, window.location.origin);
+        else window.location.href = CODEFORGE_HOME;
+      }, 750);
+    }
+    btn.addEventListener("click", enter);
+    window.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); enter(); } });
+  })();
+</script>
+</body></html>

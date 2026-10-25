@@ -1,151 +1,25 @@
-# CodeForge
+# CodeForge intro add-on
 
-Autonomous coding agent with sandboxed execution.
+Adds the animated "eye made of code" intro in front of the CodeForge site.
 
-```text
-Task → LLM generates Python → execute in sandbox → classify errors → repair (max 3) → result
-```
+## Install (about 1 minute)
+1. Unzip this folder.
+2. Copy the `client` folder from here into your project root. Say yes to merge folders.
+   - **New files:** `client/public/codeforge-intro.html`, `client/src/pages/Intro.tsx`
+   - **Replaced file:** `client/src/App.tsx` (it only adds the intro route; the other routes are the same as the latest commit)
+3. Run:
+   ```
+   cd client
+   npm run dev
+   ```
+4. Open the site. The intro shows first. Press **Enter CodeForge** (or the Enter key) to go to Home.
 
-Focus: bounded autonomous repair, isolation of untrusted code, measurable reliability.
+## How it behaves
+- `/` shows the intro once per browser session, then Home.
+- `/intro` always shows the intro (useful for demos and screenshots).
+- Nothing else in the site changes.
 
-## Architecture
-
-```text
-React Studio (Vite) ──Socket.IO──► Express orchestrator
-                                      │
-                         ┌────────────┼────────────┐
-                         ▼            ▼            ▼
-                    Gemini/Groq/Mock  Classifier   Sandbox
-                                                   ├─ Docker (USE_DOCKER=true)
-                                                   └─ Local subprocess (default)
-```
-
-Python-only MVP. Optional PostgreSQL when `DATABASE_URL` is set.
-
-## Local setup (Windows)
-
-```cmd
-cd server
-copy .env.example .env
-notepad .env
-npm install
-npm run dev
-
-cd ..\client
-npm install
-npm run dev
-```
-
-Open <http://localhost:5173>
-
-**Canonical backend environment file:** `server/.env` (copy from `server/.env.example`). The backend loads only `server/.env`.
-
-## Environment variables
-
-| Variable | Required? | Purpose |
-| --- | --- | --- |
-| `GEMINI_API_KEY` | One of Gemini / Groq / mock | Primary LLM |
-| `GEMINI_MODEL` | No | Default `gemini-2.0-flash` |
-| `GROQ_API_KEY` | Optional | Fallback LLM |
-| `GROQ_MODEL` | No | Default `llama-3.3-70b-versatile` |
-| `USE_MOCK_LLM` | No | `true` for CI / offline / no keys |
-| `PORT` | No | Default `3001` |
-| `CORS_ORIGIN` | No | Allowed frontend origin(s) for Express & Socket.IO CORS (default: `http://localhost:5173,http://127.0.0.1:5173`) |
-| `USE_DOCKER` | No | `true` = Docker sandbox; `false` = local Python |
-| `SANDBOX_IMAGE` | No | Default `python:3.12-slim` |
-| `DATABASE_URL` | No | Enables Postgres persistence |
-
-**Mock mode:** set `USE_MOCK_LLM=true` when you have no API keys, for CI, or deterministic runs.
-
-## Execution modes
-
-### Development — local subprocess (`USE_DOCKER=false`, default)
-
-- Runs `python` / `python3` in a temp directory
-- Enforces timeout, code size, output limits, and minimal child env (API keys not inherited)
-- **Important:** Local subprocess execution is **not** a security boundary — intended for local dev and solo demos only
-
-### Secure execution — Docker (`USE_DOCKER=true`)
-
-Requires Docker Desktop or a Docker daemon on the same host as the Node process.
-Docker provides the intended isolation layer:
-
-- **Network disabled:** `NetworkMode: none`
-- **Resource limits:** Memory (512MB), CPU (1 core), PID limit (64)
-- **Non-root user:** Runs as `nobody` (UID 65534)
-- **Capability restrictions:** Drops `ALL` Linux capabilities, `no-new-privileges`
-- **Filesystem isolation:** Read-only code mount, size-capped tmpfs for `/tmp`
-- **Timeout:** Wall-clock timeout with automatic SIGKILL and container cleanup
-
-*Note: While Docker provides strong container isolation, it is not claimed to be an absolute security guarantee (see [SECURITY.md](./SECURITY.md)).*
-
-If Docker fails at runtime, the server logs a warning and **falls back to local subprocess**.
-
-### docker-compose.yml
-
-Starts the **API service only**. `USE_DOCKER=false` is intentional (no Docker-in-Docker).
-Compose does **not** by itself provide the secure sandbox. Use host process + `USE_DOCKER=true`.
-
-## Tests & CI
-
-```cmd
-cd server
-npm test              # runs classifier, orchestrator, provider fallback & local sandbox safety tests
-npm run typecheck     # typechecks all files including tests
-npm run build         # compiles production dist (excludes test files)
-npm run test:docker   # runs Docker container security tests (requires running Docker daemon)
-```
-
-GitHub Actions: install → typecheck → tests (`USE_MOCK_LLM=true`) → build server + client. No real API keys.
-
-Local executor tests cover timeout, oversized code, and structured failures. Docker integration tests require a local Docker daemon and are separated cleanly so standard CI does not depend on them.
-
-## Benchmark
-
-Committed `benchmark/results.json` (2026-09-09):
-
-| Metric | Value |
-| --- | --- |
-| Tasks | 25 |
-| Success rate | 100% |
-| First-attempt success | 100% |
-| Average attempts | 1.0 |
-
-Re-run against your own server; treat numbers as one measured run.
-
-## Security
-
-See [SECURITY.md](./SECURITY.md).
-
-- Prefer `USE_DOCKER=true` for any multi-user or exposed host
-- Local subprocess is **not** isolation
-- Docker is stronger than local, not a microVM
-
-## Production notes
-
-- Choose real keys or mock mode deliberately
-- Tighten CORS to your frontend origin
-- Never commit `.env`
-- Prefer Docker sandbox with a real host daemon
-- Add authentication before public exposure (not in this MVP)
-
-## Stack
-
-TypeScript · Express · React · Vite · Socket.IO · Docker · Gemini / Groq · optional PostgreSQL
-
----
-
-## Evolution (Phases 0–6)
-
-Additional capabilities live under `docs/` and do not replace the MVP above.
-
-| Phase | Focus | Docs |
-| --- | --- | --- |
-| 0–3 | Truthful persistence, evaluator, experience memory, evaluation protocol | [EVALUATION.md](./docs/EVALUATION.md), [EVOLUTION_PHASES_0_3.md](./docs/EVOLUTION_PHASES_0_3.md) |
-| 4 | Repository agent (workspace tools, state machine) | [PHASE_4_REPO_AGENT.md](./docs/PHASE_4_REPO_AGENT.md) |
-| 5 | Engineering Arena (missions, scoring) | [PHASE_5_ARENA.md](./docs/PHASE_5_ARENA.md) |
-| 6 | API tokens, quotas, audit, evidence bundles | [PHASE_6_HARDEN.md](./docs/PHASE_6_HARDEN.md) |
-
-Static results placeholder: [docs/results/index.html](./docs/results/index.html).
-
-Do not cite improvement numbers until committed under `benchmark/results/` with intervals.
+## Notes
+- The intro loads Tailwind and fonts from the internet, so it needs a connection.
+- To change the intro text, edit `client/public/codeforge-intro.html` (look for `cf-h1` and `cf-sub`).
+- If your `App.tsx` has changed since the latest commit, don't overwrite it. Add the `Intro` import, the `Entry` and `IntroRoute` components, and the `/intro` and `/` routes by hand.

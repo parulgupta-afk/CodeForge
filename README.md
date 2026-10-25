@@ -140,7 +140,7 @@ TypeScript · Express · React · Vite · Socket.IO · Docker · Gemini / Groq �
 Additional capabilities live under `docs/` and do not replace the MVP above.
 
 | Phase | Focus | Docs |
-|-------|--------|------|
+| --- | --- | --- |
 | 0–3 | Truthful persistence, evaluator, experience memory, evaluation protocol | [EVALUATION.md](./docs/EVALUATION.md), [EVOLUTION_PHASES_0_3.md](./docs/EVOLUTION_PHASES_0_3.md) |
 | 4 | Repository agent (workspace tools, state machine) | [PHASE_4_REPO_AGENT.md](./docs/PHASE_4_REPO_AGENT.md) |
 | 5 | Engineering Arena (missions, scoring) | [PHASE_5_ARENA.md](./docs/PHASE_5_ARENA.md) |

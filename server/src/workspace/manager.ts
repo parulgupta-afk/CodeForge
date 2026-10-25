@@ -37,9 +37,8 @@ export function resolveSafe(root: string, relativePath: string): string {
   if (path.isAbsolute(relativePath)) {
     throw new PathEscapeError(`absolute paths not allowed: ${relativePath}`);
   }
-  const normalized = path.normalize(relativePath).replace(/^(\.\.(\/|\\|$))+/, "");
-  const full = path.resolve(root, normalized);
   const rootResolved = path.resolve(root);
+  const full = path.resolve(rootResolved, relativePath);
   if (full !== rootResolved && !full.startsWith(rootResolved + path.sep)) {
     throw new PathEscapeError(`path escapes workspace: ${relativePath}`);
   }

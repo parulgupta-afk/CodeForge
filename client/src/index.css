@@ -815,3 +815,189 @@ body::before { display: none; }
 .new-run-panel { border: 1px solid #d8e0eb; border-radius: 11px; background: #ffffff; box-shadow: 0 16px 42px rgba(19,35,59,.18); }
 textarea, select { border: 1px solid #cbd7e5; border-radius: 7px; background: #fbfcfe; color: var(--ink); }
 .safety-note { border: 1px solid #e7c977; border-radius: 7px; background: #fffaf0; }
+/* ==========================================================
+   READABILITY LAYER
+   Same neo-brutalist look (colours, borders, hard shadows).
+   Bigger text, more space, fewer things competing for attention.
+   ========================================================== */
+body { font-size: 18px; line-height: 1.55; }
+p { line-height: 1.55; }
+.mono { font-size: 14px; letter-spacing: .01em; }
+.eyebrow { font-size: 13px; letter-spacing: .08em; }
+.card-kicker, .panel-title { font-size: 13px; letter-spacing: .06em; }
+.brand-sub { font-size: 11px; }
+.rail-kicker { font-size: 13px; }
+.footer-mark { font-size: 12px; }
+.breadcrumb { font-size: 15px; }
+.side-rail { width: 264px; padding: 32px 20px 24px; }
+.main-canvas { width: calc(100% - 264px); margin-left: 264px; }
+.nav-item { grid-template-columns: 22px 1fr 16px; gap: 12px; padding: 16px 12px; font-size: 17px; }
+.main-nav { gap: 10px; }
+.topbar { min-height: 84px; padding: 0 48px; }
+.content-wrap { padding: 72px 64px 140px; }
+.brutal-button { min-height: 54px; padding: 12px 22px; font-size: 15px; gap: 10px; letter-spacing: .03em; }
+.status-badge { min-height: 28px; padding: 4px 10px; font-size: 13px; }
+.text-link { font-size: 14px; }
+
+/* Home */
+.hero-grid { gap: 72px; padding: 24px 0 110px; }
+.hero-copy h1 { font-size: clamp(52px, 6vw, 92px); }
+.hero-lede { max-width: 560px; margin: 36px 0; font-size: 24px; line-height: 1.45; letter-spacing: -.02em; }
+.hero-actions { gap: 16px; flex-wrap: wrap; }
+.hero-note { margin-top: 30px; font-size: 14px; }
+.run-demo { padding: 32px; }
+.run-demo-top { padding: 32px 0 24px; }
+.run-demo-top h3 { font-size: 30px; }
+.run-score strong { font-size: 42px; }
+.run-score span { font-size: 13px; }
+.phase-track { grid-template-columns: repeat(7, minmax(0, 1fr)); margin: 32px 0 28px; }
+.phase-node { width: 32px; height: 32px; font-size: 12px; }
+.phase-step:not(:last-child)::after { top: 15px; left: 30px; width: calc(100% - 20px); }
+.phase-name { font-size: 12px; }
+.demo-evidence { min-height: 96px; padding: 20px; font-size: 15px; line-height: 1.7; }
+.run-demo-footer { padding-top: 24px; gap: 20px; flex-wrap: wrap; }
+.run-footer-status { max-width: 100%; font-size: 13px; }
+.proof-stamp { font-size: 13px; }
+.proof-stamp b { font-size: 11px; }
+.metric-block { min-height: 130px; padding: 26px 26px; gap: 18px; }
+.metric-label { font-size: 13px; }
+.proof-section { gap: 64px; padding: 150px 0 120px; }
+.section-lead p { max-width: 340px; font-size: 19px; }
+.proof-blocks { gap: 24px; }
+.proof-block { min-height: 340px; padding: 30px; }
+.block-num { font-size: 14px; }
+.proof-block h3 { font-size: 26px; margin-bottom: 14px; }
+.proof-block p { font-size: 18px; }
+.bottom-cta { padding: 48px; gap: 40px; }
+.cta-copy p { font-size: 20px; }
+
+/* Try it (studio) */
+.section-header { margin-bottom: 40px; }
+.studio-layout { gap: 32px; }
+.studio-main { gap: 32px; }
+.studio-code-grid { gap: 32px; }
+.run-queue, .evidence-panel, .run-header-card, .code-card, .log-card { padding: 28px; }
+.queue-list { gap: 12px; }
+.queue-item { padding: 14px; gap: 12px; }
+.queue-item b { font-size: 15px; }
+.queue-item span:not(.status-badge) { font-size: 13px; }
+.mission-file { font-size: 14px; }
+.mission-mini p { font-size: 16px; }
+.mini-tags span { font-size: 12px; padding: 5px 8px; }
+.detail-index { font-size: 13px; }
+.phase-detail p { font-size: 17px; margin: 6px 0 0; }
+.code-lines, .log-lines { font-size: 15px; line-height: 1.9; }
+.log-lines > div { margin: 10px 0; }
+.code-footer { font-size: 13px; }
+.evidence-verdict p { font-size: 16px; }
+.evidence-row { font-size: 13px; padding: 14px 0; gap: 12px; }
+.evidence-value { font-size: 15px; }
+.evidence-note p { font-size: 15px; }
+
+/* Practice (arena) */
+.arena-xp span, .arena-xp small { font-size: 13px; }
+.arena-hero { padding: 40px; gap: 32px; }
+.arena-hero p { font-size: 20px; max-width: 460px; }
+.mode-grid { gap: 28px; margin: 36px 0; }
+.mode-card { padding: 28px; }
+.mode-card p { font-size: 17px; }
+.mission-list, .arena-workspace { padding: 28px; }
+.mission-row { padding: 18px 0; gap: 14px; }
+.mission-row b { font-size: 17px; }
+.mission-row div span { font-size: 12px; }
+.mission-number { font-size: 15px; }
+.workspace-task p { font-size: 17px; }
+.workspace-code { font-size: 15px; line-height: 1.9; }
+.workspace-feedback p { font-size: 16px; }
+.arena-content-grid { gap: 32px; }
+
+/* Proof (lab) */
+.lab-result-banner { padding: 40px; gap: 28px; }
+.lab-result-status p { font-size: 16px; }
+.lab-meta-strip { gap: 20px; padding: 20px 24px; }
+.lab-meta-strip > div span { font-size: 12px; }
+.lab-meta-strip > div b { font-size: 16px; }
+.method-button { font-size: 13px; }
+.condition-grid { gap: 24px; margin: 36px 0; }
+.condition-card { padding: 28px; }
+.condition-footer { font-size: 14px; gap: 10px; }
+.condition-footer b { font-size: 15px; }
+.chart-axis { font-size: 12px; }
+.chart-label { font-size: 12px; }
+.chart-value { font-size: 15px; }
+.chart-legend { font-size: 13px; }
+.lab-detail-grid { gap: 32px; }
+.lab-chart, .lab-method { padding: 28px; }
+.method-list { gap: 18px; }
+.method-list b { font-size: 14px; }
+.method-list span { font-size: 17px; }
+.table-filter button { font-size: 12px; padding: 6px 10px; }
+table { font-size: 15px; }
+th { font-size: 12px; }
+th, td { padding: 16px 14px; }
+.trial-table { padding: 28px; margin-top: 36px; }
+
+/* Replay */
+.replay-layout { gap: 32px; }
+.replay-number { font-size: 13px; }
+.replay-step { padding: 16px 12px; }
+.replay-step b { font-size: 16px; }
+.replay-step small { font-size: 12px; }
+.call-grid p { font-size: 17px; }
+.cassette-bar { font-size: 13px; padding: 14px; }
+.replay-verdict p { font-size: 16px; }
+.receipt-row { font-size: 14px; padding: 8px 0; }
+
+/* New task dialog */
+.new-run-panel { padding: 32px; }
+.field-label { font-size: 13px; gap: 8px; }
+textarea, select { font-size: 16px; padding: 14px; }
+.field-grid { gap: 20px; }
+.budget-row b { font-size: 15px; }
+.safety-note { font-size: 14px; line-height: 1.5; }
+
+@media (max-width: 1180px) {
+  .content-wrap { padding: 48px 32px 100px; }
+  .hero-grid { gap: 48px; padding-bottom: 80px; }
+}
+@media (max-width: 940px) {
+  .side-rail { width: min(300px, 86vw); }
+  .main-canvas { width: 100%; margin-left: 0; }
+  .topbar { padding: 0 20px; }
+  .content-wrap { padding: 40px 20px 90px; }
+  .proof-section { padding: 90px 0 70px; }
+}
+@media (max-width: 660px) {
+  body { font-size: 17px; }
+  .hero-lede { font-size: 20px; }
+  .phase-name { font-size: 10px; }
+  .phase-node { width: 26px; height: 26px; }
+  .run-demo { padding: 20px; }
+  .brutal-button { min-height: 50px; }
+  .topbar-actions .brutal-button { font-size: 12px; padding: 8px 10px; min-height: 44px; }
+}
+
+/* Layout fixes so nothing is squeezed */
+.studio-layout { grid-template-columns: minmax(0, 1fr) 400px; }
+.run-queue { grid-column: 1 / -1; }
+.run-queue .queue-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.queue-item b { white-space: nowrap; }
+.run-queue .mission-mini p { max-width: 720px; }
+.terminal-muted { color: #5e6e83; opacity: 1; }
+.run-score span, .text-link { white-space: nowrap; }
+.proof-section { grid-template-columns: 1fr; gap: 48px; }
+.section-lead p { max-width: 560px; }
+.bottom-cta { flex-wrap: wrap; }
+.cta-copy { max-width: none; flex: 1 1 420px; flex-wrap: wrap; }
+.cta-copy .brutal-button { white-space: nowrap; }
+.hero-proof { padding-bottom: 12px; }
+@media (max-width: 1180px) {
+  .studio-layout { grid-template-columns: 1fr; }
+  .run-queue .queue-list { grid-template-columns: 1fr; }
+}
+@media (max-width: 940px) {
+  .proof-section { gap: 32px; }
+}
+.log-lines > div > span:first-child { color: #5e6e83; opacity: 1; }
+.button-row { flex-wrap: wrap; }
+@media (max-width: 660px) { .proof-stamp { right: 8px; bottom: -34px; min-width: 0; } .hero-proof { padding-bottom: 40px; } }

@@ -1,237 +1,264 @@
 {
   "total": 25,
-  "successCount": 25,
-  "successRate": 100,
-  "firstAttemptSuccessRate": 100,
-  "withinThreeAttemptsRate": 100,
-  "averageAttempts": 1,
-  "failureCategories": {},
+  "successCount": 0,
+  "successRate": 0,
+  "firstAttemptSuccessRate": 0,
+  "withinThreeAttemptsRate": 0,
+  "averageAttempts": 0,
+  "failureCategories": {
+    "unauthorized": 25
+  },
   "results": [
     {
       "taskId": "task01",
       "category": "basic",
       "title": "Average 1 to 100",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 15982,
-      "finalOutput": "50.5"
+      "errorCategory": "unauthorized",
+      "durationMs": 424,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task02",
       "category": "basic",
       "title": "Sum of evens",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 8028,
-      "finalOutput": "650"
+      "errorCategory": "unauthorized",
+      "durationMs": 13,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task03",
       "category": "basic",
       "title": "Factorial 10",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 8078,
-      "finalOutput": "3628800"
+      "errorCategory": "unauthorized",
+      "durationMs": 6,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task04",
       "category": "basic",
       "title": "Reverse string",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 8834,
-      "finalOutput": "egroFedoC"
+      "errorCategory": "unauthorized",
+      "durationMs": 4,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task05",
       "category": "basic",
       "title": "Palindrome",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 8209,
-      "finalOutput": "True"
+      "errorCategory": "unauthorized",
+      "durationMs": 7,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task06",
       "category": "data",
       "title": "JSON sum",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 8591,
-      "finalOutput": "15"
+      "errorCategory": "unauthorized",
+      "durationMs": 15,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task07",
       "category": "data",
       "title": "Word count",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 6202,
-      "finalOutput": "9"
+      "errorCategory": "unauthorized",
+      "durationMs": 5,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task08",
       "category": "data",
       "title": "Unique sorted",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 8546,
-      "finalOutput": "1 2 3 4"
+      "errorCategory": "unauthorized",
+      "durationMs": 10,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task09",
       "category": "data",
       "title": "Max value",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 6085,
-      "finalOutput": "56"
+      "errorCategory": "unauthorized",
+      "durationMs": 23,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task10",
       "category": "data",
       "title": "Dict keys",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 7674,
-      "finalOutput": "a,b,c"
+      "errorCategory": "unauthorized",
+      "durationMs": 5,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task11",
       "category": "data",
       "title": "FizzBuzz sample",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 8650,
-      "finalOutput": "1\r\n2\r\nFizz\r\n4\r\nBuzz\r\nFizz\r\n7\r\n8\r\nFizz\r\nBuzz\r\n11\r\nFizz\r\n13\r\n14\r\nFizzBuzz"
+      "errorCategory": "unauthorized",
+      "durationMs": 5,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task12",
       "category": "data",
       "title": "CSV average",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 11412,
-      "finalOutput": "20.0"
+      "errorCategory": "unauthorized",
+      "durationMs": 5,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task13",
       "category": "algo",
       "title": "Fibonacci 10",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 12483,
-      "finalOutput": "0 1 1 2 3 5 8 13 21 34"
+      "errorCategory": "unauthorized",
+      "durationMs": 8,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task14",
       "category": "algo",
       "title": "Prime check",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 9675,
-      "finalOutput": "True"
+      "errorCategory": "unauthorized",
+      "durationMs": 6,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task15",
       "category": "algo",
       "title": "GCD",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 9231,
-      "finalOutput": "6"
+      "errorCategory": "unauthorized",
+      "durationMs": 7,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task16",
       "category": "failure",
       "title": "Missing pandas",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 10462,
-      "finalOutput": "2.0"
+      "errorCategory": "unauthorized",
+      "durationMs": 7,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task17",
       "category": "failure",
       "title": "Type error bait",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 9323,
-      "finalOutput": "5points"
+      "errorCategory": "unauthorized",
+      "durationMs": 7,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task18",
       "category": "failure",
       "title": "Index error bait",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 8870,
-      "finalOutput": "Index out of range. Recovery successful."
+      "errorCategory": "unauthorized",
+      "durationMs": 5,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task19",
       "category": "security",
       "title": "Timeout bait",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 5355,
-      "finalOutput": "1\r\n2\r\n3\r\n4\r\n5\r\n6\r\n7\r\n8\r\n9\r\n10\r\ndone"
+      "errorCategory": "unauthorized",
+      "durationMs": 4,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task20",
       "category": "security",
       "title": "No network",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 7640,
-      "finalOutput": "offline-ok"
+      "errorCategory": "unauthorized",
+      "durationMs": 4,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task21",
       "category": "basic",
       "title": "List comprehension",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 7289,
-      "finalOutput": "1 4 9 16 25"
+      "errorCategory": "unauthorized",
+      "durationMs": 6,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task22",
       "category": "data",
       "title": "Sort dict by value",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 8453,
-      "finalOutput": "c\r\nb\r\na"
+      "errorCategory": "unauthorized",
+      "durationMs": 4,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task23",
       "category": "algo",
       "title": "Binary search length",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 6175,
-      "finalOutput": "3"
+      "errorCategory": "unauthorized",
+      "durationMs": 3,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task24",
       "category": "basic",
       "title": "String title case",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 8288,
-      "finalOutput": "Code Forge Agent"
+      "errorCategory": "unauthorized",
+      "durationMs": 3,
+      "finalError": "unauthorized: valid API token required"
     },
     {
       "taskId": "task25",
       "category": "data",
       "title": "Filter positives",
-      "success": true,
+      "success": false,
       "attempts": 1,
-      "durationMs": 6149,
-      "finalOutput": "3 5 8"
+      "errorCategory": "unauthorized",
+      "durationMs": 24,
+      "finalError": "unauthorized: valid API token required"
     }
   ],
-  "generatedAt": "2026-09-13T17:15:06.922Z"
+  "generatedAt": "2026-10-25T05:49:51.803Z"
 }

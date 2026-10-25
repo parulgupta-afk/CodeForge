@@ -43,7 +43,7 @@ Open <http://localhost:5173>
 ## Environment variables
 
 | Variable | Required? | Purpose |
-|----------|-----------|---------|
+| --- | --- | --- |
 | `GEMINI_API_KEY` | One of Gemini / Groq / mock | Primary LLM |
 | `GEMINI_MODEL` | No | Default `gemini-2.0-flash` |
 | `GROQ_API_KEY` | Optional | Fallback LLM |
@@ -105,7 +105,7 @@ Local executor tests cover timeout, oversized code, and structured failures. Doc
 Committed `benchmark/results.json` (2026-09-09):
 
 | Metric | Value |
-|--------|--------|
+| --- | --- |
 | Tasks | 25 |
 | Success rate | 100% |
 | First-attempt success | 100% |

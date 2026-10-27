@@ -10,44 +10,45 @@
 
 ---
 
-## 📌 Table of Contents
+## Table of Contents
 
-- [Overview](#-overview)
-- [How CodeForge Works (Agent Lifecycle)](#-how-codeforge-works-agent-lifecycle)
-- [Key Features](#-key-features)
-- [Architecture & Tech Stack](#-architecture--tech-stack)
-- [Project Directory Structure](#-project-directory-structure)
-- [Security & Sandbox Isolation](#-security--sandbox-isolation)
-- [Getting Started](#-getting-started)
+- [Overview](#overview)
+- [How CodeForge Works (Agent Lifecycle)](#how-codeforge-works-agent-lifecycle)
+- [Key Features](#key-features)
+- [Architecture & Tech Stack](#architecture--tech-stack)
+- [Project Directory Structure](#project-directory-structure)
+- [Security & Sandbox Isolation](#security--sandbox-isolation)
+- [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [1. Clone Repository](#1-clone-repository)
   - [2. Environment Configuration](#2-environment-configuration)
   - [3. Backend Setup](#3-backend-setup)
   - [4. Frontend Studio Setup](#4-frontend-studio-setup)
   - [5. Running via Docker Compose](#5-running-via-docker-compose)
-- [Testing & Quality Assurance](#-testing--quality-assurance)
-- [Benchmark Framework](#-benchmark-framework)
-- [WebSocket & API Reference](#-websocket--api-reference)
-- [Deployment Guide](#-deployment-guide)
-- [Contributing](#-contributing)
-- [License](#-license)
+- [Testing & Quality Assurance](#testing--quality-assurance)
+- [Benchmark Framework](#benchmark-framework)
+- [WebSocket & API Reference](#websocket--api-reference)
+- [Deployment Guide](#deployment-guide)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## 🚀 Overview
+## Overview
 
-**CodeForge** is an autonomous coding agent platform that bridges the gap between raw LLM code generation and reliable, production-ready execution. 
+**CodeForge** is an autonomous coding agent platform that bridges the gap between raw LLM code generation and reliable, production-ready execution.
 
 Instead of treating LLM output as a one-shot miracle, CodeForge runs generated Python code in an isolated, resource-constrained execution sandbox, inspects the stdout/stderr stream, classifies runtime failures via a structured taxonomy, and autonomously repairs the solution through a closed feedback loop (up to 3 attempts).
 
-### 🎯 Core Principles
+### Core Principles
+
 1. **Never trust generated code**: All execution happens in locked-down environments (Docker containers with dropped privileges, zero network access, and strict cgroups).
 2. **Deterministic error classification**: Instead of feeding raw traceback spam back to the LLM, errors are parsed into discrete categories (`SyntaxError`, `MissingDependency`, `Timeout`, `PermissionDenied`, etc.) with actionable guidance.
 3. **Live observability**: Operators track every generation step, execution attempt, and sandbox log in real time through WebSocket streaming.
 
 ---
 
-## 🔄 How CodeForge Works (Agent Lifecycle)
+## How CodeForge Works (Agent Lifecycle)
 
 ```mermaid
 flowchart TD
@@ -71,31 +72,31 @@ flowchart TD
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-- **🤖 Autonomous Self-Repair Loop**: Automatically detects syntax, logic, and runtime errors and self-repairs code within 3 attempts.
-- **🛡️ Secure Docker Sandbox**:
+- **Autonomous Self-Repair Loop**: Automatically detects syntax, logic, and runtime errors and self-repairs code within 3 attempts.
+- **Secure Docker Sandbox**:
   - `NetworkMode: none` (prevents external data exfiltration and SSRF).
   - Unprivileged execution under user `nobody` (`uid: 65534`).
   - Read-only code mount with temporary memory-capped `tmpfs`.
   - Dropped Linux capabilities (`CapDrop: ALL`) and `no-new-privileges`.
-- **⚡ Dual LLM Provider Fallback**: Seamless multi-provider reliability with Gemini and Groq, plus cassette recording/replay for offline CI testing.
-- **📊 Real-Time Studio UI**:
+- **Dual LLM Provider Fallback**: Seamless multi-provider reliability with Gemini and Groq, plus cassette recording/replay for offline CI testing.
+- **Real-Time Studio UI**:
   - Live execution journal and terminal streaming over WebSockets.
   - Interactive multi-attempt cards with visual code diffs.
   - Success rate, attempt distributions, and error-category metrics.
-- **📈 Built-In Benchmark Suite**: 25-task automated evaluation harness to measure Pass@1, Pass@3, and self-repair convergence rates.
-- **🔒 Production Security**: Built-in rate limiting, Helmet HTTP security headers, CORS origin enforcement, body size caps, and API token quota enforcement.
+- **Built-In Benchmark Suite**: 25-task automated evaluation harness to measure Pass@1, Pass@3, and self-repair convergence rates.
+- **Production Security**: Built-in rate limiting, Helmet HTTP security headers, CORS origin enforcement, body size caps, and API token quota enforcement.
 
 ---
 
-## 🛠️ Architecture & Tech Stack
+## Architecture & Tech Stack
 
 | Layer | Technologies |
 | :--- | :--- |
 | **Frontend Studio** | React 18, Vite, TypeScript, Tailwind CSS, Lucide React, Wouter |
 | **Backend Orchestrator** | Node.js 20+, Express, TypeScript, ts-node-dev |
-| **Real-Time Streaming**| Socket.io (client & server) |
+| **Real-Time Streaming** | Socket.io (client & server) |
 | **Execution Sandboxes** | Dockerode (Docker Engine API), Python 3.12 slim, Local Subprocess Runner |
 | **LLM Integrations** | Google Gemini API (`gemini-2.0-flash`), Groq API (`llama-3.3-70b-versatile`) |
 | **Persistence** | PostgreSQL (`pg`), in-memory fallback |
@@ -103,7 +104,7 @@ flowchart TD
 
 ---
 
-## 📂 Project Directory Structure
+## Project Directory Structure
 
 ```text
 CodeForge/
@@ -146,7 +147,7 @@ CodeForge/
 
 ---
 
-## 🛡️ Security & Sandbox Isolation
+## Security & Sandbox Isolation
 
 CodeForge treats all generated code as potentially malicious untrusted input. The sandbox implements multi-layer defense-in-depth:
 
@@ -162,7 +163,7 @@ CodeForge treats all generated code as potentially malicious untrusted input. Th
 
 ---
 
-## 🏁 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -185,12 +186,15 @@ cd CodeForge
 ### 2. Environment Configuration
 
 #### Backend Setup (`server/.env`)
+
 Copy the template and configure your API keys:
+
 ```bash
 cp server/.env.example server/.env
 ```
 
 Key environment options in `server/.env`:
+
 ```ini
 # Provide at least one API key (or set USE_MOCK_LLM=true for offline testing)
 GEMINI_API_KEY=your_gemini_api_key_here
@@ -210,11 +214,13 @@ SANDBOX_MODE=dev         # 'dev' falls back to local subprocess if Docker is off
 ```
 
 #### Frontend Setup (`client/.env`)
+
 ```bash
 cp client/.env.example client/.env
 ```
 
 Ensure `client/.env` points to the backend server:
+
 ```ini
 VITE_WS_URL=http://localhost:3001
 ```
@@ -228,19 +234,22 @@ cd server
 npm install
 npm run dev
 ```
-> Backend API and WebSocket hub will listen on `http://localhost:3001`.
+
+The backend API and WebSocket hub will listen on `http://localhost:3001`.
 
 ---
 
 ### 4. Frontend Studio Setup
 
 In a separate terminal:
+
 ```bash
 cd client
 npm install
 npm run dev
 ```
-> Open your browser and navigate to `http://localhost:5173`.
+
+Open your browser and navigate to `http://localhost:5173`.
 
 ---
 
@@ -254,17 +263,19 @@ docker compose up --build
 
 ---
 
-## 🧪 Testing & Quality Assurance
+## Testing & Quality Assurance
 
 CodeForge includes comprehensive test suites covering the error classifier, agent orchestrator, provider fallback mechanism, sandboxes, and security boundaries.
 
 Run all server tests:
+
 ```bash
 cd server
 npm test
 ```
 
 Run targeted test suites:
+
 ```bash
 npm run test:classifier     # Test traceback parsing & categorization
 npm run test:orchestrator   # Test agent state-machine & repair cycle
@@ -275,7 +286,7 @@ npm run test:security       # Test abuse prevention, quotas, & boundary checks
 
 ---
 
-## 📊 Benchmark Framework
+## Benchmark Framework
 
 The repository contains an automated 25-task evaluation suite in `/benchmark` measuring real-world code generation and repair reliability across Math, Algorithms, Data Processing, and String Manipulation.
 
@@ -294,13 +305,14 @@ Benchmark output generates a structured JSON report (`benchmark/results.json`) a
 | **Pass@1 Rate** | Percentage of tasks solved on the first attempt |
 | **Pass@3 Rate** | Cumulative percentage of tasks solved within 3 attempts |
 | **Self-Repair Rate** | Percentage of failed initial attempts successfully fixed |
-| **Error Distribution**| Categorized breakdown of initial failure modes |
+| **Error Distribution** | Categorized breakdown of initial failure modes |
 
 ---
 
-## 📡 WebSocket & API Reference
+## WebSocket & API Reference
 
 ### REST Endpoints
+
 - `GET /api/health`: Health-check endpoint verifying LLM connectivity and sandbox status.
 - `POST /api/runs`: Submits a new coding task specification.
 - `GET /api/runs/:id`: Fetches task status, attempt journals, and code outputs.
@@ -318,7 +330,7 @@ Benchmark output generates a structured JSON report (`benchmark/results.json`) a
 
 ---
 
-## 🚢 Deployment Guide
+## Deployment Guide
 
 For full production deployment instructions, see [DEPLOY.md](DEPLOY.md).
 
@@ -328,7 +340,7 @@ For full production deployment instructions, see [DEPLOY.md](DEPLOY.md).
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions, issues, and feature requests are welcome!
 
@@ -340,6 +352,6 @@ Contributions, issues, and feature requests are welcome!
 
 ---
 
-## 📄 License
+## License
 
 Distributed under the **MIT License**. See `LICENSE` for more information.

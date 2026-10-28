@@ -343,11 +343,27 @@ function ArenaScreen({ mode, setMode, navigate }: { mode: string; setMode: (mode
   );
 }
 
+function exportDownload(filename: string, content: string) {
+  const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 function LabScreen({ selectedBench, setSelectedBench, navigate }: { selectedBench: string; setSelectedBench: (value: string) => void; navigate: (path: string) => void }) {
   const selected = benchmark.find(item => item.id === selectedBench) ?? benchmark[2];
+  const handleSaveReport = () => {
+    const report = `# CodeForge Benchmark Proof Report\n\n**Exported:** ${new Date().toISOString()}\n**Selected Configuration:** ${selected.label} (${selected.score})\n\n## Summary\n- Practice Set: 20 Tasks\n- Real Test Set: 30 Tasks\n- Tries Per Task: 5\n- Confidence: 95%\n\n## Configurations\n${benchmark.map(b => `- ${b.label}: ${b.score} (Range: ${b.interval}%, Delta: ${b.delta}) - ${b.note}`).join("\n")}\n`;
+    exportDownload("codeforge-benchmark-report.md", report);
+  };
   return (
     <div className="product-screen">
-      <SectionHeader index="04" eyebrow="HOW WE KNOW IT WORKS" title="PROOF" action={<div className="button-row"><Button variant="secondary"><Download size={15} /> SAVE REPORT</Button><Button variant="primary" onClick={() => navigate("/replay")}><RotateCcw size={15} /> REPLAY</Button></div>} />
+      <SectionHeader index="04" eyebrow="HOW WE KNOW IT WORKS" title="PROOF" action={<div className="button-row"><Button variant="secondary" onClick={handleSaveReport}><Download size={15} /> SAVE REPORT</Button><Button variant="primary" onClick={() => navigate("/replay")}><RotateCcw size={15} /> REPLAY</Button></div>} />
       <section className="lab-result-banner"><div><span className="eyebrow">THE RESULT</span><h2>IT SCORES HIGHER,<br /><span>BUT WE’RE NOT SURE YET.</span></h2></div><div className="lab-result-status"><StatusBadge status="running">NOT SURE YET</StatusBadge><p>We can’t say it works better yet.</p></div></section>
       <div className="lab-meta-strip"><div><span>PRACTICE SET</span><b>20 TASKS</b></div><div><span>REAL TEST</span><b>30 TASKS</b></div><div><span>TRIES PER TASK</span><b>5</b></div><div><span>CERTAINTY</span><b>95%</b></div><button className="method-button"><Search size={15} /> METHOD</button></div>
       <section className="condition-grid">{benchmark.map(item => <button key={item.id} className={`condition-card condition-${item.color} ${selectedBench === item.id ? "is-selected" : ""}`} onClick={() => setSelectedBench(item.id)}><span className="eyebrow">{item.label}</span><strong>{item.score}</strong><div className="condition-interval"><span className="interval-track"><i style={{ left: `${parseInt(item.interval.split("–")[0]) - 45}%`, width: `${parseInt(item.interval.split("–")[1]) - parseInt(item.interval.split("–")[0]) + 3}%` }} /></span><span className="mono">range {item.interval}%</span></div><div className="condition-footer"><span>{item.note}</span><b>{item.delta}</b></div></button>)}</section>
@@ -359,9 +375,13 @@ function LabScreen({ selectedBench, setSelectedBench, navigate }: { selectedBenc
 
 function ReplayScreen({ selected, setSelected, navigate }: { selected: number; setSelected: (index: number) => void; navigate: (path: string) => void }) {
   const phase = phases[selected];
+  const handleSaveReplay = () => {
+    const replayDoc = `# CodeForge Execution Replay Record\n\n**Exported:** ${new Date().toISOString()}\n**Task:** "Find the cause and make a small fix for blank rows."\n**Current Step:** ${phase.label} (${phase.icon})\n**AI Explanation:** ${phase.detail}\n\n## Verified Fix Diff\n\`\`\`python\nfor row in reader:\n+  if not row: continue\n   records.append(row)\n\`\`\`\n\n## Status\n- Open Tests: 12 / 12 Passed\n- Secret Tests: 4 / 4 Passed\n- Verdict: ${selected === 6 ? "ALL TESTS PASSED. LESSON SAVED." : "IN PROGRESS"}\n`;
+    exportDownload(`codeforge-replay-${phase.label.toLowerCase()}.md`, replayDoc);
+  };
   return (
     <div className="product-screen">
-      <SectionHeader index="R" eyebrow="WATCH IT AGAIN, STEP BY STEP" title="REPLAY" action={<div className="button-row"><Button variant="secondary"><Download size={15} /> SAVE</Button><Button variant="primary" onClick={() => navigate("/studio")}>BACK</Button></div>} />
+      <SectionHeader index="R" eyebrow="WATCH IT AGAIN, STEP BY STEP" title="REPLAY" action={<div className="button-row"><Button variant="secondary" onClick={handleSaveReplay}><Download size={15} /> SAVE</Button><Button variant="primary" onClick={() => navigate("/studio")}>BACK</Button></div>} />
       <div className="replay-layout"><aside className="replay-timeline brutal-card"><div className="panel-title"><span>STEPS</span><StatusBadge status="verified">NO INTERNET NEEDED</StatusBadge></div>{phases.map((item, index) => <button key={item.label} onClick={() => setSelected(index)} className={`replay-step ${selected === index ? "is-selected" : ""}`}><span className="replay-number">{item.icon}</span><span><b>{item.label}</b><small>{item.detail.split(".")[0]}</small></span><ChevronRight size={15} /></button>)}</aside><section className="replay-detail"><div className="replay-call brutal-card"><div className="panel-title"><span>STEP: {phase.label}</span><span className="mono muted">RECORDED</span></div><div className="call-grid"><div><span className="eyebrow">WHAT WE ASKED</span><p>“Find the cause and make a small fix for blank rows.”</p></div><div><span className="eyebrow">WHAT THE AI SAID</span><p>{phase.detail}</p></div></div><div className="cassette-bar"><LockKeyhole size={14} /> THIS IS A RECORDING. NO KEY OR ACCOUNT NEEDED.</div></div><div className="replay-evidence-grid"><div className="brutal-card code-card"><div className="panel-title"><span>THE FIX</span></div><div className="code-lines"><div><span className="line-num">18</span><span className="code-muted">for row in reader:</span></div><div className="code-add"><span className="line-num">19</span><span>+  if not row: continue</span></div><div><span className="line-num">20</span><span>   records.append(row)</span></div></div></div><div className="brutal-card replay-verdict"><div className="panel-title"><span>RESULT</span><StatusBadge status={selected === 6 ? "verified" : "notrun"}>{selected === 6 ? "PASSED" : "NOT DONE"}</StatusBadge></div><div className="receipt-number">{selected === 6 ? "16 / 16" : `${selected + 10} / 16`}</div><p>{selected === 6 ? "Every test passed. The lesson was saved." : "This recording stops before the final result."}</p><div className="receipt-row"><span>OPEN TESTS</span><b>12 / 12</b></div><div className="receipt-row"><span>SECRET TESTS</span><b>{selected === 6 ? "4 / 4" : "NOT RUN"}</b></div></div></div></section></div>
     </div>
   );
